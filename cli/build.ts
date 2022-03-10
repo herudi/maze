@@ -31,6 +31,7 @@ try {
 } catch (_e) { /* noop */ }
 
 const config: any = {
+  absWorkingDir: dir,
   jsxFactory: "h",
   jsxFragment: "Fragment",
   format: "esm",
