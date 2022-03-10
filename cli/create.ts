@@ -16,7 +16,9 @@ export default async function createApp() {
   await Deno.mkdir(join(dir, "pages", "api"), { recursive: true });
   await Deno.mkdir(join(dir, ".vscode"));
   await Deno.mkdir(join(dir, "public"));
-  await Deno.writeTextFile(join(dir, 'deno.json'), `{
+  await Deno.writeTextFile(
+    join(dir, "deno.json"),
+    `{
   "compilerOptions": {
     "lib": [
       "dom",
@@ -34,7 +36,7 @@ export default async function createApp() {
       "exclude": [
         "_core/",
         "public/",
-        "dist/"
+        "server_prod.js"
       ]
     }
   },
@@ -43,13 +45,16 @@ export default async function createApp() {
       "exclude": [
         "_core/",
         "public/",
-        "dist/"
+        "server_prod.js"
       ]
     }
   },
   "importMap": "./import_map.json"
-}`);
-  await Deno.writeTextFile(join(dir, 'import_map.json'), `
+}`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "import_map.json"),
+    `
 {
   "imports": {
     "nano-jsx": "https://deno.land/x/nano_jsx@v0.0.30/mod.ts",
@@ -57,8 +62,11 @@ export default async function createApp() {
     "nhttp": "https://deno.land/x/nhttp@1.1.10/mod.ts",
     "types": "${link}/core/types.ts"
   }
-}`);
-  await Deno.writeTextFile(join(dir, '.vscode', 'settings.json'), `
+}`,
+  );
+  await Deno.writeTextFile(
+    join(dir, ".vscode", "settings.json"),
+    `
 {
   "deno.enable": true,
   "deno.unstable": true,
@@ -68,15 +76,21 @@ export default async function createApp() {
     "https://cdn.skypack.dev": true
   },
   "deno.importMap": "./import_map.json"
-}`);
-  await Deno.writeTextFile(join(dir, 'server.ts'), `import { initApp } from "./_core/http.ts";
+}`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "server.ts"),
+    `import { initApp } from "./_core/http.ts";
 
 const app = await initApp(/* callback app */);
 app.listen(8080, () => {
   console.log("> Running on http://localhost:8080");
 });
-`);
-  await Deno.writeTextFile(join(dir, 'components', 'navbar.tsx'), `/** @jsx h */
+`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "components", "navbar.tsx"),
+    `/** @jsx h */
 import { h, Router } from "nano-jsx";
 import { tw } from "twind";
 
@@ -106,8 +120,11 @@ export default function Navbar({ route }: any) {
     </nav>
   );
 }
-`);
-  await Deno.writeTextFile(join(dir, 'pages', '_app.tsx'), `/** @jsx h */
+`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "pages", "_app.tsx"),
+    `/** @jsx h */
 import { h, Helmet } from "nano-jsx";
 import { AppProps } from "types";
 import Navbar from "../components/navbar.tsx";
@@ -125,9 +142,12 @@ export default function App({ Component, props }: AppProps) {
     </div>
   );
 }
-`);
+`,
+  );
 
-  await Deno.writeTextFile(join(dir, 'pages', '_error.tsx'), `/** @jsx h */
+  await Deno.writeTextFile(
+    join(dir, "pages", "_error.tsx"),
+    `/** @jsx h */
 import { h, Helmet } from "nano-jsx";
 import { tw } from "twind";
 
@@ -158,12 +178,19 @@ export default function ErrorPage(
     </div>
   );
 }
-`);
-  await Deno.writeTextFile(join(dir, 'pages', 'about.tsx'), `/** @jsx h */
+`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "pages", "about.tsx"),
+    `/** @jsx h */
 import { Component, h, Helmet } from "nano-jsx";
 import { tw } from "twind";
 import { PageProps, RequestEvent } from "types";
 import ErrorPage from "./_error.tsx";
+
+const style = {
+  button: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+}
 
 export default class About extends Component<PageProps> {
   // initial props (server-side or client-side)
@@ -185,17 +212,30 @@ export default class About extends Component<PageProps> {
               {this.props.data.title}
             </h3>
             <p class={tw${"`text-2xl`"}}>This about from API /api/about</p>
+            <p class={tw${"`text-2sm mt-5`"}}>try to modify at file : /pages/about.tsx</p>
+            <div class={tw${"`mt-10`"}}>
+              <a target="_blank" href="https://github.com/herudi/maze" class={tw${"`${style.button}`"}}>
+                Read the doc on github
+              </a>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 }
-`);
-  await Deno.writeTextFile(join(dir, 'pages', 'index.tsx'), `/** @jsx h */
+`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "pages", "index.tsx"),
+    `/** @jsx h */
 import { Component, h, Helmet } from "nano-jsx";
 import { tw } from "twind";
 import { PageProps } from "types";
+
+const style = {
+  button: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+}
 
 export default class Home extends Component<PageProps> {
 
@@ -211,14 +251,23 @@ export default class Home extends Component<PageProps> {
               Welcome Home
             </h3>
             <p class={tw${"`text-2xl`"}}>Maze Application Home</p>
+            <p class={tw${"`text-2sm mt-5`"}}>try to modify at file : /pages/index.tsx</p>
+            <div class={tw${"`mt-10`"}}>
+              <a target="_blank" href="https://github.com/herudi/maze" class={tw${"`${style.button}`"}}>
+                Read the doc on github
+              </a>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 }
-`);
-  await Deno.writeTextFile(join(dir, 'pages', 'api', 'about.ts'), `import { HttpError } from "nhttp";
+`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "pages", "api", "about.ts"),
+    `import { HttpError } from "nhttp";
 import { RequestEvent } from "types";
 
 export default async function handler(rev: RequestEvent) {
@@ -229,8 +278,11 @@ export default async function handler(rev: RequestEvent) {
   }
   throw new HttpError(405, "method not allowed");
 }
-`);
-  await Deno.writeTextFile(join(dir, '_core', 'root_app.tsx'), `/** @jsx h */
+`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "_core", "root_app.tsx"),
+    `/** @jsx h */
 import { h } from "nano-jsx";
 import App from "../pages/_app.tsx";
 
@@ -248,8 +300,11 @@ RootApp.event = (App as any).event || {};
 
 export default RootApp;
   
-`);
-  await Deno.writeTextFile(join(dir, '_core', 'result', 'pages.ts'), `
+`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "_core", "result", "pages.ts"),
+    `
 import $0 from "../../pages/index.tsx";
 import $1 from "../../pages/about.tsx";
 export const pages: any = [
@@ -265,16 +320,22 @@ export const pages: any = [
   },
 ];
 export const tt: string = '1646808121930';
-`);
-  await Deno.writeTextFile(join(dir, '_core', 'result', 'apis.ts'), `
+`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "_core", "result", "apis.ts"),
+    `
 import { Router } from "https://deno.land/x/nhttp@1.1.10/mod.ts";
 import { RequestEvent } from "${link}/core/types.ts";
 import $0 from "../../pages/api/about.ts";
 const api = new Router<RequestEvent>();
 api.any('/about', $0);
 export default api;
-`);
-  await Deno.writeTextFile(join(dir, '_core', 'result', 'server_pages.ts'), `
+`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "_core", "result", "server_pages.ts"),
+    `
 import $0 from "../../pages/index.tsx";
 import $1 from "../../pages/about.tsx";
 export const pages: any = [
@@ -290,8 +351,11 @@ export const pages: any = [
   },
 ];
 export const tt: string = '1646808121930';
-`);
-  await Deno.writeTextFile(join(dir, '_core', 'http.ts'), `
+`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "_core", "http.ts"),
+    `
 import { initApp as baseInitApp, NHttp, ReqEvent } from "${link}/core/server.tsx";
 import ErrorPage from "../pages/_error.tsx";
 import RootApp from "./root_app.tsx";
@@ -308,8 +372,11 @@ export const initApp = async (appCallback?: (app: NHttp<ReqEvent>) => any) => {
     apis: apis
   }, appCallback);
 };
-`);
-  await Deno.writeTextFile(join(dir, '_core', 'hydrate.tsx'), `/** @jsx h */
+`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "_core", "hydrate.tsx"),
+    `/** @jsx h */
 import { h, hydrate } from "nano-jsx";
 import { pages, tt } from "./result/pages.ts";
 import RootApp from "./root_app.tsx";
@@ -505,7 +572,8 @@ window.addEventListener("load", async () => {
   }
   router.resolve();
 });
-  `);
+  `,
+  );
   console.log(`Success create ${app}.
     
 cd ${app}

@@ -6,11 +6,12 @@ import { join, resolve, toFileUrl } from "./deps.ts";
 
 const dir = Deno.cwd();
 
-const map = (await import(toFileUrl(join(resolve(dir, "./import_map.json"))).href, {
-  assert: {
-    type: "json"
-  }
-})).default;
+const map =
+  (await import(toFileUrl(join(resolve(dir, "./import_map.json"))).href, {
+    assert: {
+      type: "json",
+    },
+  })).default;
 
 delete map.imports["types"];
 
@@ -27,7 +28,9 @@ for (let i = 0; i < listFiles.length; i++) {
 }
 
 try {
-  await Deno.remove(join(resolve(dir, "./__maze/public/pages")), { recursive: true });
+  await Deno.remove(join(resolve(dir, "./__maze/public/pages")), {
+    recursive: true,
+  });
 } catch (_e) { /* noop */ }
 
 const config: any = {
@@ -57,7 +60,7 @@ try {
     outfile: join(resolve(dir, "./server_prod.js")),
     plugins: [esbuild_import_map.plugin()],
   });
-  
+
   await esbuild.build({
     ...config,
     bundle: true,

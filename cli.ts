@@ -1,6 +1,6 @@
 import createApp from "./cli/create.ts";
 import dev_server from "./cli/dev.ts";
-import { LINK } from './core/constant.ts';
+import { LINK } from "./core/constant.ts";
 
 const arg = (Deno.args || [])[0];
 
@@ -50,8 +50,7 @@ BUILD PRODUCTION:
 
 RUN PRODUCTION:
   deno run -A server_prod.js
-  `)
+  `);
 } else {
-  console.log(`command not valid. please type: maze help`)
+  console.log(`command not valid. please type: maze help`);
 }
-
