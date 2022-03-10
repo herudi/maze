@@ -23,11 +23,11 @@ const obj = {} as any;
 for (let i = 0; i < listFiles.length; i++) {
   const name = listFiles[i];
   const _name = name.replace("./pages/", "").replace(/\.[^.]+$/, "");
-  obj[_name] = join(resolve(dir, "." + name));
+  obj[_name] = toFileUrl(join(resolve(dir, name))).href;
 }
 
 try {
-  await Deno.remove(join(resolve(dir, "./public/pages")), { recursive: true });
+  await Deno.remove(join(resolve(dir, "./__maze/public/pages")), { recursive: true });
 } catch (_e) { /* noop */ }
 
 const config: any = {
@@ -57,6 +57,7 @@ try {
     outfile: join(resolve(dir, "./server_prod.js")),
     plugins: [esbuild_import_map.plugin()],
   });
+  
   await esbuild.build({
     ...config,
     bundle: true,
@@ -64,11 +65,11 @@ try {
       importMapFile: join(resolve(dir, "./import_map.json")),
     })],
     entryPoints: {
-      "_app": join(resolve(dir, "./_core/hydrate.tsx")),
+      "_app": toFileUrl(join(resolve(dir, "./_core/hydrate.tsx"))).href,
       ...obj,
     },
     splitting: true,
-    outdir: join(resolve(dir, "./public/pages")),
+    outdir: join(resolve(dir, "./__maze/public/pages")),
   });
   console.log("Success Build !!");
   console.log("Run Production: deno run -A server_prod.js");

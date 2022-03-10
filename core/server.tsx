@@ -3,9 +3,11 @@ import { h } from "./deps_client.ts";
 import { jsx } from "./tpl.ts";
 import { HttpError, NHttp } from "./deps_server.ts";
 import { RequestEvent } from "./types.ts";
+import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
+import { join, resolve, toFileUrl } from "../cli/deps.ts";
 
 const env = (Deno.args || []).includes("--dev") ? "development" : "production";
-const clientScript = "/pages/_app.js";
+const clientScript = "/__maze/pages/_app.js";
 const tt = Date.now();
 export type ReqEvent = RequestEvent & {
   render: (
@@ -16,16 +18,17 @@ export type ReqEvent = RequestEvent & {
 export { NHttp };
 const app = new NHttp<ReqEvent>({ env });
 
+app.use(staticFiles(join(resolve(Deno.cwd(), "./public"))));
+
 async function serverApp({ map_pages, map_server_pages }: any) {
   let pages: any = [];
   if (env === "development") {
     const dir = Deno.cwd();
-    const {join, resolve,toFileUrl} = await import("../cli/deps.ts");
     try {
-      await Deno.remove(join(resolve(dir, "./public/pages")), { recursive: true });
+      await Deno.remove(join(resolve(dir, "./__maze/public/pages")), { recursive: true });
     } catch (_e) { /* noop */ }
     const { genPages } = await import("./gen.ts");
-    
+
     const import_map = (await import(toFileUrl(join(resolve(dir, "./import_map.json"))).href, {
       assert: {
         type: "json"
@@ -35,7 +38,7 @@ async function serverApp({ map_pages, map_server_pages }: any) {
     const es_map = await import(
       "https://esm.sh/esbuild-plugin-import-map?no-check"
     );
-    
+
     pages = map_pages;
     await genPages();
     import_map.imports["nano-jsx"] = "https://cdn.skypack.dev/nano-jsx@v0.0.30";
