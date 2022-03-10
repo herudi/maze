@@ -506,5 +506,17 @@ window.addEventListener("load", async () => {
   router.resolve();
 });
   `);
-  console.log(`cd ${app}\nmaze dev\nmaze build`);
+  console.log(`Success create ${app}.
+    
+cd ${app}
+
+RUN DEVELOPMENT:
+  maze dev
+
+BUILD PRODUCTION:
+  maze build
+
+RUN PRODUCTION:
+  deno run -A server_prod.js
+  `);
 }

@@ -76,15 +76,16 @@ function genRoutes(arr: string[], target: string, env: string) {
     return `
 ${arr.map((el, i) => `import $${i} from "../../pages${el}";`).join("\n")}
 export const pages: any = [
-  ${arr.map((el, i) => {
-      const path = genPath(el);
-      return `{ 
+  ${
+      arr.map((el, i) => {
+        const path = genPath(el);
+        return `{ 
     path: '${path}',
     page: $${i},
     methods: ($${i} as any).methods
   },`;
-    }).join("\n  ")
-      }
+      }).join("\n  ")
+    }
 ];
 export const tt: string = '${Date.now()}';
 `;
@@ -92,15 +93,16 @@ export const tt: string = '${Date.now()}';
   if (target === "page" && env === "production") {
     return `
 export const pages = [
-  ${arr.map((el) => {
-      const path = genPath(el);
-      const pathfile = el.replace(".tsx", ".js").replace(".jsx", ".js");
-      return `{ 
+  ${
+      arr.map((el) => {
+        const path = genPath(el);
+        const pathfile = el.replace(".tsx", ".js").replace(".jsx", ".js");
+        return `{ 
     path: '${path}',
     page: '.${pathfile}'
   },`;
-    }).join("\n  ")
-      }
+      }).join("\n  ")
+    }
 ];
 export const tt: string = '${Date.now()}';
 `;
@@ -110,11 +112,12 @@ import { Router } from "https://deno.land/x/nhttp@1.1.10/mod.ts";
 import { RequestEvent } from "${link}/core/types.ts";
 ${arr.map((el, i) => `import $${i} from "../../pages${el}";`).join("\n")}
 const api = new Router<RequestEvent>();
-  ${arr.map((el, i) => {
-    const path = genPath(el);
-    return `api.any('${path}', $${i});`;
-  }).join("\n  ")
-    }
+  ${
+    arr.map((el, i) => {
+      const path = genPath(el);
+      return `api.any('${path}', $${i});`;
+    }).join("\n  ")
+  }
 export default api;
 `;
 }

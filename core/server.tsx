@@ -25,15 +25,18 @@ async function serverApp({ map_pages, map_server_pages }: any) {
   if (env === "development") {
     const dir = Deno.cwd();
     try {
-      await Deno.remove(join(resolve(dir, "./__maze/public/pages")), { recursive: true });
+      await Deno.remove(join(resolve(dir, "./__maze/public/pages")), {
+        recursive: true,
+      });
     } catch (_e) { /* noop */ }
     const { genPages } = await import("./gen.ts");
 
-    const import_map = (await import(toFileUrl(join(resolve(dir, "./import_map.json"))).href, {
-      assert: {
-        type: "json"
-      }
-    })).default;
+    const import_map =
+      (await import(toFileUrl(join(resolve(dir, "./import_map.json"))).href, {
+        assert: {
+          type: "json",
+        },
+      })).default;
     const esbuild = await import("https://deno.land/x/esbuild@v0.14.22/mod.js");
     const es_map = await import(
       "https://esm.sh/esbuild-plugin-import-map?no-check"
@@ -175,8 +178,8 @@ export const initApp = async (opts: {
   }
   const pages = await serverApp({
     map_pages: opts.pages,
-    map_server_pages: opts.server_pages
-  })
+    map_server_pages: opts.server_pages,
+  });
   for (let i = 0; i < pages.length; i++) {
     const route: any = pages[i];
     const methods = route.methods || ["GET"];

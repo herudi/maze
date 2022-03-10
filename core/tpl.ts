@@ -18,18 +18,23 @@ const html = (
     ${head.join("\n    ")}
     ${styleTag}
   </head>
-  ${attributes.body.size === 0 ? "<body>" : `<body ${attributes.body.toString()}>`
-  }
+  ${
+  attributes.body.size === 0 ? "<body>" : `<body ${attributes.body.toString()}>`
+}
     <div id="root">${body}</div>
-    ${initData !== void 0
-    ? `<script id="__INIT_DATA__" type="application/json">${JSON.stringify(initData)
+    ${
+  initData !== void 0
+    ? `<script id="__INIT_DATA__" type="application/json">${
+      JSON.stringify(initData)
     }</script>`
     : ""
-  }${footer.join("\n    ")}${env === "development" ? '<script src="/js/refresh.js"></script>' : ""
-  }${clientScript
+}${footer.join("\n    ")}${
+  env === "development" ? '<script src="/js/refresh.js"></script>' : ""
+}${
+  clientScript
     ? `<script type="module" src="${clientScript + "?v=" + tt}"></script>`
     : ""
-  }
+}
   </body>
 <html>
 `);
