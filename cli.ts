@@ -35,5 +35,23 @@ if (arg === "create") {
   await dev_server();
 } else if (arg === "build") {
   await build();
+} else if (arg === "help") {
+  console.log(`Maze the fullstack framework nanojsx and deno.
+    
+CREATE NEW APP:
+  maze create your-app-name
+  cd your-app-name
+
+RUN DEVELOPMENT:
+  maze dev
+
+BUILD PRODUCTION:
+  maze build
+
+RUN PRODUCTION:
+  deno run -A server_prod.js
+  `)
+} else {
+  console.log(`command not valid. please type: maze help`)
 }
 
