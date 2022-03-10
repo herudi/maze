@@ -313,7 +313,7 @@ export const initApp = async (appCallback?: (app: NHttp<ReqEvent>) => any) => {
 import { h } from "nano-jsx";
 import { pages, tt } from "./result/pages.ts";
 import RootApp from "./root_app.tsx";
-import ClassicRouter from "${link}/router.tsx";
+import ClassicRouter from "${link}/core/router.tsx";
 
 async function lazy(url: string) {
   const mod = (await import(url + "?v=" + tt)).default;
