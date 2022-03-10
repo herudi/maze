@@ -212,7 +212,7 @@ export default class About extends Component<PageProps> {
               {this.props.data.title}
             </h3>
             <p class={tw${"`text-2xl`"}}>This about from API /api/about</p>
-            <p class={tw${"`text-2sm mt-5`"}}>try to modify at file : /pages/about.tsx</p>
+            <p class={tw${"`mt-5`"}}>try to modify at file : /pages/about.tsx</p>
             <div class={tw${"`mt-10`"}}>
               <a target="_blank" href="https://github.com/herudi/maze" class={tw${"`${style.button}`"}}>
                 Read the doc on github
@@ -251,7 +251,7 @@ export default class Home extends Component<PageProps> {
               Welcome Home
             </h3>
             <p class={tw${"`text-2xl`"}}>Maze Application Home</p>
-            <p class={tw${"`text-2sm mt-5`"}}>try to modify at file : /pages/index.tsx</p>
+            <p class={tw${"`mt-5`"}}>try to modify at file : /pages/index.tsx</p>
             <div class={tw${"`mt-10`"}}>
               <a target="_blank" href="https://github.com/herudi/maze" class={tw${"`${style.button}`"}}>
                 Read the doc on github
