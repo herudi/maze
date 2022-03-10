@@ -36,7 +36,7 @@ if (arg === "create") {
 } else if (arg === "build") {
   await build();
 } else if (arg === "help") {
-  console.log(`Maze the fullstack framework nanojsx and deno.
+  console.log(`Maze the fullstack web framework for deno and nanojsx.
     
 CREATE NEW APP:
   maze create your-app-name
