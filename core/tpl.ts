@@ -21,7 +21,7 @@ const html = (
   ${
   attributes.body.size === 0 ? "<body>" : `<body ${attributes.body.toString()}>`
 }
-    <div id="root">${body}</div>
+    ${body}
     ${
   initData !== void 0
     ? `<script id="__INIT_DATA__" type="application/json">${

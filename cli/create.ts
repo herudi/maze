@@ -91,34 +91,48 @@ app.listen(8080, () => {
   await Deno.writeTextFile(
     join(dir, "components", "navbar.tsx"),
     `/** @jsx h */
-import { h, Router } from "nano-jsx";
+import { Component, h, Router } from "nano-jsx";
 import { tw } from "twind";
 
-const { Link } = Router;
+const { Link, Listener } = Router;
 const active = "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium";
 const in_active = "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium";
 
-export default function Navbar({ route }: any) {
-  return (
-    <nav class={tw${"`bg-gray-800 sticky top-0 z-10`"}}>
-      <div class={tw${"`max-w-7xl mx-auto px-2 sm:px-6 lg:px-8`"}}>
-        <div class={tw${"`relative flex items-center justify-between h-16`"}}>
-          <div class={tw${"`flex-1 flex items-center justify-center sm:items-stretch sm:justify-start`"}}>
-            <div class={tw${"`sm:block sm:ml-6`"}}>
-              <div class={tw${"`flex space-x-4`"}}>
-                <Link to="/" class={tw${"`${route.pathname === '/' ? active : in_active}`"}}>
-                  Home
-                </Link>
-                <Link to="/about" class={tw${"`${route.pathname === '/about' ? active : in_active}`"}}>
-                  About
-                </Link>
+export default class Navbar extends Component {
+  listener = Listener().use();
+  didMount() {
+    this.listener.subscribe((curr, prev) => {
+      if (curr !== prev) {
+        this.update({ pathname: location.pathname });
+      }
+    })
+  }
+  didUnmount() {
+    this.listener.cancel();
+  }
+  render(loc: Location) {
+    const route = loc || this.props.route;
+    return (
+      <nav class={tw${"`bg-gray-800 sticky top-0 z-10`"}}>
+        <div class={tw${"`max-w-7xl mx-auto px-2 sm:px-6 lg:px-8`"}}>
+          <div class={tw${"`relative flex items-center justify-between h-16`"}}>
+            <div class={tw${"`flex-1 flex items-center justify-center sm:items-stretch sm:justify-start`"}}>
+              <div class={tw${"`sm:block sm:ml-6`"}}>
+                <div class={tw${"`flex space-x-4`"}}>
+                  <Link to="/" class={tw${"`${route.pathname === '/' ? active : in_active}`"}}>
+                    Home
+                  </Link>
+                  <Link to="/about" class={tw${"`${route.pathname === '/about' ? active : in_active}`"}}>
+                    About
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </nav>
-  );
+      </nav>
+    );
+  }
 }
 `,
   );
@@ -287,9 +301,10 @@ import { h } from "nano-jsx";
 import App from "../pages/_app.tsx";
 
 function RootApp({ Page, initData, route, isServer }: any) {
+  const Comp = (props: any) => <div id="__ROUTE_APP__"><Page {...props}/></div>
   return (
     <App
-      Component={Page}
+      Component={Comp}
       props={{ ...initData, route, isServer }}
     />
   );
@@ -381,6 +396,7 @@ import { h, hydrate } from "nano-jsx";
 import { pages, tt } from "./result/pages.ts";
 import RootApp from "./root_app.tsx";
 import { RequestEvent } from "types";
+import ErrorPage from "../pages/_error.tsx";
 
 type ReqEvent = RequestEvent & {
   render: (elem: any, id?: string) => any;
@@ -421,23 +437,9 @@ function decURI(str: string) {
   }
 }
 
-type TRouter = {
-  id?: string;
-  notFoundPage?: any;
-  errorPage?: any;
-};
-
 export default class ClassicRouter {
   routes: { path: string; regex: RegExp; wild: boolean; fn: THandler }[] = [];
   current: string | undefined;
-  id: string;
-  errorPage: any;
-  notFoundPage: any;
-  constructor(opts: TRouter = {}) {
-    this.id = opts.id || "root";
-    this.errorPage = opts.errorPage || (<div>Error: Something went wrong</div>);
-    this.notFoundPage = opts.notFoundPage || (<div>404: Page not found</div>);
-  }
 
   add(path: string, fn: THandler) {
     let wild = false;
@@ -475,7 +477,6 @@ export default class ClassicRouter {
     if (this.current === pathname + search) return;
     let { fn, params } = this.find(pathname);
     this.current = pathname + search;
-    const _id = this.id;
     const rev = {} as ReqEvent;
     rev.pathname = pathname;
     rev.url = this.current;
@@ -496,9 +497,9 @@ export default class ClassicRouter {
       }
     };
     rev.render = (elem, id) => {
-      hydrate(elem, document.getElementById(id || _id));
+      hydrate(elem, id ? document.getElementById(id) : document.body);
     };
-    if (!fn) return rev.render(this.notFoundPage);
+    if (!fn) return rev.render(<ErrorPage message="Not Found" status={404} />);
     fn(rev);
   }
 
@@ -546,19 +547,35 @@ window.addEventListener("load", async () => {
         const initData = first
           ? init || {}
           : (Page.initProps ? (await Page.initProps(rev)) : {});
-        rev.render(
-          <RootApp
-            Page={Page}
-            initData={{ ...initData, ...rootData }}
-            route={{
-              pathname: rev.pathname,
-              url: rev.url,
-              path: obj.path,
-              params: rev.params,
-            }}
-            isServer={false}
-          />,
-        );
+        if (first) {
+          rev.render(
+            <RootApp
+              Page={Page}
+              initData={{ ...initData, ...rootData }}
+              route={{
+                pathname: rev.pathname,
+                url: rev.url,
+                path: obj.path,
+                params: rev.params,
+              }}
+              isServer={false}
+            />,
+          );
+        } else {
+          const myInitData = { ...initData, ...rootData };
+          rev.render(
+            <Page
+              {...myInitData}
+              route={{
+                pathname: rev.pathname,
+                url: rev.url,
+                path: obj.path,
+                params: rev.params,
+              }}
+              isServer={false}
+            />, "__ROUTE_APP__"
+          );
+        }
         if (RootApp.event.onEnd !== void 0) {
           RootApp.event.onEnd(rev);
         }
