@@ -412,8 +412,6 @@ import config from "../config.ts";
 import { RequestEvent } from "types";
 import ErrorPage from "../pages/_error.tsx";
 
-setup(config.twind);
-
 type ReqEvent = RequestEvent & {
   render: (elem: any, id?: string) => any;
 };
@@ -540,8 +538,10 @@ async function lazy(url: string) {
   const mod = (await import(url + "?v=" + tt)).default;
   return mod;
 }
-let first = true;
-window.addEventListener("load", async () => {
+
+window.addEventListener("load", () => {
+  setup(config.twind);
+  let first = true;
   let init: any = document.getElementById("__INIT_DATA__");
   if (init) init = JSON.parse(init.textContent || "{}");
   const router = new ClassicRouter();
