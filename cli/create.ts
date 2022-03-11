@@ -405,10 +405,14 @@ export const initApp = async (appCallback?: (app: NHttp<ReqEvent>) => any) => {
     join(dir, "@shared", "hydrate.tsx"),
     `/** @jsx h */
 import { h, hydrate } from "nano-jsx";
+import { setup } from "twind";
 import { pages, tt } from "./result/pages.ts";
 import RootApp from "./root_app.tsx";
+import config from "../config.ts";
 import { RequestEvent } from "types";
 import ErrorPage from "../pages/_error.tsx";
+
+setup(config.twind);
 
 type ReqEvent = RequestEvent & {
   render: (elem: any, id?: string) => any;
