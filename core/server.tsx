@@ -140,7 +140,8 @@ app.on404((rev) => {
 export const initApp = async (opts: {
   root: any;
   error_page: any;
-  twind_sheet: () => string;
+  twind_setup: Record<string, any>;
+  nano_setup: Record<string, any>;
   pages: Record<string, any>[];
   server_pages: Record<string, any>[];
   apis: any;
@@ -168,8 +169,9 @@ export const initApp = async (opts: {
             params: rev.params,
           }}
         />,
-        opts.twind_sheet,
+        opts.twind_setup,
         { clientScript, env, initData: props.initData, tt },
+        opts.nano_setup,
       );
     };
     return next();
@@ -207,7 +209,8 @@ export const initApp = async (opts: {
     rev.response.type("text/html; charset=utf-8");
     return jsx(
       <ErrorPage message={err.message} status={status as number} />,
-      opts.twind_sheet,
+      opts.twind_setup,
+      opts.nano_setup,
     );
   });
   return app;

@@ -79,17 +79,16 @@ export default async function createApp() {
 }`,
   );
   await Deno.writeTextFile(
-    join(dir, "config", "twind_sheet.ts"),
-    `import { setup } from "https://cdn.skypack.dev/twind@0.16.16";
-import { virtualSheet, getStyleTag } from "https://cdn.skypack.dev/twind@0.16.16/sheets";
+    join(dir, "config", "twind_setup.ts"),
+    `// twind setup options => https://twind.dev/usage-guides/ssr.html
 
-const sheet = virtualSheet();
-setup({ sheet });
+export default {};`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "config", "nano_setup.ts"),
+    `// nano ssr options e.g renderSSR(component, options)
 
-export default () => {
-  (sheet as any).reset();
-  return getStyleTag(sheet);
-}`,
+export default {};`,
   );
   await Deno.writeTextFile(
     join(dir, "server.ts"),
@@ -388,13 +387,15 @@ import { initApp as baseInitApp, NHttp, ReqEvent } from "${link}/core/server.tsx
 import ErrorPage from "../pages/_error.tsx";
 import RootApp from "./root_app.tsx";
 import apis from "./result/apis.ts";
-import twind_sheet from "../config/twind_sheet.ts";
+import twind_setup from "../config/twind_setup.ts";
+import nano_setup from "../config/nano_setup.ts";
 import { pages } from "./result/pages.ts";
 import { pages as server_pages } from "./result/server_pages.ts";
 
 export const initApp = async (appCallback?: (app: NHttp<ReqEvent>) => any) => {
   return await baseInitApp({
-    twind_sheet: twind_sheet,
+    twind_setup: twind_setup,
+    nano_setup: nano_setup,
     root: RootApp,
     error_page: ErrorPage,
     pages: pages,
