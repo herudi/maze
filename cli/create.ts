@@ -12,7 +12,6 @@ export default async function createApp() {
   const dir = join(cwd, app);
   await Deno.mkdir(join(dir, "components"), { recursive: true });
   await Deno.mkdir(join(dir, "@shared"));
-  await Deno.mkdir(join(dir, "config"));
   await Deno.mkdir(join(dir, "@shared", "result"));
   await Deno.mkdir(join(dir, "pages", "api"), { recursive: true });
   await Deno.mkdir(join(dir, ".vscode"));
@@ -79,16 +78,14 @@ export default async function createApp() {
 }`,
   );
   await Deno.writeTextFile(
-    join(dir, "config", "twind_setup.ts"),
-    `// twind setup options => https://twind.dev/usage-guides/ssr.html
+    join(dir, "config.ts"),
+    `export default {
+  // twind setup options.
+  twind: {},
 
-export default {};`,
-  );
-  await Deno.writeTextFile(
-    join(dir, "config", "nano_setup.ts"),
-    `// nano ssr options e.g renderSSR(component, options)
-
-export default {};`,
+  // nano renderSSR options.
+  nano: {}
+};`,
   );
   await Deno.writeTextFile(
     join(dir, "server.ts"),
@@ -387,15 +384,14 @@ import { initApp as baseInitApp, NHttp, ReqEvent } from "${link}/core/server.tsx
 import ErrorPage from "../pages/_error.tsx";
 import RootApp from "./root_app.tsx";
 import apis from "./result/apis.ts";
-import twind_setup from "../config/twind_setup.ts";
-import nano_setup from "../config/nano_setup.ts";
+import config from "../config.ts";
 import { pages } from "./result/pages.ts";
 import { pages as server_pages } from "./result/server_pages.ts";
 
 export const initApp = async (appCallback?: (app: NHttp<ReqEvent>) => any) => {
   return await baseInitApp({
-    twind_setup: twind_setup,
-    nano_setup: nano_setup,
+    twind_setup: config.twind,
+    nano_setup: config.nano,
     root: RootApp,
     error_page: ErrorPage,
     pages: pages,

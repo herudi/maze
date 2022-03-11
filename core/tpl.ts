@@ -1,24 +1,4 @@
-// original from https://crux.land/nanossr@0.0.1
-// include maze core script
-
 import { Helmet, renderSSR } from "./deps_client.ts";
-import { setup } from "https://cdn.skypack.dev/twind@0.16.16";
-import {
-  getStyleTag,
-  virtualSheet,
-} from "https://cdn.skypack.dev/twind@0.16.16/sheets";
-
-let SHEET_SINGLETON: any = null;
-function sheet(twOptions = {}) {
-  return SHEET_SINGLETON ?? (SHEET_SINGLETON = setupSheet(twOptions));
-}
-
-// Setup TW sheet singleton
-function setupSheet(twOptions: Record<string, any>) {
-  const sheet = virtualSheet();
-  setup({ ...twOptions, sheet });
-  return sheet;
-}
 
 const html = (
   { body, attributes, head, footer, styleTag, clientScript, env, initData, tt }:
@@ -50,15 +30,15 @@ const html = (
 <html>
 `);
 
-export function jsx(
+export function toHtml(
   Component: any,
-  twOptions: Record<string, any>,
+  sheet: any,
+  styleTag: string,
   options: Record<string, any> = {},
   ssrOptions: Record<string, any> = {},
 ) {
-  sheet(twOptions ?? {}).reset();
+  sheet.reset();
   const app = renderSSR(Component, ssrOptions);
   const { body, head, footer, attributes } = Helmet.SSR(app);
-  const styleTag = getStyleTag(sheet());
   return html({ ...options, body, head, footer, styleTag, attributes });
 }

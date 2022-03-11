@@ -1,10 +1,15 @@
 /** @jsx h */
 import { h } from "./deps_client.ts";
-import { jsx } from "./tpl.ts";
+import { toHtml } from "./tpl.ts";
 import { HttpError, NHttp } from "./deps_server.ts";
 import { RequestEvent } from "./types.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
 import { join, resolve, toFileUrl } from "../cli/deps.ts";
+import { setup } from "https://cdn.skypack.dev/twind@0.16.16";
+import {
+  getStyleTag,
+  virtualSheet,
+} from "https://cdn.skypack.dev/twind@0.16.16/sheets";
 
 const env = (Deno.args || []).includes("--dev") ? "development" : "production";
 const clientScript = "/__maze/pages/_app.js";
@@ -146,6 +151,9 @@ export const initApp = async (opts: {
   server_pages: Record<string, any>[];
   apis: any;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
+  const sheet = virtualSheet();
+  setup({ ...opts.twind_setup, sheet });
+  const styleTag = getStyleTag(sheet);
   let obj = {} as any;
   const RootApp = opts.root;
   app.use("/api", opts.apis);
@@ -157,7 +165,7 @@ export const initApp = async (opts: {
         const data = props.initData || {};
         props.initData = { ...data, ...rootData };
       }
-      return jsx(
+      return toHtml(
         <RootApp
           isServer={true}
           initData={props.initData}
@@ -169,7 +177,8 @@ export const initApp = async (opts: {
             params: rev.params,
           }}
         />,
-        opts.twind_setup,
+        sheet,
+        styleTag,
         { clientScript, env, initData: props.initData, tt },
         opts.nano_setup,
       );
@@ -207,9 +216,11 @@ export const initApp = async (opts: {
       return { status, message: err.message };
     }
     rev.response.type("text/html; charset=utf-8");
-    return jsx(
+    return toHtml(
       <ErrorPage message={err.message} status={status as number} />,
-      opts.twind_setup,
+      sheet,
+      styleTag,
+      {},
       opts.nano_setup,
     );
   });
