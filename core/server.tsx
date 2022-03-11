@@ -210,6 +210,7 @@ export const initApp = async (opts: {
     return jsx(
       <ErrorPage message={err.message} status={status as number} />,
       opts.twind_setup,
+      {},
       opts.nano_setup,
     );
   });
