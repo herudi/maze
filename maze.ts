@@ -6,10 +6,10 @@ const arg = (Deno.args || [])[0];
 
 async function build() {
   console.log("Building Server Production...");
-
+  const reload = (Deno.args[1] || "");
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   const script = CMD +
-    `deno run -A --no-check --unstable ${LINK}/cli/build.ts`;
+    `deno run -A --no-check --unstable ${reload} ${LINK}/cli/build.ts`;
   const p = Deno.run({
     cmd: script.split(" "),
     stdout: "piped",

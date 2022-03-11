@@ -32,9 +32,10 @@ const html = (
 
 export function jsx(
   Component: any,
-  styleTag: string,
+  twind_sheet: () => string,
   opts: Record<string, any> = {},
 ) {
+  const styleTag = twind_sheet();
   const app = renderSSR(Component, opts);
   const { body, head, footer, attributes } = Helmet.SSR(app);
   return html({ ...opts, body, head, footer, styleTag, attributes });

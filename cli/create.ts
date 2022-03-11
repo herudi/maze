@@ -79,14 +79,15 @@ export default async function createApp() {
 }`,
   );
   await Deno.writeTextFile(
-    join(dir, "config", "style_tag.ts"),
+    join(dir, "config", "twind_sheet.ts"),
     `import { setup } from "https://cdn.skypack.dev/twind@0.16.16";
 import { virtualSheet, getStyleTag } from "https://cdn.skypack.dev/twind@0.16.16/sheets";
 
-const sheet = virtualSheet();
-setup({ sheet });
-
-export default getStyleTag(sheet);`,
+export default () => {
+  const sheet = virtualSheet();
+  setup({ sheet });
+  return getStyleTag(sheet);
+}`,
   );
   await Deno.writeTextFile(
     join(dir, "server.ts"),
@@ -385,13 +386,13 @@ import { initApp as baseInitApp, NHttp, ReqEvent } from "${link}/core/server.tsx
 import ErrorPage from "../pages/_error.tsx";
 import RootApp from "./root_app.tsx";
 import apis from "./result/apis.ts";
-import style_tag from "../config/style_tag.ts";
+import twind_sheet from "../config/twind_sheet.ts";
 import { pages } from "./result/pages.ts";
 import { pages as server_pages } from "./result/server_pages.ts";
 
 export const initApp = async (appCallback?: (app: NHttp<ReqEvent>) => any) => {
   return await baseInitApp({
-    style_tag: style_tag,
+    twind_sheet: twind_sheet,
     root: RootApp,
     error_page: ErrorPage,
     pages: pages,

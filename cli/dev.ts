@@ -3,6 +3,7 @@ import { genRoutesWithRefresh } from "../core/gen.ts";
 import { join, resolve, toFileUrl } from "./deps.ts";
 
 export default async function dev_server() {
+  const reload = (Deno.args[1] || "");
   const dir = Deno.cwd();
   const sleep = (ms = 100) => new Promise((ok) => setTimeout(ok, ms));
   try {
@@ -15,7 +16,7 @@ export default async function dev_server() {
   await sleep(1000);
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   const script = CMD +
-    "deno run -A --import-map=import_map.json --watch --no-check --unstable ./server.ts --dev";
+    `deno run -A --import-map=import_map.json --watch --no-check --unstable ${reload} ./server.ts --dev`;
   const p = Deno.run({ cmd: script.split(" ") });
   const pages_dir = join(resolve(dir, "./pages"));
   const url = toFileUrl(pages_dir);

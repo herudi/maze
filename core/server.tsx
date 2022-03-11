@@ -140,7 +140,7 @@ app.on404((rev) => {
 export const initApp = async (opts: {
   root: any;
   error_page: any;
-  style_tag: string;
+  twind_sheet: () => string;
   pages: Record<string, any>[];
   server_pages: Record<string, any>[];
   apis: any;
@@ -168,7 +168,7 @@ export const initApp = async (opts: {
             params: rev.params,
           }}
         />,
-        opts.style_tag,
+        opts.twind_sheet,
         { clientScript, env, initData: props.initData, tt },
       );
     };
@@ -207,7 +207,7 @@ export const initApp = async (opts: {
     rev.response.type("text/html; charset=utf-8");
     return jsx(
       <ErrorPage message={err.message} status={status as number} />,
-      opts.style_tag,
+      opts.twind_sheet,
     );
   });
   return app;
