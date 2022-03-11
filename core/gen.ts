@@ -173,11 +173,11 @@ export async function genPages(
     // save pages.ts
     if (stat_page.status || refresh) {
       const str_file = genRoutes(page_list, "page", env);
-      const path = join(resolve(dir, "./_core/result/pages.ts"));
+      const path = join(resolve(dir, "./@shared/result/pages.ts"));
       await Deno.writeTextFile(path, str_file);
       if (env === "production") {
         const str_file = genRoutes(page_list, "page", "development");
-        const path = join(resolve(dir, "./_core/result/server_pages.ts"));
+        const path = join(resolve(dir, "./@shared/result/server_pages.ts"));
         await Deno.writeTextFile(path, str_file);
       }
     }
@@ -185,7 +185,7 @@ export async function genPages(
     // save apis.ts
     if (stat_api.status || refresh) {
       const str_file = genRoutes(api_list, "api", env);
-      const path = join(resolve(dir, "./_core/result/apis.ts"));
+      const path = join(resolve(dir, "./@shared/result/apis.ts"));
       await Deno.writeTextFile(path, str_file);
     }
   } catch (error) {

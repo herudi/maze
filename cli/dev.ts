@@ -7,7 +7,7 @@ export default async function dev_server() {
   const sleep = (ms = 100) => new Promise((ok) => setTimeout(ok, ms));
   try {
     await Deno.writeTextFile(
-      join(resolve(dir, "./_core/result/server_pages.ts")),
+      join(resolve(dir, "./@shared/result/server_pages.ts")),
       `export const pages: any = [];`,
     );
   } catch (_e) { /* noop */ }

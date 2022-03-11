@@ -11,8 +11,9 @@ export default async function createApp() {
   const cwd = Deno.cwd();
   const dir = join(cwd, app);
   await Deno.mkdir(join(dir, "components"), { recursive: true });
-  await Deno.mkdir(join(dir, "_core"));
-  await Deno.mkdir(join(dir, "_core", "result"));
+  await Deno.mkdir(join(dir, "@shared"));
+  await Deno.mkdir(join(dir, "config"));
+  await Deno.mkdir(join(dir, "@shared", "result"));
   await Deno.mkdir(join(dir, "pages", "api"), { recursive: true });
   await Deno.mkdir(join(dir, ".vscode"));
   await Deno.mkdir(join(dir, "public"));
@@ -34,7 +35,7 @@ export default async function createApp() {
   "fmt": {
     "files": {
       "exclude": [
-        "_core/",
+        "@shared/",
         "public/",
         "server_prod.js"
       ]
@@ -43,7 +44,7 @@ export default async function createApp() {
   "lint": {
     "files": {
       "exclude": [
-        "_core/",
+        "@shared/",
         "public/",
         "server_prod.js"
       ]
@@ -66,8 +67,7 @@ export default async function createApp() {
   );
   await Deno.writeTextFile(
     join(dir, ".vscode", "settings.json"),
-    `
-{
+    `{
   "deno.enable": true,
   "deno.unstable": true,
   "deno.suggest.imports.hosts": {
@@ -79,8 +79,18 @@ export default async function createApp() {
 }`,
   );
   await Deno.writeTextFile(
+    join(dir, "config", "style_tag.ts"),
+    `import { setup } from "https://cdn.skypack.dev/twind@0.16.16";
+import { virtualSheet, getStyleTag } from "https://cdn.skypack.dev/twind@0.16.16/sheets";
+
+const sheet = virtualSheet();
+setup({ sheet });
+
+export default getStyleTag(sheet);`,
+  );
+  await Deno.writeTextFile(
     join(dir, "server.ts"),
-    `import { initApp } from "./_core/http.ts";
+    `import { initApp } from "./@shared/http.ts";
 
 const app = await initApp(/* callback app */);
 app.listen(8080, () => {
@@ -295,7 +305,7 @@ export default async function handler(rev: RequestEvent) {
 `,
   );
   await Deno.writeTextFile(
-    join(dir, "_core", "root_app.tsx"),
+    join(dir, "@shared", "root_app.tsx"),
     `/** @jsx h */
 import { h } from "nano-jsx";
 import App from "../pages/_app.tsx";
@@ -318,7 +328,7 @@ export default RootApp;
 `,
   );
   await Deno.writeTextFile(
-    join(dir, "_core", "result", "pages.ts"),
+    join(dir, "@shared", "result", "pages.ts"),
     `
 import $0 from "../../pages/index.tsx";
 import $1 from "../../pages/about.tsx";
@@ -338,7 +348,7 @@ export const tt: string = '1646808121930';
 `,
   );
   await Deno.writeTextFile(
-    join(dir, "_core", "result", "apis.ts"),
+    join(dir, "@shared", "result", "apis.ts"),
     `
 import { Router } from "https://deno.land/x/nhttp@1.1.10/mod.ts";
 import { RequestEvent } from "${link}/core/types.ts";
@@ -349,7 +359,7 @@ export default api;
 `,
   );
   await Deno.writeTextFile(
-    join(dir, "_core", "result", "server_pages.ts"),
+    join(dir, "@shared", "result", "server_pages.ts"),
     `
 import $0 from "../../pages/index.tsx";
 import $1 from "../../pages/about.tsx";
@@ -369,17 +379,19 @@ export const tt: string = '1646808121930';
 `,
   );
   await Deno.writeTextFile(
-    join(dir, "_core", "http.ts"),
+    join(dir, "@shared", "http.ts"),
     `
 import { initApp as baseInitApp, NHttp, ReqEvent } from "${link}/core/server.tsx";
 import ErrorPage from "../pages/_error.tsx";
 import RootApp from "./root_app.tsx";
 import apis from "./result/apis.ts";
+import style_tag from "../config/style_tag.ts";
 import { pages } from "./result/pages.ts";
 import { pages as server_pages } from "./result/server_pages.ts";
 
 export const initApp = async (appCallback?: (app: NHttp<ReqEvent>) => any) => {
   return await baseInitApp({
+    style_tag: style_tag,
     root: RootApp,
     error_page: ErrorPage,
     pages: pages,
@@ -390,7 +402,7 @@ export const initApp = async (appCallback?: (app: NHttp<ReqEvent>) => any) => {
 `,
   );
   await Deno.writeTextFile(
-    join(dir, "_core", "hydrate.tsx"),
+    join(dir, "@shared", "hydrate.tsx"),
     `/** @jsx h */
 import { h, hydrate } from "nano-jsx";
 import { pages, tt } from "./result/pages.ts";

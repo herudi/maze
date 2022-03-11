@@ -68,7 +68,7 @@ try {
       importMapFile: join(resolve(dir, "./import_map.json")),
     })],
     entryPoints: {
-      "_app": toFileUrl(join(resolve(dir, "./_core/hydrate.tsx"))).href,
+      "_app": toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))).href,
       ...obj,
     },
     splitting: true,
