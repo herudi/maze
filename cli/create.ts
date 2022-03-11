@@ -83,9 +83,11 @@ export default async function createApp() {
     `import { setup } from "https://cdn.skypack.dev/twind@0.16.16";
 import { virtualSheet, getStyleTag } from "https://cdn.skypack.dev/twind@0.16.16/sheets";
 
+const sheet = virtualSheet();
+setup({ sheet });
+
 export default () => {
-  const sheet = virtualSheet();
-  setup({ sheet });
+  (sheet as any).reset();
   return getStyleTag(sheet);
 }`,
   );
