@@ -79,13 +79,17 @@ export default async function createApp() {
   );
   await Deno.writeTextFile(
     join(dir, "config.ts"),
-    `export default {
-  // twind setup options.
-  twind: {},
+    `import { RequestEvent } from "types";
+// twind setup options.
+export const twind_setup = {};
 
-  // nano renderSSR options.
-  nano: {}
-};`,
+// hydrate part to id "__MY_PAGE__" if pathname startsWith "/"
+export const hydrate_setup = ({ pathname }: RequestEvent) => {
+  if (pathname.startsWith("/")) {
+    return "__MY_PAGE__";
+  }
+  return void 0;
+}`,
   );
   await Deno.writeTextFile(
     join(dir, "server.ts"),
@@ -152,7 +156,7 @@ import { h, Helmet } from "nano-jsx";
 import { AppProps } from "types";
 import Navbar from "../components/navbar.tsx";
 
-export default function App({ Component, props }: AppProps) {
+export default function App({ Page, props }: AppProps) {
   return (
     <div>
       <Helmet>
@@ -161,7 +165,7 @@ export default function App({ Component, props }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Helmet>
       <Navbar route={props.route} />
-      <Component {...props} />
+      <div id="__MY_PAGE__"><Page {...props} /></div>
     </div>
   );
 }
@@ -310,10 +314,9 @@ import { h } from "nano-jsx";
 import App from "../pages/_app.tsx";
 
 function RootApp({ Page, initData, route, isServer }: any) {
-  const Comp = (props: any) => <div id="__ROUTE_APP__"><Page {...props}/></div>
   return (
     <App
-      Component={Comp}
+      Page={Page}
       props={{ ...initData, route, isServer }}
     />
   );
@@ -384,14 +387,13 @@ import { initApp as baseInitApp, NHttp, ReqEvent } from "${link}/core/server.tsx
 import ErrorPage from "../pages/_error.tsx";
 import RootApp from "./root_app.tsx";
 import apis from "./result/apis.ts";
-import config from "../config.ts";
+import { twind_setup } from "../config.ts";
 import { pages } from "./result/pages.ts";
 import { pages as server_pages } from "./result/server_pages.ts";
 
 export const initApp = async (appCallback?: (app: NHttp<ReqEvent>) => any) => {
   return await baseInitApp({
-    twind_setup: config.twind,
-    nano_setup: config.nano,
+    twind_setup: twind_setup,
     root: RootApp,
     error_page: ErrorPage,
     pages: pages,
@@ -408,7 +410,7 @@ import { h, hydrate } from "nano-jsx";
 import { setup } from "twind";
 import { pages, tt } from "./result/pages.ts";
 import RootApp from "./root_app.tsx";
-import config from "../config.ts";
+import { twind_setup, hydrate_setup } from "../config.ts";
 import { RequestEvent } from "types";
 import ErrorPage from "../pages/_error.tsx";
 
@@ -540,7 +542,7 @@ async function lazy(url: string) {
 }
 
 window.addEventListener("load", () => {
-  setup(config.twind);
+  setup(twind_setup);
   let first = true;
   let init: any = document.getElementById("__INIT_DATA__");
   if (init) init = JSON.parse(init.textContent || "{}");
@@ -563,7 +565,7 @@ window.addEventListener("load", () => {
         const initData = first
           ? init || {}
           : (Page.initProps ? (await Page.initProps(rev)) : {});
-        if (first) {
+        const initRender = () => {
           rev.render(
             <RootApp
               Page={Page}
@@ -577,20 +579,28 @@ window.addEventListener("load", () => {
               isServer={false}
             />,
           );
+        }
+        if (first) {
+          initRender();
         } else {
           const myInitData = { ...initData, ...rootData };
-          rev.render(
-            <Page
-              {...myInitData}
-              route={{
-                pathname: rev.pathname,
-                url: rev.url,
-                path: obj.path,
-                params: rev.params,
-              }}
-              isServer={false}
-            />, "__ROUTE_APP__"
-          );
+          const target_id = hydrate_setup(rev);
+          if (!target_id) {
+            rev.render(<ErrorPage message="Not Found" status={404} />);
+          } else {
+            rev.render(
+              <Page
+                {...myInitData}
+                route={{
+                  pathname: rev.pathname,
+                  url: rev.url,
+                  path: obj.path,
+                  params: rev.params,
+                }}
+                isServer={false}
+              />, target_id
+            );
+          }
         }
         if (RootApp.event.onEnd !== void 0) {
           RootApp.event.onEnd(rev);

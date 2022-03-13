@@ -28,6 +28,6 @@ export type PageProps = {
 };
 
 export type AppProps = {
-  Component: any;
+  Page: any;
   props: PageProps;
 };
