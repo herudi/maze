@@ -18,8 +18,6 @@ export type ReqEvent = RequestEvent & {
 export { NHttp };
 const app = new NHttp<ReqEvent>({ env });
 
-app.use(staticFiles(join(resolve(Deno.cwd(), "./public"))));
-
 async function serverApp({ map_pages, map_server_pages }: any) {
   let pages: any = [];
   if (env === "development") {
@@ -144,9 +142,11 @@ export const initApp = async (opts: {
   pages: Record<string, any>[];
   server_pages: Record<string, any>[];
   apis: any;
+  cwd: string;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
   let obj = {} as any;
   const RootApp = opts.root;
+  app.use(staticFiles(join(resolve(opts.cwd, "./public"))));
   app.use("/api", opts.apis);
   app.use((rev, next) => {
     rev.render = async (Page, props) => {
