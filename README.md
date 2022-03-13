@@ -5,7 +5,7 @@ The fullstack web framework for [Deno](https://deno.land/) and
 
 > under development, not complete tests and not complete docs.
 
-Demo site => https://maze-demo.deno.dev
+Demo site => https://maze-ssr.deno.dev
 
 ## Features
 

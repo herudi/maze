@@ -28,7 +28,7 @@ for (let i = 0; i < listFiles.length; i++) {
 }
 
 try {
-  await Deno.remove(join(resolve(dir, "./__maze/public/pages")), {
+  await Deno.remove(join(resolve(dir, "./public/__maze/pages")), {
     recursive: true,
   });
 } catch (_e) { /* noop */ }
@@ -72,7 +72,7 @@ try {
       ...obj,
     },
     splitting: true,
-    outdir: join(resolve(dir, "./__maze/public/pages")),
+    outdir: join(resolve(dir, "./public/__maze/pages")),
   });
   console.log("Success Build !!");
   console.log("Run Production: deno run -A server_prod.js");

@@ -25,7 +25,7 @@ async function serverApp({ map_pages, map_server_pages }: any) {
   if (env === "development") {
     const dir = Deno.cwd();
     try {
-      await Deno.remove(join(resolve(dir, "./__maze/public/pages")), {
+      await Deno.remove(join(resolve(dir, "./public/__maze/pages")), {
         recursive: true,
       });
     } catch (_e) { /* noop */ }
