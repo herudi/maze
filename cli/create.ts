@@ -107,22 +107,18 @@ app.listen(8080, () => {
 import { Component, h, Router } from "nano-jsx";
 import { tw } from "twind";
 
-const { Link, Listener } = Router;
+const { Link } = Router;
 const active = "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium";
 const in_active = "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium";
 
 export default class Navbar extends Component {
-  listener = Listener().use();
+
   didMount() {
-    this.listener.subscribe((curr, prev) => {
-      if (curr !== prev) {
-        this.update({ pathname: location.pathname });
-      }
+    addEventListener("page:end", () => {
+      this.update({ pathname: location.pathname });
     })
   }
-  didUnmount() {
-    this.listener.cancel();
-  }
+
   render(loc: Location) {
     const route = loc || this.props.route;
     return (
@@ -153,7 +149,7 @@ export default class Navbar extends Component {
     join(dir, "pages", "_app.tsx"),
     `/** @jsx h */
 import { h, Helmet } from "nano-jsx";
-import { AppProps } from "types";
+import { AppProps, RequestEvent } from "types";
 import Navbar from "../components/navbar.tsx";
 
 export default function App({ Page, props }: AppProps) {
@@ -168,6 +164,14 @@ export default function App({ Page, props }: AppProps) {
       <div id="__MY_PAGE__"><Page {...props} /></div>
     </div>
   );
+}
+
+App.event = {
+  onEnd({ isFirst }: RequestEvent) {
+    if (!isFirst) {
+      dispatchEvent(new Event("page:end"));
+    }
+  }
 }
 `,
   );
