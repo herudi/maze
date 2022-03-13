@@ -142,11 +142,11 @@ export const initApp = async (opts: {
   pages: Record<string, any>[];
   server_pages: Record<string, any>[];
   apis: any;
-  cwd: string;
+  assets: string;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
   let obj = {} as any;
   const RootApp = opts.root;
-  app.use(staticFiles(join(resolve(opts.cwd, "./public"))));
+  app.use(staticFiles(opts.assets));
   app.use("/api", opts.apis);
   app.use((rev, next) => {
     rev.render = async (Page, props) => {
