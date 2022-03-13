@@ -402,7 +402,8 @@ export const initApp = async (appCallback?: (app: NHttp<ReqEvent>) => any) => {
     error_page: ErrorPage,
     pages: pages,
     server_pages: server_pages,
-    apis: apis
+    apis: apis,
+    meta_url: import.meta.url,
   }, appCallback);
 };
 `,
