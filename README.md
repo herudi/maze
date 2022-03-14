@@ -1,12 +1,14 @@
 ## Maze
 
-The fullstack web framework for [Deno](https://deno.land/) and
+Simple, Fullstack TS/JS for [Deno](https://deno.land/) and
 [Nanojsx](https://nanojsx.io/).
 
 > under development, not complete tests and not complete docs.
 
-Demo site => https://maze-ssr.deno.dev
+> It's Fun Project :), PRs Welcome.
 
+Demo site => https://maze-ssr.deno.dev
+Demo Repo => https://github.com/herudi/maze-demo
 ## Features
 
 - SSR first.
@@ -57,7 +59,3 @@ maze build
 ```bash
 deno run -A server_prod.js
 ```
-
-### Note
-
-It's Fun Project, PRs Welcome.
