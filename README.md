@@ -12,7 +12,7 @@ Demo site => https://maze-ssr.deno.dev
 Demo Repo => https://github.com/herudi/maze-demo
 ## Features
 
-- SSR first.
+- SSR first (good choice for SEO using [Helmet](https://nanojsx.io/components.html#helmet)).
 - Tailwind out of the box using ([Twind](https://twind.dev/)).
 - Nextjs like (dynamic routes page and api/handler).
 - Support for [Deno Deploy](https://deno.com/deploy) and
