@@ -43,7 +43,7 @@ async function serverApp({ map_pages, map_server_pages }: any) {
     pages = map_pages;
     await genPages();
     import_map.imports["nano-jsx"] =
-      `https://cdn.skypack.dev/nano-jsx@v${NANO_VERSION}`;
+      `https://cdn.skypack.dev/nano-jsx@${NANO_VERSION}`;
     delete import_map.imports["types"];
     es_map.load(import_map as any);
     const result = await esbuild.build({
