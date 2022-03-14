@@ -1,12 +1,7 @@
 // original from https://crux.land/nanossr@0.0.1
 // include maze core script
 
-import { Helmet, renderSSR } from "./deps_client.ts";
-import { setup } from "https://cdn.skypack.dev/twind@0.16.16";
-import {
-  getStyleTag,
-  virtualSheet,
-} from "https://cdn.skypack.dev/twind@0.16.16/sheets";
+import { getStyleTag, Helmet, renderSSR, setup, virtualSheet } from "./deps.ts";
 
 let SHEET_SINGLETON: any = null;
 function sheet(twOptions = {}) {

@@ -1,4 +1,9 @@
-import { LINK } from "../core/constant.ts";
+import {
+  LINK,
+  NANO_VERSION,
+  NHTTP_VERSION,
+  TWIND_VERSION,
+} from "../core/constant.ts";
 import { join } from "./deps.ts";
 
 export default async function createApp() {
@@ -57,9 +62,9 @@ export default async function createApp() {
     `
 {
   "imports": {
-    "nano-jsx": "https://deno.land/x/nano_jsx@v0.0.30/mod.ts",
-    "twind": "https://cdn.skypack.dev/twind@0.16.16",
-    "nhttp": "https://deno.land/x/nhttp@1.1.10/mod.ts",
+    "nano-jsx": "https://deno.land/x/nano_jsx@${NANO_VERSION}/mod.ts",
+    "twind": "https://cdn.skypack.dev/twind@${TWIND_VERSION}",
+    "nhttp": "https://deno.land/x/nhttp@${NHTTP_VERSION}/mod.ts",
     "types": "${link}/core/types.ts"
   }
 }`,
@@ -356,7 +361,7 @@ export const tt: string = '1646808121930';
   await Deno.writeTextFile(
     join(dir, "@shared", "result", "apis.ts"),
     `
-import { Router } from "https://deno.land/x/nhttp@1.1.10/mod.ts";
+import { Router } from "https://deno.land/x/nhttp@${NHTTP_VERSION}/mod.ts";
 import { RequestEvent } from "${link}/core/types.ts";
 import $0 from "../../pages/api/about.ts";
 const api = new Router<RequestEvent>();

@@ -1,10 +1,10 @@
 /** @jsx h */
-import { h } from "./deps_client.ts";
+import { h, HttpError, NHttp } from "./deps.ts";
 import { jsx } from "./tpl.ts";
-import { HttpError, NHttp } from "./deps_server.ts";
 import { RequestEvent } from "./types.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
 import { join, resolve, toFileUrl } from "../cli/deps.ts";
+import { NANO_VERSION } from "./constant.ts";
 
 const env = (Deno.args || []).includes("--dev") ? "development" : "production";
 const clientScript = "/__maze/pages/_app.js";
@@ -42,7 +42,8 @@ async function serverApp({ map_pages, map_server_pages }: any) {
 
     pages = map_pages;
     await genPages();
-    import_map.imports["nano-jsx"] = "https://cdn.skypack.dev/nano-jsx@v0.0.30";
+    import_map.imports["nano-jsx"] =
+      `https://cdn.skypack.dev/nano-jsx@v${NANO_VERSION}`;
     delete import_map.imports["types"];
     es_map.load(import_map as any);
     const result = await esbuild.build({
@@ -146,7 +147,7 @@ export const initApp = async (opts: {
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
   let obj = {} as any;
   const RootApp = opts.root;
-  const assets = env === 'development' ? "../public" : "./public";
+  const assets = env === "development" ? "../public" : "./public";
   app.use(staticFiles(new URL(assets, opts.meta_url).href));
   app.use("/api", opts.apis);
   app.use((rev, next) => {
