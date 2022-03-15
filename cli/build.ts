@@ -63,7 +63,7 @@ try {
   if (error) {
     throw error;
   }
-  let file_http = await Deno.readTextFile(join(dir, "@shared", "http_prod.ts"));
+  let file_http = await Deno.readTextFile(join(dir, "@shared", "http.ts"));
   file_http = file_http.replace(
     `${LINK}/core/server.ts`,
     `${LINK}/core/server_prod.ts`,
