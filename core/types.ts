@@ -1,4 +1,4 @@
-import { RequestEvent as BRequestEvent } from "https://deno.land/x/nhttp@1.1.10/src/request_event.ts";
+import { RequestEvent as BRequestEvent } from "https://deno.land/x/nhttp@1.1.11/src/request_event.ts";
 
 export type RequestEvent = BRequestEvent & {
   getBaseUrl: () => string;
@@ -11,6 +11,13 @@ export type RequestEvent = BRequestEvent & {
    * const { data, error } = await fetchApi("/api/home");
    */
   fetchApi: (pathname: string, options?: RequestInit) => Promise<any>;
+};
+
+export type ReqEvent = RequestEvent & {
+  render: (
+    Page: any,
+    props: { path: string; initData?: any },
+  ) => Record<string, any>;
 };
 
 export type RouteProps = {

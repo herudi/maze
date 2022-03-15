@@ -392,7 +392,7 @@ export const tt: string = '1646808121930';
   await Deno.writeTextFile(
     join(dir, "@shared", "http.ts"),
     `
-import { initApp as baseInitApp, NHttp, ReqEvent } from "${link}/core/server.tsx";
+import { initApp as baseInitApp, NHttp, ReqEvent } from "${link}/core/server.ts";
 import ErrorPage from "../pages/_error.tsx";
 import RootApp from "./root_app.tsx";
 import apis from "./result/apis.ts";

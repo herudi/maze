@@ -1,4 +1,9 @@
-export { HttpError, NHttp } from "https://deno.land/x/nhttp@1.1.10/mod.ts";
+export {
+  HttpError,
+  NHttp,
+  RequestEvent,
+} from "https://deno.land/x/nhttp@1.1.11/mod.ts";
+export type { NextFunction } from "https://deno.land/x/nhttp@1.1.11/mod.ts";
 export { setup } from "https://cdn.skypack.dev/twind@0.16.16";
 export {
   getStyleTag,
