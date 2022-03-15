@@ -5,7 +5,7 @@ import baseInitApp from "./init_app.tsx";
 
 const env = "production";
 const clientScript = CLIENT_SCRIPT;
-const tt = Date.now();
+const tt = new Date().getTime();
 const app = new NHttp<ReqEvent>({ env });
 
 export const initApp = (opts: {
