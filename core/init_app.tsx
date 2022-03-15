@@ -72,8 +72,7 @@ export default (
   });
   let obj = {} as any;
   const RootApp = opts.root;
-  const assets = env === "development" ? "../public" : "./public";
-  app.use(fetchFile(new URL(assets, opts.meta_url).href));
+  app.use(fetchFile(new URL("public", opts.meta_url).href));
   app.use("/api", opts.apis);
   app.use((rev, next) => {
     rev.render = async (Page, props) => {
