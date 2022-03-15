@@ -65,8 +65,8 @@ export default function fetchFile(fetch_url: string, ssg = false) {
       const reader = readerFromStreamReader(res.body.getReader());
       const body = await readAll(reader);
       return response.status(status).send(body);
-    } catch (e) {
-      return next(e);
+    } catch (_e) {
+      return next();
     }
   };
 }
