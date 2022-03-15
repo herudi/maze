@@ -9,11 +9,11 @@ const now = new Date();
 
 export default function fetchFile(fetch_url: string, ssg = false) {
   return async (
-    { request, response, url }: RequestEvent,
+    { request, response, path }: RequestEvent,
     next: NextFunction,
   ) => {
-    let isDirectory = url.slice((url.lastIndexOf(".") - 1 >>> 0) + 2) === "";
-    let fetchFile = fetch_url + url;
+    let isDirectory = path.slice((path.lastIndexOf(".") - 1 >>> 0) + 2) === "";
+    let fetchFile = fetch_url + path;
     if (isDirectory && ssg) {
       if (fetchFile[fetchFile.length - 1] !== "/") {
         fetchFile += "/";
