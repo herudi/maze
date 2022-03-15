@@ -8,7 +8,7 @@ const clientScript = CLIENT_SCRIPT;
 const tt = Date.now();
 const app = new NHttp<ReqEvent>({ env });
 
-export const initApp = async (opts: {
+export const initApp = (opts: {
   root: any;
   error_page: any;
   twind_setup: Record<string, any>;
@@ -18,7 +18,7 @@ export const initApp = async (opts: {
   meta_url: string;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
   const pages = opts.server_pages;
-  const myApp = await baseInitApp(
+  const myApp = baseInitApp(
     {
       ...opts,
       env,

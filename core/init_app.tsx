@@ -4,7 +4,7 @@ import { jsx } from "./tpl.ts";
 import fetchFile from "./fetch_file.ts";
 import { ReqEvent } from "./types.ts";
 
-export default async (
+export default (
   opts: {
     root: any;
     error_page: any;
