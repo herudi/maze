@@ -57,11 +57,14 @@ maze dev
 
 ```bash
 maze build
-// or
+
+// or bundle single file.
 maze build-bundle
 ```
 
 > generating server_prod.js and client files.
+
+> note: 
 
 ### Run Production
 
