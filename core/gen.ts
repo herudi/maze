@@ -89,7 +89,6 @@ export const pages: any = [
       }).join("\n  ")
     }
 ];
-export const tt: string = '${Date.now()}';
 `;
   }
   if (target === "page" && env === "production") {
@@ -106,7 +105,6 @@ export const pages = [
       }).join("\n  ")
     }
 ];
-export const tt: string = '${Date.now()}';
 `;
   }
   return `

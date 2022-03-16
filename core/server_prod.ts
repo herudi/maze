@@ -5,7 +5,6 @@ import baseInitApp from "./init_app.tsx";
 
 const env = "production";
 const clientScript = CLIENT_SCRIPT;
-const tt = new Date().getTime();
 const app = new NHttp<ReqEvent>({ env });
 
 export const initApp = (opts: {
@@ -16,16 +15,16 @@ export const initApp = (opts: {
   server_pages: Record<string, any>[];
   apis: any;
   meta_url: string;
+  build_id: string;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
-  const pages = opts.server_pages;
   const myApp = baseInitApp(
     {
       ...opts,
       env,
       clientScript,
-      tt,
+      tt: opts.build_id,
     },
-    pages,
+    opts.server_pages,
     app,
     routeCallback,
   );

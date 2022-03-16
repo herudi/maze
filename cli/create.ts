@@ -355,8 +355,11 @@ export const pages: any = [
     methods: ($1 as any).methods
   },
 ];
-export const tt: string = '1646808121930';
 `,
+  );
+  await Deno.writeTextFile(
+    join(dir, "@shared", "result", "constant.ts"),
+    `export const BUILD_ID: string = '${Date.now()}';`,
   );
   await Deno.writeTextFile(
     join(dir, "@shared", "result", "apis.ts"),
@@ -386,7 +389,6 @@ export const pages: any = [
     methods: ($1 as any).methods
   },
 ];
-export const tt: string = '1646808121930';
 `,
   );
   await Deno.writeTextFile(
@@ -398,6 +400,7 @@ import RootApp from "./root_app.tsx";
 import apis from "./result/apis.ts";
 import { twind_setup } from "../config.ts";
 import { pages } from "./result/pages.ts";
+import { BUILD_ID } from "./result/constant.ts";
 import { pages as server_pages } from "./result/server_pages.ts";
 
 export const initApp = (url: string, appCallback?: (app: NHttp<ReqEvent>) => any) => {
@@ -409,6 +412,7 @@ export const initApp = (url: string, appCallback?: (app: NHttp<ReqEvent>) => any
     server_pages: server_pages,
     apis: apis,
     meta_url: url,
+    build_id: BUILD_ID,
   }, appCallback);
 };
 `,
@@ -418,11 +422,12 @@ export const initApp = (url: string, appCallback?: (app: NHttp<ReqEvent>) => any
     `/** @jsx h */
 import { h, hydrate } from "nano-jsx";
 import { setup } from "twind";
-import { pages, tt } from "./result/pages.ts";
+import { pages } from "./result/pages.ts";
 import RootApp from "./root_app.tsx";
 import { twind_setup, hydrate_setup } from "../config.ts";
 import { RequestEvent } from "types";
 import ErrorPage from "../pages/_error.tsx";
+import { BUILD_ID } from "./result/constant.ts";
 
 type ReqEvent = RequestEvent & {
   render: (elem: any, id?: string) => any;
@@ -547,7 +552,7 @@ export default class ClassicRouter {
 }
 
 async function lazy(url: string) {
-  const mod = (await import(url + "?v=" + tt)).default;
+  const mod = (await import(url + "?v=" + BUILD_ID)).default;
   return mod;
 }
 

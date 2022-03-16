@@ -13,7 +13,7 @@ export default (
     meta_url: string;
     env: string;
     clientScript: string;
-    tt: number;
+    tt: string;
   },
   pages: any[],
   app: NHttp<ReqEvent>,
@@ -72,14 +72,6 @@ export default (
   });
   let obj = {} as any;
   const RootApp = opts.root;
-  app.use(
-    fetchFile(
-      opts.meta_url.endsWith("/public")
-        ? opts.meta_url
-        : new URL("public", opts.meta_url).href,
-    ),
-  );
-  app.use("/api", opts.apis);
   app.use((rev, next) => {
     rev.render = async (Page, props) => {
       rev.response.type("text/html; charset=utf-8");
@@ -111,6 +103,14 @@ export default (
     routeCallback(app);
     obj = app.route;
   }
+  app.use(
+    fetchFile(
+      opts.meta_url.endsWith("/public")
+        ? opts.meta_url
+        : new URL("public", opts.meta_url).href,
+    ),
+  );
+  app.use("/api", opts.apis);
   for (let i = 0; i < pages.length; i++) {
     const route: any = pages[i];
     const methods = route.methods || ["GET"];

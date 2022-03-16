@@ -9,7 +9,6 @@ import * as esbuild_import_map from "https://esm.sh/esbuild-plugin-import-map?no
 
 const env = "development";
 const clientScript = CLIENT_SCRIPT;
-const tt = Date.now();
 const dir = Deno.cwd();
 const app = new NHttp<ReqEvent>({ env });
 await genPages();
@@ -71,13 +70,14 @@ export const initApp = (opts: {
   server_pages: Record<string, any>[];
   apis: any;
   meta_url: string;
+  build_id: string;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
   return baseInitApp(
     {
       ...opts,
       env,
       clientScript,
-      tt,
+      tt: opts.build_id,
     },
     opts.pages,
     app,
