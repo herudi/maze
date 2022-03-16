@@ -7,7 +7,11 @@ Simple, Fullstack TS/JS for [Deno](https://deno.land/) and
 
 > It's Fun Project :), PRs Welcome.
 
-Demo site => https://maze-ssr.deno.dev
+> Docs and tests soon.
+
+Demo site (deno deploy) => https://maze-ssr.deno.dev
+
+Demo site (cf workers) => https://maze-ssr.herudi.workers.dev
 
 Demo Repo => https://github.com/herudi/maze-demo
 
@@ -17,8 +21,8 @@ Demo Repo => https://github.com/herudi/maze-demo
   [Helmet](https://nanojsx.io/components.html#helmet)).
 - Tailwind out of the box using ([Twind](https://twind.dev/)).
 - Nextjs like (dynamic routes page and api/handler).
-- Support for [Deno Deploy](https://deno.com/deploy) and
-  [Deno](https://deno.land).
+- Support for [Deno](https://deno.land), [Deno Deploy](https://deno.com/deploy)
+  and [Cloudflare Workers](https://workers.cloudflare.com).
 - Hot Reloading.
 
 ## Includes
