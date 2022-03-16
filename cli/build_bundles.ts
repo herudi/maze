@@ -56,7 +56,7 @@ try {
   await esbuild.build({
     ...config,
     bundle: true,
-    entryPoints: [join(resolve(dir, "./server_prod.ts"))],
+    entryPoints: [toFileUrl(join(resolve(dir, "./server_prod.ts"))).href],
     outfile: join(resolve(dir, "./server_prod.js")),
     plugins: [denoPlugin({
       importMapFile: join(resolve(dir, "./import_map.json")),
