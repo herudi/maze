@@ -4,12 +4,12 @@ import { LINK } from "./core/constant.ts";
 
 const arg = (Deno.args || [])[0];
 
-async function build() {
+async function build(name: string) {
   console.log("Building Server Production...");
   const reload = Deno.args[1] ? " " + Deno.args[1] : "";
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   const script = CMD +
-    `deno run -A --no-check${reload} --unstable ${LINK}/cli/build.ts`;
+    `deno run -A --no-check${reload} --unstable ${LINK}/cli/${name}.ts`;
   const p = Deno.run({
     cmd: script.split(" "),
     stdout: "piped",
@@ -34,7 +34,9 @@ if (arg === "create") {
 } else if (arg === "dev") {
   await dev_server();
 } else if (arg === "build") {
-  await build();
+  await build("build");
+} else if (arg === "build-bundle") {
+  await build("build_bundles");
 } else if (arg === "help") {
   console.log(`Maze. the fullstack web framework for deno and nanojsx.
     

@@ -53,6 +53,8 @@ maze dev
 
 ```bash
 maze build
+// or
+maze build-bundle
 ```
 
 > generating server_prod.js and client files.

@@ -72,7 +72,9 @@ function genPath(el: string) {
 }
 
 function genRoutes(arr: string[], target: string, env: string) {
-  if (target === "page" && env === "development") {
+  if (
+    target === "page" && (env === "development" || env === "production_bundles")
+  ) {
     return `
 ${arr.map((el, i) => `import $${i} from "../../pages${el}";`).join("\n")}
 export const pages: any = [
@@ -175,7 +177,7 @@ export async function genPages(
       const str_file = genRoutes(page_list, "page", env);
       const path = join(resolve(dir, "./@shared/result/pages.ts"));
       await Deno.writeTextFile(path, str_file);
-      if (env === "production") {
+      if (env === "production" || env === "production_bundles") {
         const str_file = genRoutes(page_list, "page", "development");
         const path = join(resolve(dir, "./@shared/result/server_pages.ts"));
         await Deno.writeTextFile(path, str_file);
