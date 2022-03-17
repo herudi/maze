@@ -50,7 +50,6 @@ const config: any = {
   absWorkingDir: dir,
   jsxFactory: "h",
   jsxFragment: "Fragment",
-  format: "esm",
   loader: {
     ".ts": "ts",
     ".js": "js",
@@ -86,6 +85,7 @@ try {
   if (isWorkers) {
     await esbuild.build({
       ...config,
+      format: "esm",
       bundle: true,
       entryPoints: [toFileUrl(join(resolve(dir, "./server_prod.ts"))).href],
       outfile: join(resolve(dir, "./server_prod.js")),
@@ -96,6 +96,7 @@ try {
   } else {
     await esbuild.build({
       ...config,
+      format: "esm",
       bundle: true,
       entryPoints: [join(resolve(dir, "./server_prod.ts"))],
       outfile: join(resolve(dir, "./server_prod.js")),
@@ -118,6 +119,7 @@ try {
   } else {
     await esbuild.build({
       ...config,
+      format: "esm",
       bundle: true,
       plugins: [denoPlugin({
         importMapFile: join(resolve(dir, "./import_map.json")),
