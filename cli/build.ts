@@ -88,6 +88,7 @@ try {
     await esbuild.build({
       ...config,
       format: "esm",
+      platform: "neutral",
       bundle: true,
       entryPoints: [toFileUrl(join(resolve(dir, "./server_prod.ts"))).href],
       outfile: join(resolve(dir, "./server_prod.js")),
@@ -99,6 +100,7 @@ try {
     await esbuild.build({
       ...config,
       format: "esm",
+      platform: "neutral",
       bundle: true,
       entryPoints: [join(resolve(dir, "./server_prod.ts"))],
       outfile: join(resolve(dir, "./server_prod.js")),
@@ -108,8 +110,9 @@ try {
   if (isBundle) {
     await esbuild.build({
       ...config,
-      format: "iife",
+      format: "esm",
       platform: "browser",
+      target: ["es6"],
       bundle: true,
       plugins: [denoPlugin({
         importMapFile: join(resolve(dir, "./import_map.json")),
@@ -123,6 +126,8 @@ try {
     await esbuild.build({
       ...config,
       format: "esm",
+      platform: "browser",
+      target: ["es6"],
       bundle: true,
       plugins: [denoPlugin({
         importMapFile: join(resolve(dir, "./import_map.json")),

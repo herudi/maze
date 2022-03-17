@@ -26,7 +26,6 @@ const html = (
     env,
     initData,
     tt,
-    build_bundle,
   }: any,
 ) => (`<!DOCTYPE html>
 <html ${attributes.html.toString()}>
@@ -48,11 +47,7 @@ const html = (
   env === "development" ? '<script src="/js/refresh.js"></script>' : ""
 }${
   clientScript
-    ? `<script type="${
-      build_bundle
-        ? "application/javascript"
-        : "module"
-    }" src="${clientScript + "?v=" + tt}"></script>`
+    ? `<script type="module" src="${clientScript + "?v=" + tt}"></script>`
     : ""
 }
   </body>
