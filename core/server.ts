@@ -75,7 +75,7 @@ export const initApp = (opts: {
   build_id: string;
   build_bundle: boolean;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
-  opts.build_bundle = true;
+  opts.build_bundle = false;
   return baseInitApp(
     {
       ...opts,
