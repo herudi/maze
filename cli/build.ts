@@ -5,6 +5,9 @@ import { denoPlugin } from "https://deno.land/x/esbuild_deno_loader@0.4.0/mod.ts
 import { join, resolve, toFileUrl } from "./deps.ts";
 import { LINK } from "../core/constant.ts";
 
+const isWorkers = (Deno.args || []).includes("--my-cfw") ? true : false;
+const isBundle = (Deno.args || []).includes("--my-split") ? false : true;
+
 async function clean() {
   try {
     await Deno.remove(join(resolve(dir, "./@shared/http_prod.ts")));
@@ -65,7 +68,8 @@ try {
   }
   await Deno.writeTextFile(
     join(dir, "@shared", "result", "constant.ts"),
-    `export const BUILD_ID: string = '${Date.now()}';`,
+    `export const BUILD_ID: string = '${Date.now()}';
+  export const BUILD_BUNDLE: boolean = ${isBundle};`,
   );
   let file_http = await Deno.readTextFile(join(dir, "@shared", "http.ts"));
   file_http = file_http.replace(
@@ -79,27 +83,54 @@ try {
     "./@shared/http_prod.ts",
   );
   await Deno.writeTextFile(join(dir, "server_prod.ts"), file_server);
-  await esbuild.build({
-    ...config,
-    bundle: true,
-    entryPoints: [join(resolve(dir, "./server_prod.ts"))],
-    outfile: join(resolve(dir, "./server_prod.js")),
-    plugins: [esbuild_import_map.plugin()],
-  });
+  if (isBundle) {
+    await esbuild.build({
+      ...config,
+      bundle: true,
+      entryPoints: [toFileUrl(join(resolve(dir, "./server_prod.ts"))).href],
+      outfile: join(resolve(dir, "./server_prod.js")),
+      plugins: [denoPlugin({
+        importMapFile: join(resolve(dir, "./import_map.json")),
+      })],
+    });
+  } else {
+    await esbuild.build({
+      ...config,
+      bundle: true,
+      entryPoints: [join(resolve(dir, "./server_prod.ts"))],
+      outfile: join(resolve(dir, "./server_prod.js")),
+      plugins: [esbuild_import_map.plugin()],
+    });
+  }
 
-  await esbuild.build({
-    ...config,
-    bundle: true,
-    plugins: [denoPlugin({
-      importMapFile: join(resolve(dir, "./import_map.json")),
-    })],
-    entryPoints: {
-      "_app": toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))).href,
-      ...obj,
-    },
-    splitting: true,
-    outdir: join(resolve(dir, "./public/__maze/pages")),
-  });
+  if (isWorkers) {
+    await esbuild.build({
+      ...config,
+      bundle: true,
+      format: "iife",
+      plugins: [denoPlugin({
+        importMapFile: join(resolve(dir, "./import_map.json")),
+      })],
+      entryPoints: [
+        toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))).href,
+      ],
+      outfile: join(resolve(dir, "./public/__maze/pages/_app.js")),
+    });
+  } else {
+    await esbuild.build({
+      ...config,
+      bundle: true,
+      plugins: [denoPlugin({
+        importMapFile: join(resolve(dir, "./import_map.json")),
+      })],
+      entryPoints: {
+        "_app": toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))).href,
+        ...obj,
+      },
+      splitting: true,
+      outdir: join(resolve(dir, "./public/__maze/pages")),
+    });
+  }
   await clean();
   console.log("Success Build !!");
   console.log("Run Production: deno run -A server_prod.js");

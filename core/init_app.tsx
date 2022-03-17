@@ -2,7 +2,7 @@
 import { h, HttpError, NHttp } from "./deps.ts";
 import { jsx } from "./tpl.ts";
 import fetchFile from "./fetch_file.ts";
-import { ReqEvent } from "./types.ts";
+import { ReqEvent, TObject } from "./types.ts";
 
 export default (
   opts: {
@@ -141,5 +141,24 @@ export default (
       { pathname: rev.path },
     );
   });
-  return app;
+  return {
+    listen(
+      opts: number | Deno.ListenOptions | Deno.ListenTlsOptions | TObject,
+      callback?: (
+        err?: Error,
+        opts?:
+          | Deno.ListenOptions
+          | Deno.ListenTlsOptions
+          | TObject,
+      ) => void | Promise<void>,
+    ) {
+      if (typeof Deno === "undefined") {
+        addEventListener("fetch", (e: any) => {
+          e.respondWith(app.handleEvent(e));
+        });
+      } else {
+        app.listen(opts, callback);
+      }
+    },
+  };
 };

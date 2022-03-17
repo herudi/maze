@@ -400,7 +400,7 @@ import RootApp from "./root_app.tsx";
 import apis from "./result/apis.ts";
 import { twind_setup } from "../config.ts";
 import { pages } from "./result/pages.ts";
-import { BUILD_ID } from "./result/constant.ts";
+import { BUILD_ID, BUILD_BUNDLE } from "./result/constant.ts";
 import { pages as server_pages } from "./result/server_pages.ts";
 
 export const initApp = (url: string, appCallback?: (app: NHttp<ReqEvent>) => any) => {
@@ -413,6 +413,7 @@ export const initApp = (url: string, appCallback?: (app: NHttp<ReqEvent>) => any
     apis: apis,
     meta_url: url,
     build_id: BUILD_ID,
+    build_bundle: BUILD_BUNDLE,
   }, appCallback);
 };
 `,

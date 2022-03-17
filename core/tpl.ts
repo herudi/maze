@@ -16,8 +16,18 @@ function setupSheet(twOptions: Record<string, any>) {
 }
 
 const html = (
-  { body, attributes, head, footer, styleTag, clientScript, env, initData, tt }:
-    any,
+  {
+    body,
+    attributes,
+    head,
+    footer,
+    styleTag,
+    clientScript,
+    env,
+    initData,
+    tt,
+    build_bundle,
+  }: any,
 ) => (`<!DOCTYPE html>
 <html ${attributes.html.toString()}>
   <head>
@@ -38,7 +48,11 @@ const html = (
   env === "development" ? '<script src="/js/refresh.js"></script>' : ""
 }${
   clientScript
-    ? `<script type="module" src="${clientScript + "?v=" + tt}"></script>`
+    ? `<script type="${
+      build_bundle
+        ? "application/javascript"
+        : "module"
+    }" src="${clientScript + "?v=" + tt}"></script>`
     : ""
 }
   </body>

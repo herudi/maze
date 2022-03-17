@@ -64,7 +64,7 @@ maze build-bundle
 
 > generating server_prod.js and client files.
 
-> note: 
+> note:
 
 ### Run Production
 

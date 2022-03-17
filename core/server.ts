@@ -31,7 +31,7 @@ esbuild_import_map.load(import_map as any);
 const result = await esbuild.build({
   jsxFactory: "h",
   jsxFragment: "Fragment",
-  format: "esm",
+  format: "iife",
   write: false,
   bundle: true,
   plugins: [esbuild_import_map.plugin()],
@@ -72,7 +72,9 @@ export const initApp = (opts: {
   apis: any;
   meta_url: string;
   build_id: string;
+  build_bundle: boolean;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
+  opts.build_bundle = true;
   return baseInitApp(
     {
       ...opts,

@@ -1,5 +1,6 @@
 import { RequestEvent as BRequestEvent } from "https://deno.land/x/nhttp@1.1.11/src/request_event.ts";
 
+export type TObject = { [k: string]: any };
 export type RequestEvent = BRequestEvent & {
   getBaseUrl: () => string;
   pathname: string;
