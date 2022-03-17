@@ -32,6 +32,8 @@ const result = await esbuild.build({
   jsxFactory: "h",
   jsxFragment: "Fragment",
   write: false,
+  format: "esm",
+  platform: "browser",
   bundle: true,
   plugins: [esbuild_import_map.plugin()],
   entryPoints: [join(resolve(dir, "./@shared/hydrate.tsx"))],

@@ -106,6 +106,7 @@ try {
   if (isWorkers) {
     await esbuild.build({
       ...config,
+      platform: "browser",
       bundle: true,
       plugins: [denoPlugin({
         importMapFile: join(resolve(dir, "./import_map.json")),
