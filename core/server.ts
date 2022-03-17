@@ -31,7 +31,6 @@ esbuild_import_map.load(import_map as any);
 const result = await esbuild.build({
   jsxFactory: "h",
   jsxFragment: "Fragment",
-  format: "iife",
   write: false,
   bundle: true,
   plugins: [esbuild_import_map.plugin()],
