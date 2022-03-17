@@ -83,7 +83,7 @@ try {
     "./@shared/http_prod.ts",
   );
   await Deno.writeTextFile(join(dir, "server_prod.ts"), file_server);
-  if (isBundle) {
+  if (isWorkers) {
     await esbuild.build({
       ...config,
       bundle: true,
@@ -102,8 +102,7 @@ try {
       plugins: [esbuild_import_map.plugin()],
     });
   }
-
-  if (isWorkers) {
+  if (isBundle) {
     await esbuild.build({
       ...config,
       platform: "browser",
