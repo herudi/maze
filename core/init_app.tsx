@@ -14,6 +14,7 @@ export default (
     env: string;
     clientScript: string;
     tt: string;
+    build_bundle: boolean;
   },
   pages: any[],
   app: NHttp<ReqEvent>,
@@ -21,6 +22,7 @@ export default (
 ) => {
   const env = opts.env;
   const clientScript = opts.clientScript;
+  const build_bundle = opts.build_bundle;
   const tt = opts.tt;
   app.use((rev, next) => {
     rev.getBaseUrl = () => new URL(rev.request.url).origin;
@@ -93,7 +95,7 @@ export default (
           }}
         />,
         opts.twind_setup,
-        { clientScript, env, initData: props.initData, tt },
+        { clientScript, env, initData: props.initData, tt, build_bundle },
         { pathname: rev.path },
       );
     };
