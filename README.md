@@ -3,11 +3,9 @@
 Simple, Fullstack TS/JS for [Deno](https://deno.land/) and
 [Nanojsx](https://nanojsx.io/).
 
-> under development, not complete tests and not complete docs.
+> [WIP] Work In Progress, not complete tests and not complete docs.
 
 > It's Fun Project :), PRs Welcome.
-
-> Docs and tests soon.
 
 Demo site (deno deploy) => https://maze-ssr.deno.dev
 
@@ -58,13 +56,17 @@ maze dev
 ```bash
 maze build
 
-// or bundle single file.
-maze build-bundle
+// or splitting build.
+maze build-split
+
+// or build cf workers.
+maze build-cfw
+
+// or build cf workers with splitting.
+maze build-cfw-split
 ```
 
 > generating server_prod.js and client files.
-
-> note:
 
 ### Run Production
 
