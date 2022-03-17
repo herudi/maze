@@ -9,7 +9,7 @@ async function build(prefix: string = "") {
   const reload = (Deno.args || []).includes("--reload") ? " --reload" : "";
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   const script = CMD +
-    `deno run -A --no-check${reload} --unstable ${LINK}/cli/build.ts${prefix}`;
+    `deno run -A --no-check${reload} --unstable ${LINK}/cli/build.ts?v=${Date.now()}${prefix}`;
   const p = Deno.run({
     cmd: script.split(" "),
     stdout: "piped",
