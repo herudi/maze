@@ -105,7 +105,7 @@ try {
   if (isBundle) {
     await esbuild.build({
       ...config,
-      platform: "browser",
+      platform: "neutral",
       bundle: true,
       plugins: [denoPlugin({
         importMapFile: join(resolve(dir, "./import_map.json")),
