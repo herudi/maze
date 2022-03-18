@@ -54,7 +54,7 @@ export default async function createApp() {
       ]
     }
   },
-  "importMap": "./import_map.json"
+  "importMap": "import_map.json"
 }`,
   );
   await Deno.writeTextFile(

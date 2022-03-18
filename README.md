@@ -7,6 +7,8 @@ Simple, Fullstack TS/JS for [Deno](https://deno.land/) and
 
 > It's Fun Project :), PRs Welcome.
 
+> requires Deno 1.20.0 or higher
+
 Demo site (deno deploy) => https://maze-ssr.deno.dev
 
 Demo site (cf workers) => https://maze-ssr.herudi.workers.dev
