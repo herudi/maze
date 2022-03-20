@@ -1,6 +1,6 @@
 ## Maze
 
-Simple, Fullstack TS/JS with [Deno](https://deno.land/) and
+The simple fullstack TS/JS with [Deno](https://deno.land/) and
 [Nanojsx](https://nanojsx.io/).
 
 > not complete tests and not complete docs.
@@ -10,8 +10,6 @@ Simple, Fullstack TS/JS with [Deno](https://deno.land/) and
 > requires Deno 1.20.0 or higher
 
 Demo site (deno deploy) => https://maze-ssr.deno.dev
-
-Demo site (cf workers) => https://maze-ssr.herudi.workers.dev
 
 Demo Repo => https://github.com/herudi/maze-demo
 
@@ -59,12 +57,6 @@ maze build
 
 // or splitting build.
 maze build-split
-
-// or build cf workers.
-maze build-cfw
-
-// or build cf workers with splitting.
-maze build-cfw-split
 ```
 
 > Temporarily build server.ts to server_prod.js. That's because deno deploy

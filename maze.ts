@@ -37,12 +37,8 @@ if (arg === "create") {
   await build();
 } else if (arg === "build-split") {
   await build(" --my-split");
-} else if (arg === "build-cfw") {
-  await build(" --my-cfw");
-} else if (arg === "build-cfw-split") {
-  await build(" --my-split --my-cfw");
 } else if (arg === "help") {
-  console.log(`Maze. the fullstack web framework for deno and nanojsx.
+  console.log(`The simple fullstack TS/JS with deno and nanojsx.
     
 CREATE NEW APP:
   maze create your-app-name

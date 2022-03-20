@@ -5,7 +5,6 @@ import { denoPlugin } from "https://deno.land/x/esbuild_deno_loader@0.4.0/mod.ts
 import { join, resolve, toFileUrl } from "./deps.ts";
 import { LINK } from "../core/constant.ts";
 
-const isWorkers = (Deno.args || []).includes("--my-cfw") ? true : false;
 const isBundle = (Deno.args || []).includes("--my-split") ? false : true;
 
 async function clean() {
@@ -84,29 +83,15 @@ try {
     "./@shared/http_prod.ts",
   );
   await Deno.writeTextFile(join(dir, "server_prod.ts"), file_server);
-  if (isWorkers) {
-    await esbuild.build({
-      ...config,
-      format: "esm",
-      platform: "neutral",
-      bundle: true,
-      entryPoints: [toFileUrl(join(resolve(dir, "./server_prod.ts"))).href],
-      outfile: join(resolve(dir, "./server_prod.js")),
-      plugins: [denoPlugin({
-        importMapFile: join(resolve(dir, "./import_map.json")),
-      })],
-    });
-  } else {
-    await esbuild.build({
-      ...config,
-      format: "esm",
-      platform: "neutral",
-      bundle: true,
-      entryPoints: [join(resolve(dir, "./server_prod.ts"))],
-      outfile: join(resolve(dir, "./server_prod.js")),
-      plugins: [esbuild_import_map.plugin()],
-    });
-  }
+  await esbuild.build({
+    ...config,
+    format: "esm",
+    platform: "neutral",
+    bundle: true,
+    entryPoints: [join(resolve(dir, "./server_prod.ts"))],
+    outfile: join(resolve(dir, "./server_prod.js")),
+    plugins: [esbuild_import_map.plugin()],
+  });
   if (isBundle) {
     await esbuild.build({
       ...config,
