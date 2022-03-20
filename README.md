@@ -1,9 +1,9 @@
 ## Maze
 
-Simple, Fullstack TS/JS for [Deno](https://deno.land/) and
+Simple, Fullstack TS/JS with [Deno](https://deno.land/) and
 [Nanojsx](https://nanojsx.io/).
 
-> [WIP] Work In Progress, not complete tests and not complete docs.
+> not complete tests and not complete docs.
 
 > It's Fun Project :), PRs Welcome.
 
@@ -21,8 +21,7 @@ Demo Repo => https://github.com/herudi/maze-demo
   [Helmet](https://nanojsx.io/components.html#helmet)).
 - Tailwind out of the box using ([Twind](https://twind.dev/)).
 - Nextjs like (dynamic routes page and api/handler).
-- Support for [Deno](https://deno.land), [Deno Deploy](https://deno.com/deploy)
-  and [Cloudflare Workers](https://workers.cloudflare.com).
+- Support for [Deno](https://deno.land), [Deno Deploy](https://deno.com/deploy).
 - Hot Reloading.
 
 ## Includes
@@ -68,7 +67,8 @@ maze build-cfw
 maze build-cfw-split
 ```
 
-> generating server_prod.js and client files.
+> Temporarily build server.ts to server_prod.js. That's because deno deploy
+> doesn't support import-maps yet. but in the future will support.
 
 ### Run Production
 
