@@ -14,12 +14,15 @@ export default (
     env: string;
     clientScript: string;
     tt: string;
+    build_id: string;
+    static_config?: (rev: ReqEvent) => void;
   },
   pages: any[],
   app: NHttp<ReqEvent>,
   routeCallback?: (app: NHttp<ReqEvent>) => any,
 ) => {
   const env = opts.env;
+  const build_id = opts.build_id;
   const clientScript = opts.clientScript;
   const tt = opts.tt;
   app.use((rev, next) => {
@@ -108,6 +111,8 @@ export default (
       opts.meta_url.endsWith("/public")
         ? opts.meta_url
         : new URL("public", opts.meta_url).href,
+      Number(build_id),
+      opts.static_config,
     ),
   );
   app.use("/api", opts.apis);

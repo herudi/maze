@@ -16,6 +16,7 @@ export const initApp = (opts: {
   apis: any;
   meta_url: string;
   build_id: string;
+  static_config?: (rev: ReqEvent) => void;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
   const myApp = baseInitApp(
     {

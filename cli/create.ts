@@ -100,8 +100,7 @@ export const hydrate_setup = ({ pathname }: RequestEvent) => {
     join(dir, "server.ts"),
     `import { initApp } from "./@shared/http.ts";
 
-const maze = initApp(import.meta.url);
-maze.listen(8080, () => {
+initApp(import.meta.url).listen(8080, () => {
   console.log("> Running on http://localhost:8080");
 });
 `,
@@ -403,7 +402,13 @@ import { pages } from "./result/pages.ts";
 import { BUILD_ID } from "./result/constant.ts";
 import { pages as server_pages } from "./result/server_pages.ts";
 
-export const initApp = (url: string, appCallback?: (app: NHttp<ReqEvent>) => any) => {
+export const initApp = (url: string, {
+  appCallback,
+  staticConfig
+}: {
+  appCallback?: (app: NHttp<ReqEvent>) => any
+  staticConfig?: (rev: ReqEvent) => void
+} = {}) => {
   return baseInitApp({
     twind_setup: twind_setup,
     root: RootApp,
@@ -413,6 +418,7 @@ export const initApp = (url: string, appCallback?: (app: NHttp<ReqEvent>) => any
     apis: apis,
     meta_url: url,
     build_id: BUILD_ID,
+    static_config: staticConfig
   }, appCallback);
 };
 `,

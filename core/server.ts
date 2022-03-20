@@ -53,7 +53,7 @@ app.get("/__REFRESH__", ({ response }) => {
       controller.enqueue(`data: reload\nretry: 100\n\n`);
     },
     cancel(err) {
-      console.log(err);
+      console.log(err || "Error ReadableStream");
     },
   }).pipeThrough(new TextEncoderStream());
 });
@@ -73,6 +73,7 @@ export const initApp = (opts: {
   apis: any;
   meta_url: string;
   build_id: string;
+  static_config?: (rev: ReqEvent) => void;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
   return baseInitApp(
     {
