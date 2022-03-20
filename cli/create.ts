@@ -100,7 +100,14 @@ export const hydrate_setup = ({ pathname }: RequestEvent) => {
     join(dir, "server.ts"),
     `import { initApp } from "./@shared/http.ts";
 
-initApp(import.meta.url).listen(8080, () => {
+initApp(import.meta.url, {
+  staticConfig: ({ response, env }) => {
+    // cache-control examples in production.
+    if (env === 'production') {
+      response.header("cache-control", "public, max-age=7200, immutable");
+    }
+  }
+}).listen(8080, () => {
   console.log("> Running on http://localhost:8080");
 });
 `,

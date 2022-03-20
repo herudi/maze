@@ -35,7 +35,7 @@ Demo Repo => https://github.com/herudi/maze-demo
 ## Install
 
 ```bash
-deno install -Af --no-check https://raw.githubusercontent.com/herudi/maze/master/maze.ts
+deno install -Af --no-check -r https://raw.githubusercontent.com/herudi/maze/master/maze.ts
 ```
 
 ## Usage
