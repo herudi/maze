@@ -25,6 +25,7 @@ const map =
       type: "json",
     },
   })).default;
+const BUILD_ID = Date.now();
 
 delete map.imports["types"];
 
@@ -41,7 +42,7 @@ for (let i = 0; i < listFiles.length; i++) {
 }
 
 try {
-  await Deno.remove(join(resolve(dir, "./public/__maze/pages")), {
+  await Deno.remove(join(resolve(dir, "./public/__maze")), {
     recursive: true,
   });
 } catch (_e) { /* noop */ }
@@ -69,7 +70,7 @@ try {
   }
   await Deno.writeTextFile(
     join(dir, "@shared", "result", "constant.ts"),
-    `export const BUILD_ID: string = '${Date.now()}';`,
+    `export const BUILD_ID: string = '${BUILD_ID}';`,
   );
   let file_http = await Deno.readTextFile(join(dir, "@shared", "http.ts"));
   file_http = file_http.replace(
@@ -119,7 +120,7 @@ try {
       entryPoints: [
         toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))).href,
       ],
-      outfile: join(resolve(dir, "./public/__maze/pages/_app.js")),
+      outfile: join(resolve(dir, `./public/__maze/${BUILD_ID}/_app.js`)),
     });
   } else {
     await esbuild.build({
@@ -136,7 +137,7 @@ try {
         ...obj,
       },
       splitting: true,
-      outdir: join(resolve(dir, "./public/__maze/pages")),
+      outdir: join(resolve(dir, `./public/__maze/${BUILD_ID}`)),
     });
   }
   await clean();

@@ -1,20 +1,19 @@
 import { NHttp } from "./deps.ts";
 import { ReqEvent } from "./types.ts";
 import { join, resolve, toFileUrl } from "../cli/deps.ts";
-import { CLIENT_SCRIPT, NANO_VERSION } from "./constant.ts";
+import { NANO_VERSION } from "./constant.ts";
 import baseInitApp from "./init_app.tsx";
 import { genPages } from "./gen.ts";
 import * as esbuild from "https://deno.land/x/esbuild@v0.14.22/mod.js";
 import * as esbuild_import_map from "https://esm.sh/esbuild-plugin-import-map?no-check";
 
 const env = "development";
-const clientScript = CLIENT_SCRIPT;
 const dir = Deno.cwd();
 const tt = Date.now().toString();
 const app = new NHttp<ReqEvent>({ env });
 await genPages();
 try {
-  await Deno.remove(join(resolve(dir, "./public/__maze/pages")), {
+  await Deno.remove(join(resolve(dir, "./public/__maze")), {
     recursive: true,
   });
 } catch (_e) { /* noop */ }
@@ -40,12 +39,7 @@ const result = await esbuild.build({
   minify: true,
 });
 const source = result.outputFiles[0]?.contents;
-if (source) {
-  app.get(clientScript, ({ response }) => {
-    response.type("application/javascript");
-    return source;
-  });
-}
+
 app.get("/__REFRESH__", ({ response }) => {
   response.type("text/event-stream");
   return new ReadableStream({
@@ -75,12 +69,18 @@ export const initApp = (opts: {
   build_id: string;
   static_config?: (rev: ReqEvent) => void;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
+  const clientScript = `/__maze/${opts.build_id}/_app.js`;
+  if (source) {
+    app.get(clientScript, ({ response }) => {
+      response.type("application/javascript");
+      return source;
+    });
+  }
   return baseInitApp(
     {
       ...opts,
       env,
       clientScript,
-      tt,
     },
     opts.pages,
     app,

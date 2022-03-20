@@ -32,22 +32,17 @@ export default function myFetchFile(
       const lastMod = res.headers.get("last-modified");
       let status = 200;
       if (etag) {
-        response.header("ETag", etag || "");
+        response.header("ETag", etag);
       } else if (lastMod) {
         const key = btoa(lastMod);
         response.header("Last-Modified", lastMod);
         response.header("ETag", `W/"${key}"`);
       } else if (typeof Deno !== "undefined" && Deno.stat) {
-        const stats = await Deno.stat(new URL(fetchFile));
-        response.header(
-          "Last-Modified",
-          (stats.mtime || new Date(BUILD_ID)).toUTCString(),
-        );
-        response.header(
-          "ETag",
-          `W/"${stats.size}-${(stats.mtime || new Date(BUILD_ID)).getTime()}"`,
-        );
+        const now = new Date(BUILD_ID);
+        response.header("Last-Modified", now.toUTCString());
+        response.header("ETag", `W/"${now.getTime()}"`);
         if (request.headers.get("range")) {
+          const stats = await Deno.stat(new URL(fetchFile));
           status = 206;
           let start = 0;
           let end = stats.size - 1;

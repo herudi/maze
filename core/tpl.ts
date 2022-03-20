@@ -25,7 +25,6 @@ const html = (
     clientScript,
     env,
     initData,
-    tt,
   }: any,
 ) => (`<!DOCTYPE html>
 <html ${attributes.html.toString()}>
@@ -45,11 +44,7 @@ const html = (
     : ""
 }${footer.join("\n    ")}${
   env === "development" ? '<script src="/js/refresh.js"></script>' : ""
-}${
-  clientScript
-    ? `<script type="module" src="${clientScript + "?v=" + tt}"></script>`
-    : ""
-}
+}${clientScript ? `<script type="module" src="${clientScript}"></script>` : ""}
   </body>
 <html>
 `);

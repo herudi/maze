@@ -1,10 +1,8 @@
 import { NHttp } from "./deps.ts";
 import { ReqEvent } from "./types.ts";
-import { CLIENT_SCRIPT } from "./constant.ts";
 import baseInitApp from "./init_app.tsx";
 
 const env = "production";
-const clientScript = CLIENT_SCRIPT;
 const app = new NHttp<ReqEvent>({ env });
 
 export const initApp = (opts: {
@@ -18,12 +16,12 @@ export const initApp = (opts: {
   build_id: string;
   static_config?: (rev: ReqEvent) => void;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
+  const clientScript = `/__maze/${opts.build_id}/_app.js`;
   const myApp = baseInitApp(
     {
       ...opts,
       env,
       clientScript,
-      tt: opts.build_id,
     },
     opts.server_pages,
     app,
