@@ -9,7 +9,7 @@ import * as esbuild_import_map from "https://esm.sh/esbuild-plugin-import-map?no
 
 const env = "development";
 const dir = Deno.cwd();
-const tt = Date.now().toString();
+const build_id = Date.now().toString();
 const app = new NHttp<ReqEvent>({ env });
 await genPages();
 try {
@@ -39,7 +39,13 @@ const result = await esbuild.build({
   minify: true,
 });
 const source = result.outputFiles[0]?.contents;
-
+const clientScript = `/__maze/${build_id}/_app.js`;
+if (source) {
+  app.get(clientScript, ({ response }) => {
+    response.type("application/javascript");
+    return source;
+  });
+}
 app.get("/__REFRESH__", ({ response }) => {
   response.type("text/event-stream");
   return new ReadableStream({
@@ -69,13 +75,7 @@ export const initApp = (opts: {
   build_id: string;
   static_config?: (rev: ReqEvent) => void;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
-  const clientScript = `/__maze/${opts.build_id}/_app.js`;
-  if (source) {
-    app.get(clientScript, ({ response }) => {
-      response.type("application/javascript");
-      return source;
-    });
-  }
+  opts.build_id = build_id;
   return baseInitApp(
     {
       ...opts,
