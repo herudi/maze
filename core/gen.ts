@@ -16,7 +16,7 @@ export async function getListPages() {
   for await (const entry of it) {
     if (entry.isFile) {
       const file = toFileUrl(entry.path).href.substring(url.href.length);
-      if (!file.startsWith("/_app.") && !file.startsWith("/_error.")) {
+      if (!file.startsWith("/_default")) {
         if (!file.startsWith("/api/")) {
           page_list.push("./pages" + file);
         }
@@ -147,7 +147,7 @@ export async function genPages(
     for await (const entry of it) {
       if (entry.isFile) {
         const file = toFileUrl(entry.path).href.substring(url.href.length);
-        if (!file.startsWith("/_app.") && !file.startsWith("/_error.")) {
+        if (!file.startsWith("/_default")) {
           if (file.startsWith("/api/")) {
             api_list.push(file);
           } else {

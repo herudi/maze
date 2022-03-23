@@ -7,7 +7,6 @@ export default (
   opts: {
     root: any;
     error_page: any;
-    twind_setup: Record<string, any>;
     apis: any;
     meta_url: string;
     env: string;

@@ -9,7 +9,7 @@ const isBundle = (Deno.args || []).includes("--my-split") ? false : true;
 
 async function clean() {
   try {
-    await Deno.remove(join(resolve(dir, "./@shared/http_prod.ts")));
+    await Deno.remove(join(resolve(dir, "./@shared/maze_prod.ts")));
   } catch (_e) { /* noop */ }
   try {
     await Deno.remove(join(resolve(dir, "./server_prod.ts")));
@@ -71,16 +71,16 @@ try {
     join(dir, "@shared", "result", "constant.ts"),
     `export const BUILD_ID: string = '${BUILD_ID}';`,
   );
-  let file_http = await Deno.readTextFile(join(dir, "@shared", "http.ts"));
+  let file_http = await Deno.readTextFile(join(dir, "@shared", "maze.ts"));
   file_http = file_http.replace(
     `${LINK}/core/server.ts`,
     `${LINK}/core/server_prod.ts`,
   );
-  await Deno.writeTextFile(join(dir, "@shared", "http_prod.ts"), file_http);
+  await Deno.writeTextFile(join(dir, "@shared", "maze_prod.ts"), file_http);
   let file_server = await Deno.readTextFile(join(dir, "server.ts"));
   file_server = file_server.replace(
-    "./@shared/http.ts",
-    "./@shared/http_prod.ts",
+    "./@shared/maze.ts",
+    "./@shared/maze_prod.ts",
   );
   await Deno.writeTextFile(join(dir, "server_prod.ts"), file_server);
   await esbuild.build({

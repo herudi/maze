@@ -8,7 +8,6 @@ const app = new NHttp<ReqEvent>({ env });
 export const initApp = (opts: {
   root: any;
   error_page: any;
-  twind_setup: Record<string, any>;
   pages: Record<string, any>[];
   server_pages: Record<string, any>[];
   apis: any;

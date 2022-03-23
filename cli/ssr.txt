@@ -7,12 +7,11 @@ export default function ssr(Component: any, mazeScript: string, opts: Record<str
   return `<!DOCTYPE html>
 <html ${attributes.html.toString()}>
   <head>
-    ${head.join('\n')}
+    ${head.join('\n    ')}
   </head>
   <body ${attributes.body.toString()}>
     ${body}
-    ${footer.join('\n')}
-    ${mazeScript}
+    ${footer.join('')}${mazeScript}
   </body>
 </html>`
 }

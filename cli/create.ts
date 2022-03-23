@@ -10,11 +10,9 @@ export default async function createApp() {
   const link = LINK;
   const cwd = Deno.cwd();
   const dir = join(cwd, app);
-  await Deno.mkdir(dir);
-  await Deno.mkdir(join(dir, "@shared"));
-  await Deno.mkdir(join(dir, "pages"));
+  await Deno.mkdir(join(dir, "@shared"), { recursive: true });
   await Deno.mkdir(join(dir, "@shared", "result"));
-  await Deno.mkdir(join(dir, "pages", "api"));
+  await Deno.mkdir(join(dir, "pages", "api"), { recursive: true });
   await Deno.mkdir(join(dir, "pages", "_default"));
   await Deno.mkdir(join(dir, ".vscode"));
   await Deno.mkdir(join(dir, "public"));
@@ -102,7 +100,7 @@ maze(import.meta.url).listen(8080, () => {
     join(dir, "pages", "_default", "app.tsx"),
     `/** @jsx h */
 import { h, Helmet } from "nano-jsx";
-import { AppProps, RequestEvent } from "types";
+import { AppProps } from "types";
 
 export default function App({ Page, props }: AppProps) {
   return (
@@ -143,7 +141,7 @@ export default function ErrorPage(
 }
 `,
   );
-  const loadSsrFile = await Deno.readTextFile("cli/ssr.txt");
+  const loadSsrFile = await Deno.readTextFile(new URL(LINK + "/cli/ssr.txt"));
   await Deno.writeTextFile(
     join(dir, "pages", "_default", "ssr.tsx"),
     loadSsrFile,
@@ -271,7 +269,7 @@ export default (url: string, {
 import { h, hydrate } from "nano-jsx";
 import { pages } from "./result/pages.ts";
 import RootApp from "./root_app.tsx";
-import { target, onHydrate } from "../config.ts";
+import config from "../config.ts";
 import { RequestEvent } from "types";
 import ErrorPage from "../pages/_default/error.tsx";
 
@@ -401,6 +399,7 @@ async function lazy(url: string) {
   const mod = (await import(url)).default;
   return mod;
 }
+const { target, onHydrate } = config as any;
 
 window.addEventListener("load", () => {
   onHydrate();
