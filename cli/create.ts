@@ -165,9 +165,12 @@ ${"</html>`"}
   await Deno.writeTextFile(
     join(dir, "pages", "index.tsx"),
     `/** @jsx h */
-import { Component, h, Helmet } from "nano-jsx";
+import { Component, h, Helmet, withStyles } from "nano-jsx";
 import { PageProps } from "types";
 
+const style = ".container { text-align: center; }";
+
+@withStyles(style)
 export default class Home extends Component<PageProps> {
 
   render() {
@@ -176,14 +179,14 @@ export default class Home extends Component<PageProps> {
         <Helmet>
           <title>Welcome Home Page</title>
         </Helmet>
-        <div style="text-align: center">
+        <div class="container">
           <h1>Welcome Home</h1>
           <p>Try to modify file: /pages/index.tsx</p>
         </div>
       </div>
     );
   }
-}
+} 
 `,
   );
   await Deno.writeTextFile(
