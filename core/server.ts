@@ -3,8 +3,6 @@ import { ReqEvent } from "./types.ts";
 import { join, resolve, toFileUrl } from "../cli/deps.ts";
 import baseInitApp from "./init_app.tsx";
 import { genPages } from "./gen.ts";
-import * as esbuild from "https://deno.land/x/esbuild@v0.14.25/mod.js";
-import { denoPlugin } from "https://deno.land/x/esbuild_deno_loader@0.4.0/mod.ts";
 
 const env = "development";
 const dir = Deno.cwd();
@@ -16,27 +14,21 @@ try {
     recursive: true,
   });
 } catch (_e) { /* noop */ }
-const result = await esbuild.build({
-  jsxFactory: "h",
-  jsxFragment: "Fragment",
-  write: false,
-  format: "esm",
-  platform: "browser",
-  target: ["es6"],
-  bundle: true,
-  plugins: [denoPlugin({
-    importMapFile: join(resolve(dir, "./import_map.json")),
-  })],
-  entryPoints: [toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))).href]
+const { files } = await Deno.emit(toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))), {
+  bundle: "module",
+  check: false,
+  compilerOptions: {
+    jsxFactory: "h",
+    jsxFragmentFactory: "Fragment",
+    lib: ["dom", "dom.iterable", "esnext"],
+  },
+  importMapPath: toFileUrl(join(resolve(dir, "./import_map.json"))).href,
 });
-const source = result.outputFiles[0]?.contents;
 const clientScript = `/__maze/${build_id}/_app.js`;
-if (source) {
-  app.get(clientScript, ({ response }) => {
-    response.type("application/javascript");
-    return source;
-  });
-}
+app.get(clientScript, ({ response }) => {
+  response.type("application/javascript");
+  return files["deno:///bundle.js"];
+});
 app.get("/__REFRESH__", ({ response }) => {
   response.type("text/event-stream");
   return new ReadableStream({
