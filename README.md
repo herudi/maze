@@ -3,9 +3,7 @@
 The simple fullstack TS/JS with [Deno](https://deno.land/) and
 [Nanojsx](https://nanojsx.io/).
 
-> It's Fun Project :), PRs Welcome.
-
-> dev branch.
+> [WIP]. It's Fun Project :).
 
 ## Features
 
@@ -24,7 +22,7 @@ The simple fullstack TS/JS with [Deno](https://deno.land/) and
 ## Install
 
 ```bash
-deno install -Af --no-check -r https://raw.githubusercontent.com/herudi/maze/dev/maze.ts
+deno install -Af --no-check -r https://raw.githubusercontent.com/herudi/maze/master/maze.ts
 ```
 
 ## Usage
