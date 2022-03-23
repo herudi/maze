@@ -87,7 +87,7 @@ try {
     ...config,
     format: "esm",
     platform: "neutral",
-    target: ['esnext', 'es2020'],
+    target: ["esnext", "es2020"],
     bundle: true,
     entryPoints: [join(resolve(dir, "./server_prod.ts"))],
     outfile: join(resolve(dir, "./server_prod.js")),

@@ -14,16 +14,19 @@ try {
     recursive: true,
   });
 } catch (_e) { /* noop */ }
-const { files } = await Deno.emit(toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))), {
-  bundle: "module",
-  check: false,
-  compilerOptions: {
-    jsxFactory: "h",
-    jsxFragmentFactory: "Fragment",
-    lib: ["dom", "dom.iterable", "esnext"],
+const { files } = await Deno.emit(
+  toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))),
+  {
+    bundle: "module",
+    check: false,
+    compilerOptions: {
+      jsxFactory: "h",
+      jsxFragmentFactory: "Fragment",
+      lib: ["dom", "dom.iterable", "esnext"],
+    },
+    importMapPath: toFileUrl(join(resolve(dir, "./import_map.json"))).href,
   },
-  importMapPath: toFileUrl(join(resolve(dir, "./import_map.json"))).href,
-});
+);
 const clientScript = `/__maze/${build_id}/_app.js`;
 app.get(clientScript, ({ response }) => {
   response.type("application/javascript");

@@ -1,5 +1,6 @@
 /** @jsx h */
-import { h, HttpError, NHttp } from "./deps.ts";
+import { h } from "./nano_jsx.ts";
+import { HttpError, NHttp } from "./deps.ts";
 import fetchFile from "./fetch_file.ts";
 import { ReqEvent, TObject } from "./types.ts";
 
