@@ -141,10 +141,26 @@ export default function ErrorPage(
 }
 `,
   );
-  const loadSsrFile = await (await fetch(new URL("ssr.txt", import.meta.url))).text();
   await Deno.writeTextFile(
     join(dir, "pages", "_default", "ssr.tsx"),
-    loadSsrFile,
+    `/** @jsx h */
+import { h, Helmet, renderSSR } from "nano-jsx";
+
+export default function ssr(Component: any, mazeScript: string, opts: Record<string, any> = {}) {
+  const app = renderSSR(Component, opts);
+  const { body, head, footer, attributes } = Helmet.SSR(app);
+  return ${"`<!DOCTYPE html>"}
+${"<html ${attributes.html.toString()}>"}
+  <head>
+    ${"${head.join('\\n    ')}"}
+  </head>
+  ${"<body ${attributes.body.toString()}>"}
+    ${"${body}"}
+    ${"${footer.join('')}${mazeScript}"}
+  </body>
+${"</html>`"}
+}
+`,
   );
   await Deno.writeTextFile(
     join(dir, "pages", "index.tsx"),
