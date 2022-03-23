@@ -5,6 +5,10 @@ The simple fullstack TS/JS with [Deno](https://deno.land/) and
 
 > [WIP]. It's Fun Project :).
 
+Demo site (deno deploy) => https://maze-ssr.deno.dev
+
+Demo Repo => https://github.com/herudi/maze-demo
+
 ## Features
 
 - SSR first (good choice for SEO using
