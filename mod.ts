@@ -1,0 +1,1 @@
+export { InitProps } from "./core/props.ts";
