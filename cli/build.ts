@@ -1,4 +1,4 @@
-import * as esbuild from "https://deno.land/x/esbuild@v0.14.22/mod.js";
+import * as esbuild from "https://deno.land/x/esbuild@v0.14.25/mod.js";
 import * as esbuild_import_map from "https://esm.sh/esbuild-plugin-import-map?no-check";
 import { genRoutesWithRefresh, getListPages } from "./../core/gen.ts";
 import { denoPlugin } from "https://deno.land/x/esbuild_deno_loader@0.4.0/mod.ts";

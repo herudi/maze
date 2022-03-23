@@ -1,11 +1,10 @@
 import { NHttp } from "./deps.ts";
 import { ReqEvent } from "./types.ts";
 import { join, resolve, toFileUrl } from "../cli/deps.ts";
-import { NANO_VERSION } from "./constant.ts";
 import baseInitApp from "./init_app.tsx";
 import { genPages } from "./gen.ts";
-import * as esbuild from "https://deno.land/x/esbuild@v0.14.22/mod.js";
-import * as esbuild_import_map from "https://esm.sh/esbuild-plugin-import-map?no-check";
+import * as esbuild from "https://deno.land/x/esbuild@v0.14.25/mod.js";
+import { denoPlugin } from "https://deno.land/x/esbuild_deno_loader@0.4.0/mod.ts";
 
 const env = "development";
 const dir = Deno.cwd();
@@ -17,16 +16,6 @@ try {
     recursive: true,
   });
 } catch (_e) { /* noop */ }
-const import_map =
-  (await import(toFileUrl(join(resolve(dir, "./import_map.json"))).href, {
-    assert: {
-      type: "json",
-    },
-  })).default;
-import_map.imports["nano-jsx"] =
-  `https://cdn.skypack.dev/nano-jsx@${NANO_VERSION}`;
-delete import_map.imports["types"];
-esbuild_import_map.load(import_map as any);
 const result = await esbuild.build({
   jsxFactory: "h",
   jsxFragment: "Fragment",
@@ -34,7 +23,9 @@ const result = await esbuild.build({
   format: "esm",
   platform: "browser",
   bundle: true,
-  plugins: [esbuild_import_map.plugin()],
+  plugins: [denoPlugin({
+    importMapFile: join(resolve(dir, "./import_map.json")),
+  })],
   entryPoints: [join(resolve(dir, "./@shared/hydrate.tsx"))],
   minify: true,
 });
