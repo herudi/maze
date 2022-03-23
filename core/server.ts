@@ -22,12 +22,12 @@ const result = await esbuild.build({
   write: false,
   format: "esm",
   platform: "browser",
+  target: ["es6"],
   bundle: true,
   plugins: [denoPlugin({
     importMapFile: join(resolve(dir, "./import_map.json")),
   })],
-  entryPoints: [join(resolve(dir, "./@shared/hydrate.tsx"))],
-  minify: true,
+  entryPoints: [join(resolve(dir, "./@shared/hydrate.tsx"))]
 });
 const source = result.outputFiles[0]?.contents;
 const clientScript = `/__maze/${build_id}/_app.js`;
