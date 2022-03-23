@@ -59,7 +59,8 @@ export default async function createApp() {
   "imports": {
     "nano-jsx": "https://deno.land/x/nano_jsx@${NANO_VERSION}/mod.ts",
     "nhttp": "https://deno.land/x/nhttp@${NHTTP_VERSION}/mod.ts",
-    "types": "${link}/core/types.ts"
+    "types": "${link}/core/types.ts",
+    "props": "${link}/core/props.ts"
   }
 }`,
   );

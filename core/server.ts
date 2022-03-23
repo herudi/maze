@@ -27,7 +27,7 @@ const result = await esbuild.build({
   plugins: [denoPlugin({
     importMapFile: join(resolve(dir, "./import_map.json")),
   })],
-  entryPoints: [join(resolve(dir, "./@shared/hydrate.tsx"))]
+  entryPoints: [toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))).href]
 });
 const source = result.outputFiles[0]?.contents;
 const clientScript = `/__maze/${build_id}/_app.js`;
