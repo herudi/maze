@@ -99,19 +99,19 @@ maze(import.meta.url).listen(8080, () => {
   await Deno.writeTextFile(
     join(dir, "pages", "_default", "app.tsx"),
     `/** @jsx h */
-import { h, Helmet } from "nano-jsx";
+import { h, Helmet, Fragment } from "nano-jsx";
 import { AppProps } from "types";
 
 export default function App({ Page, props }: AppProps) {
   return (
-    <div>
+    <Fragment>
       <Helmet>
         <html lang="en" />
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Helmet>
       <div id="__MY_PAGE__"><Page {...props} /></div>
-    </div>
+    </Fragment>
   );
 }`,
   );
@@ -165,25 +165,22 @@ ${"</html>`"}
   await Deno.writeTextFile(
     join(dir, "pages", "index.tsx"),
     `/** @jsx h */
-import { Component, h, Helmet, withStyles } from "nano-jsx";
+import { Component, h, Helmet, Fragment } from "nano-jsx";
 import { PageProps } from "types";
 
-const style = ".container { text-align: center; }";
-
-@withStyles(style)
 export default class Home extends Component<PageProps> {
 
   render() {
     return (
-      <div>
+      <Fragment>
         <Helmet>
           <title>Welcome Home Page</title>
         </Helmet>
-        <div class="container">
+        <div style={{ textAlign:"center" }}>
           <h1>Welcome Home</h1>
           <p>Try to modify file: /pages/index.tsx</p>
         </div>
-      </div>
+      </Fragment>
     );
   }
 } 
