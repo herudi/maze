@@ -10,6 +10,7 @@ export default async function createApp() {
   const link = LINK;
   const cwd = Deno.cwd();
   const dir = join(cwd, app);
+  await Deno.mkdir(dir);
   await Deno.mkdir(join(dir, "@shared"));
   await Deno.mkdir(join(dir, "pages"));
   await Deno.mkdir(join(dir, "@shared", "result"));
