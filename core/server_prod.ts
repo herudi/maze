@@ -12,6 +12,7 @@ export const initApp = (opts: {
   pages: Record<string, any>[];
   server_pages: Record<string, any>[];
   apis: any;
+  ssr: (Component: any, mazeScript: string, opts?: Record<string, any>) => any;
   meta_url: string;
   build_id: string;
   static_config?: (rev: ReqEvent) => void;

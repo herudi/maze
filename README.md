@@ -3,21 +3,14 @@
 The simple fullstack TS/JS with [Deno](https://deno.land/) and
 [Nanojsx](https://nanojsx.io/).
 
-> not complete tests and not complete docs.
-
 > It's Fun Project :), PRs Welcome.
 
-> requires Deno 1.20.0 or higher
-
-Demo site (deno deploy) => https://maze-ssr.deno.dev
-
-Demo Repo => https://github.com/herudi/maze-demo
+> dev branch.
 
 ## Features
 
 - SSR first (good choice for SEO using
   [Helmet](https://nanojsx.io/components.html#helmet)).
-- Tailwind out of the box using ([Twind](https://twind.dev/)).
 - Nextjs like (dynamic routes page and api/handler).
 - Support for [Deno](https://deno.land), [Deno Deploy](https://deno.com/deploy).
 - Hot Reloading.
@@ -25,14 +18,13 @@ Demo Repo => https://github.com/herudi/maze-demo
 ## Includes
 
 - [nanojsx](https://nanojsx.io/)
-- [twind](https://twind.dev/)
 - [nhttp](https://nhttp.deno.dev)
 - more
 
 ## Install
 
 ```bash
-deno install -Af --no-check -r https://raw.githubusercontent.com/herudi/maze/master/maze.ts
+deno install -Af --no-check -r https://raw.githubusercontent.com/herudi/maze/dev/maze.ts
 ```
 
 ## Usage
@@ -55,8 +47,8 @@ maze dev
 ```bash
 maze build
 
-// or splitting build.
-maze build-split
+// or bundle build.
+maze build-bundle
 ```
 
 > Temporarily build server.ts to server_prod.js. That's because deno deploy

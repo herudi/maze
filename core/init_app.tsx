@@ -1,6 +1,5 @@
 /** @jsx h */
 import { h, HttpError, NHttp } from "./deps.ts";
-import { jsx } from "./tpl.ts";
 import fetchFile from "./fetch_file.ts";
 import { ReqEvent, TObject } from "./types.ts";
 
@@ -14,6 +13,11 @@ export default (
     env: string;
     clientScript: string;
     build_id: string;
+    ssr: (
+      Component: any,
+      mazeScript: string,
+      opts?: Record<string, any>,
+    ) => any;
     static_config?: (rev: ReqEvent) => void;
   },
   pages: any[],
@@ -21,6 +25,7 @@ export default (
   routeCallback?: (app: NHttp<ReqEvent>) => any,
 ) => {
   const env = opts.env;
+  const ssr = opts.ssr;
   const build_id = opts.build_id;
   const clientScript = opts.clientScript;
   app.use((rev, next) => {
@@ -81,7 +86,7 @@ export default (
         const data = props.initData || {};
         props.initData = { ...data, ...rootData };
       }
-      return jsx(
+      return ssr(
         <RootApp
           isServer={true}
           initData={props.initData}
@@ -93,8 +98,17 @@ export default (
             params: rev.params,
           }}
         />,
-        opts.twind_setup,
-        { clientScript, env, initData: props.initData },
+        [
+          props.initData
+            ? `<script id="__INIT_DATA__" type="application/json">${
+              JSON.stringify(props.initData)
+            }</script>`
+            : "",
+          env === "development" ? '<script src="/js/refresh.js"></script>' : "",
+          clientScript
+            ? `<script type="module" src="${clientScript}"></script>`
+            : "",
+        ].join(""),
         { pathname: rev.path },
       );
     };
@@ -137,10 +151,9 @@ export default (
       return { status, message: err.message };
     }
     rev.response.type("text/html; charset=utf-8");
-    return jsx(
+    return ssr(
       <ErrorPage message={err.message} status={status as number} />,
-      opts.twind_setup,
-      {},
+      "",
       { pathname: rev.path },
     );
   });

@@ -1,9 +1,4 @@
-import {
-  LINK,
-  NANO_VERSION,
-  NHTTP_VERSION,
-  TWIND_VERSION,
-} from "../core/constant.ts";
+import { LINK, NANO_VERSION, NHTTP_VERSION } from "../core/constant.ts";
 import { join } from "./deps.ts";
 
 export default async function createApp() {
@@ -15,10 +10,11 @@ export default async function createApp() {
   const link = LINK;
   const cwd = Deno.cwd();
   const dir = join(cwd, app);
-  await Deno.mkdir(join(dir, "components"), { recursive: true });
   await Deno.mkdir(join(dir, "@shared"));
+  await Deno.mkdir(join(dir, "pages"));
   await Deno.mkdir(join(dir, "@shared", "result"));
-  await Deno.mkdir(join(dir, "pages", "api"), { recursive: true });
+  await Deno.mkdir(join(dir, "pages", "api"));
+  await Deno.mkdir(join(dir, "pages", "_default"));
   await Deno.mkdir(join(dir, ".vscode"));
   await Deno.mkdir(join(dir, "public"));
   await Deno.writeTextFile(
@@ -63,7 +59,6 @@ export default async function createApp() {
 {
   "imports": {
     "nano-jsx": "https://deno.land/x/nano_jsx@${NANO_VERSION}/mod.ts",
-    "twind": "https://cdn.skypack.dev/twind@${TWIND_VERSION}",
     "nhttp": "https://deno.land/x/nhttp@${NHTTP_VERSION}/mod.ts",
     "types": "${link}/core/types.ts"
   }
@@ -84,84 +79,29 @@ export default async function createApp() {
   );
   await Deno.writeTextFile(
     join(dir, "config.ts"),
-    `import { RequestEvent } from "types";
-// twind setup options.
-export const twind_setup = {};
+    `export default {
 
-// hydrate part to id "__MY_PAGE__" if pathname startsWith "/"
-export const hydrate_setup = ({ pathname }: RequestEvent) => {
-  if (pathname.startsWith("/")) {
-    return "__MY_PAGE__";
-  }
-  return void 0;
+  // target id
+  target: "__MY_PAGE__",
+
+  // set anything when hydrate
+  onHydrate: () => {/*  */}
 }`,
   );
   await Deno.writeTextFile(
     join(dir, "server.ts"),
-    `import { initApp } from "./@shared/http.ts";
+    `import maze from "./@shared/maze.ts";
 
-initApp(import.meta.url, {
-  staticConfig: ({ response, env }) => {
-    // cache-control examples in production.
-    if (env === 'production') {
-      response.header("cache-control", "public, max-age=7200, immutable");
-    }
-  }
-}).listen(8080, () => {
+maze(import.meta.url).listen(8080, () => {
   console.log("> Running on http://localhost:8080");
 });
 `,
   );
   await Deno.writeTextFile(
-    join(dir, "components", "navbar.tsx"),
-    `/** @jsx h */
-import { Component, h, Router } from "nano-jsx";
-import { tw } from "twind";
-
-const { Link } = Router;
-const active = "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium";
-const in_active = "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium";
-
-export default class Navbar extends Component {
-
-  didMount() {
-    addEventListener("page:end", () => {
-      this.update({ pathname: location.pathname });
-    })
-  }
-
-  render(loc: Location) {
-    const route = loc || this.props.route;
-    return (
-      <nav class={tw${"`bg-gray-800 sticky top-0 z-10`"}}>
-        <div class={tw${"`max-w-7xl mx-auto px-2 sm:px-6 lg:px-8`"}}>
-          <div class={tw${"`relative flex items-center justify-between h-16`"}}>
-            <div class={tw${"`flex-1 flex items-center justify-center sm:items-stretch sm:justify-start`"}}>
-              <div class={tw${"`sm:block sm:ml-6`"}}>
-                <div class={tw${"`flex space-x-4`"}}>
-                  <Link to="/" class={tw${"`${route.pathname === '/' ? active : in_active}`"}}>
-                    Home
-                  </Link>
-                  <Link to="/about" class={tw${"`${route.pathname === '/about' ? active : in_active}`"}}>
-                    About
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
-    );
-  }
-}
-`,
-  );
-  await Deno.writeTextFile(
-    join(dir, "pages", "_app.tsx"),
+    join(dir, "pages", "_default", "app.tsx"),
     `/** @jsx h */
 import { h, Helmet } from "nano-jsx";
 import { AppProps, RequestEvent } from "types";
-import Navbar from "../components/navbar.tsx";
 
 export default function App({ Page, props }: AppProps) {
   return (
@@ -171,27 +111,16 @@ export default function App({ Page, props }: AppProps) {
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Helmet>
-      <Navbar route={props.route} />
       <div id="__MY_PAGE__"><Page {...props} /></div>
     </div>
   );
-}
-
-App.event = {
-  onEnd({ isFirst }: RequestEvent) {
-    if (!isFirst) {
-      dispatchEvent(new Event("page:end"));
-    }
-  }
-}
-`,
+}`,
   );
 
   await Deno.writeTextFile(
-    join(dir, "pages", "_error.tsx"),
+    join(dir, "pages", "_default", "error.tsx"),
     `/** @jsx h */
 import { h, Helmet } from "nano-jsx";
-import { tw } from "twind";
 
 export default function ErrorPage(
   { message = "something went wrong", status = 500 }: {
@@ -204,80 +133,25 @@ export default function ErrorPage(
       <Helmet>
         <title>{status} {message}</title>
       </Helmet>
-      <div class={tw${"`flex items-center justify-center w-screen h-screen`"}}>
-        <div class={tw${"`px-40 py-20 bg-white rounded-md`"}}>
-          <div class={tw${"`flex flex-col items-center`"}}>
-            <h1 class={tw${"`font-bold text-blue-600 text-9xl`"}}>{status}</h1>
-            <h6 class={tw${"`mb-2 text-2xl font-bold text-center text-gray-800 md:text-3xl`"}}>
-              <span class={tw${"`text-red-500`"}}>Oops!</span> Error
-            </h6>
-            <p class={tw${"`mb-8 text-center text-gray-500 md:text-lg`"}}>
-              {message}
-            </p>
-          </div>
-        </div>
+      <div style="text-align: center">
+        <h1>{status}</h1>
+        <p>{message}</p>
       </div>
     </div>
   );
 }
 `,
   );
+  const loadSsrFile = await Deno.readTextFile("cli/ssr.txt");
   await Deno.writeTextFile(
-    join(dir, "pages", "about.tsx"),
-    `/** @jsx h */
-import { Component, h, Helmet } from "nano-jsx";
-import { tw } from "twind";
-import { PageProps, RequestEvent } from "types";
-import ErrorPage from "./_error.tsx";
-
-const style = {
-  button: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-}
-
-export default class About extends Component<PageProps> {
-  // initial props (server-side or client-side)
-  static async initProps(rev: RequestEvent) {
-    const { data, error } = await rev.fetchApi("/api/about");
-    return { data, error };
-  }
-
-  render() {
-    if (this.props.error) return <ErrorPage {...this.props.error}/>;
-    return (
-      <div>
-        <Helmet>
-          <title>{this.props.data.title}</title>
-        </Helmet>
-        <div class={tw${"`bg-white flex justify-center h-screen`"}}>
-          <div class={tw${"`text-center mt-20 mb-10 text-gray-600`"}}>
-            <h3 class={tw${"`text-5xl`"}}>
-              {this.props.data.title}
-            </h3>
-            <p class={tw${"`text-2xl`"}}>This about from API /api/about</p>
-            <p class={tw${"`mt-5`"}}>try to modify at file : /pages/about.tsx</p>
-            <div class={tw${"`mt-10`"}}>
-              <a target="_blank" href="https://github.com/herudi/maze" class={tw${"`${style.button}`"}}>
-                Read the doc on github
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
-`,
+    join(dir, "pages", "_default", "ssr.tsx"),
+    loadSsrFile,
   );
   await Deno.writeTextFile(
     join(dir, "pages", "index.tsx"),
     `/** @jsx h */
 import { Component, h, Helmet } from "nano-jsx";
-import { tw } from "twind";
 import { PageProps } from "types";
-
-const style = {
-  button: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-}
 
 export default class Home extends Component<PageProps> {
 
@@ -285,21 +159,11 @@ export default class Home extends Component<PageProps> {
     return (
       <div>
         <Helmet>
-          <title>Hello Home Page</title>
+          <title>Welcome Home Page</title>
         </Helmet>
-        <div class={tw${"`bg-white flex justify-center h-screen`"}}>
-          <div class={tw${"`text-center mt-20 mb-10 text-gray-600`"}}>
-            <h3 class={tw${"`text-5xl`"}}>
-              Welcome Home
-            </h3>
-            <p class={tw${"`text-2xl`"}}>Maze Application Home</p>
-            <p class={tw${"`mt-5`"}}>try to modify at file : /pages/index.tsx</p>
-            <div class={tw${"`mt-10`"}}>
-              <a target="_blank" href="https://github.com/herudi/maze" class={tw${"`${style.button}`"}}>
-                Read the doc on github
-              </a>
-            </div>
-          </div>
+        <div style="text-align: center">
+          <h1>Welcome Home</h1>
+          <p>Try to modify file: /pages/index.tsx</p>
         </div>
       </div>
     );
@@ -308,25 +172,10 @@ export default class Home extends Component<PageProps> {
 `,
   );
   await Deno.writeTextFile(
-    join(dir, "pages", "api", "about.ts"),
-    `import { HttpError } from "nhttp";
-import { RequestEvent } from "types";
-
-export default async function handler(rev: RequestEvent) {
-  if (rev.request.method == "GET") {
-    // some code here
-
-    return { title: "Welcome About" };
-  }
-  throw new HttpError(405, "method not allowed");
-}
-`,
-  );
-  await Deno.writeTextFile(
     join(dir, "@shared", "root_app.tsx"),
     `/** @jsx h */
 import { h } from "nano-jsx";
-import App from "../pages/_app.tsx";
+import App from "../pages/_default/app.tsx";
 
 function RootApp({ Page, initData, route, isServer }: any) {
   return (
@@ -341,24 +190,17 @@ RootApp.initProps = (App as any).initProps;
 RootApp.event = (App as any).event || {};
 
 export default RootApp;
-  
 `,
   );
   await Deno.writeTextFile(
     join(dir, "@shared", "result", "pages.ts"),
     `
 import $0 from "../../pages/index.tsx";
-import $1 from "../../pages/about.tsx";
 export const pages: any = [
   { 
     path: '/',
     page: $0,
     methods: ($0 as any).methods
-  },
-  { 
-    path: '/about',
-    page: $1,
-    methods: ($1 as any).methods
   },
 ];
 `,
@@ -372,9 +214,7 @@ export const pages: any = [
     `
 import { Router } from "https://deno.land/x/nhttp@${NHTTP_VERSION}/mod.ts";
 import { RequestEvent } from "${link}/core/types.ts";
-import $0 from "../../pages/api/about.ts";
 const api = new Router<RequestEvent>();
-api.any('/about', $0);
 export default api;
 `,
   );
@@ -382,34 +222,28 @@ export default api;
     join(dir, "@shared", "result", "server_pages.ts"),
     `
 import $0 from "../../pages/index.tsx";
-import $1 from "../../pages/about.tsx";
 export const pages: any = [
   { 
     path: '/',
     page: $0,
     methods: ($0 as any).methods
   },
-  { 
-    path: '/about',
-    page: $1,
-    methods: ($1 as any).methods
-  },
 ];
 `,
   );
   await Deno.writeTextFile(
-    join(dir, "@shared", "http.ts"),
+    join(dir, "@shared", "maze.ts"),
     `
 import { initApp as baseInitApp, NHttp, ReqEvent } from "${link}/core/server.ts";
-import ErrorPage from "../pages/_error.tsx";
+import ErrorPage from "../pages/_default/error.tsx";
+import ssr from "../pages/_default/ssr.tsx";
 import RootApp from "./root_app.tsx";
 import apis from "./result/apis.ts";
-import { twind_setup } from "../config.ts";
 import { pages } from "./result/pages.ts";
 import { BUILD_ID } from "./result/constant.ts";
 import { pages as server_pages } from "./result/server_pages.ts";
 
-export const initApp = (url: string, {
+export default (url: string, {
   appCallback,
   staticConfig
 }: {
@@ -417,7 +251,6 @@ export const initApp = (url: string, {
   staticConfig?: (rev: ReqEvent) => void
 } = {}) => {
   return baseInitApp({
-    twind_setup: twind_setup,
     root: RootApp,
     error_page: ErrorPage,
     pages: pages,
@@ -425,6 +258,7 @@ export const initApp = (url: string, {
     apis: apis,
     meta_url: url,
     build_id: BUILD_ID,
+    ssr: ssr,
     static_config: staticConfig
   }, appCallback);
 };
@@ -434,12 +268,11 @@ export const initApp = (url: string, {
     join(dir, "@shared", "hydrate.tsx"),
     `/** @jsx h */
 import { h, hydrate } from "nano-jsx";
-import { setup } from "twind";
 import { pages } from "./result/pages.ts";
 import RootApp from "./root_app.tsx";
-import { twind_setup, hydrate_setup } from "../config.ts";
+import { target, onHydrate } from "../config.ts";
 import { RequestEvent } from "types";
-import ErrorPage from "../pages/_error.tsx";
+import ErrorPage from "../pages/_default/error.tsx";
 
 type ReqEvent = RequestEvent & {
   render: (elem: any, id?: string) => any;
@@ -569,7 +402,7 @@ async function lazy(url: string) {
 }
 
 window.addEventListener("load", () => {
-  setup(twind_setup);
+  onHydrate();
   let first = true;
   let init: any = document.getElementById("__INIT_DATA__");
   if (init) init = JSON.parse(init.textContent || "{}");
@@ -579,7 +412,7 @@ window.addEventListener("load", () => {
     router.add(obj.path, async (rev) => {
       rev.isFirst = first;
       try {
-        const target_id = hydrate_setup(rev);
+        const target_id = typeof target === 'string' ? target : target(rev);
         if (!target_id && !first) return window.location.href = rev.url;
         let rootData = {};
         if (!first) {

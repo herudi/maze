@@ -34,9 +34,9 @@ if (arg === "create") {
 } else if (arg === "dev") {
   await dev_server();
 } else if (arg === "build") {
-  await build();
-} else if (arg === "build-split") {
   await build(" --my-split");
+} else if (arg === "build-bundle") {
+  await build();
 } else if (arg === "help") {
   console.log(`The simple fullstack TS/JS with deno and nanojsx.
     

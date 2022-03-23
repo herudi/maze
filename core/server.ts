@@ -73,6 +73,7 @@ export const initApp = (opts: {
   apis: any;
   meta_url: string;
   build_id: string;
+  ssr: (Component: any, mazeScript: string, opts?: Record<string, any>) => any;
   static_config?: (rev: ReqEvent) => void;
 }, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
   opts.build_id = build_id;
