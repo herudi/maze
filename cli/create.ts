@@ -141,7 +141,7 @@ export default function ErrorPage(
 }
 `,
   );
-  const loadSsrFile = await Deno.readTextFile(new URL(LINK + "/cli/ssr.txt"));
+  const loadSsrFile = await Deno.readTextFile(new URL("ssr.txt", import.meta.url));
   await Deno.writeTextFile(
     join(dir, "pages", "_default", "ssr.tsx"),
     loadSsrFile,
