@@ -59,8 +59,7 @@ export default async function createApp() {
   "imports": {
     "nano-jsx": "https://deno.land/x/nano_jsx@${NANO_VERSION}/mod.ts",
     "nhttp": "https://deno.land/x/nhttp@${NHTTP_VERSION}/mod.ts",
-    "types": "${link}/core/types.ts",
-    "props": "${link}/core/props.ts"
+    "maze": "${link}/mod.ts"
   }
 }`,
   );
@@ -101,7 +100,7 @@ maze(import.meta.url).listen(8080, () => {
     join(dir, "pages", "_default", "app.tsx"),
     `/** @jsx h */
 import { h, Helmet, Fragment } from "nano-jsx";
-import { AppProps } from "types";
+import { AppProps } from "maze";
 
 export default function App({ Page, props }: AppProps) {
   return (
@@ -167,7 +166,7 @@ ${"</html>`"}
     join(dir, "pages", "index.tsx"),
     `/** @jsx h */
 import { Component, h, Helmet, Fragment } from "nano-jsx";
-import { PageProps } from "types";
+import { PageProps } from "maze";
 
 export default class Home extends Component<PageProps> {
 
@@ -287,7 +286,7 @@ import { h, hydrate } from "nano-jsx";
 import { pages } from "./result/pages.ts";
 import RootApp from "./root_app.tsx";
 import config from "../config.ts";
-import { RequestEvent } from "types";
+import { RequestEvent } from "maze";
 import ErrorPage from "../pages/_default/error.tsx";
 
 type ReqEvent = RequestEvent & {
