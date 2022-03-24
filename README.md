@@ -1,9 +1,11 @@
 ## Maze
 
-The simple fullstack TS/JS with [Deno](https://deno.land/) and
+Simple CLI tools for building web with [Deno](https://deno.land/) and
 [Nanojsx](https://nanojsx.io/).
 
-> [WIP]. It's Fun Project :).
+> Still [WIP]. but work functionaly.
+
+> It's Fun Project :).
 
 Demo site (deno deploy) => https://maze-ssr.deno.dev
 
@@ -11,8 +13,7 @@ Demo Repo => https://github.com/herudi/maze-demo
 
 ## Features
 
-- SSR first (good choice for SEO using
-  [Helmet](https://nanojsx.io/components.html#helmet)).
+- SSR first (good choice for SEO).
 - Nextjs like (dynamic routes page and api/handler).
 - Support for [Deno](https://deno.land), [Deno Deploy](https://deno.com/deploy).
 - Hot Reloading.
@@ -49,7 +50,7 @@ maze dev
 ```bash
 maze build
 
-// or bundle build.
+// or build bundle.
 maze build-bundle
 ```
 
