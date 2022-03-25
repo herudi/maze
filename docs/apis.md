@@ -25,27 +25,24 @@ export default async function handler(rev: RequestEvent) {
 }
 ```
 
-Example using auth middleware :
+Example using middleware :
 
 ```ts
 import { HttpError, NextFunction, RequestEvent } from "nhttp";
 
-// example auth
-async function my_auth(rev: RequestEvent, next: NextFunction) {
-  const user = await User.find(id);
-  if (!user) {
-    throw new HttpError(401, "unauthorized");
-  }
-  rev.user = user;
+async function middleware(rev: RequestEvent, next: NextFunction) {
+  rev.user = "Maze";
   return next();
 }
 
 async function handler(rev: RequestEvent) {
   if (rev.request.method == "GET") {
-    return { title: `Welcome ${rev.user.username}` };
+    const title = `Welcome ${rev.user}`;
+    console.log(title); // Welcome Maze
+    return { title };
   }
   throw new HttpError(405, "method not allowed");
 }
 
-export default [my_auth, handler];
+export default [middleware, handler];
 ```
