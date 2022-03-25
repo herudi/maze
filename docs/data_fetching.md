@@ -9,7 +9,8 @@ Work for server-side and client-side.
 import { Component, h } from "nano-jsx";
 import { PageProps, InitProps } from "maze";
 
-@InitProps(async () => {
+// decorator
+@InitProps(async (rev) => {
   const res = await fetch("http://..../items");
   const items = await res.json();
   return { items };
