@@ -1,20 +1,20 @@
 import { h, hydrate } from "./nano_jsx.ts";
-import { RequestEvent } from "./types.ts";
+import { RequestEvent, TRet } from "./types.ts";
 
 type ReqEvent = RequestEvent & {
-  render: (elem: any, id?: string) => any;
+  render: (elem: TRet, id?: string) => TRet;
 };
 
 type THandler = (
   rev: ReqEvent,
-) => any;
+) => TRet;
 
-function wildcard(path: string, wild: boolean, match: any) {
+function wildcard(path: string, wild: boolean, match: TRet) {
   const params = match.groups || {};
   if (!wild) return params;
   if (path.indexOf("*") !== -1) {
     match.shift();
-    const wild = match.filter((el: any) => el !== void 0).filter((
+    const wild = match.filter((el: TRet) => el !== void 0).filter((
       el: string,
     ) => el.startsWith("/")).join("").split("/");
     wild.shift();
@@ -43,8 +43,8 @@ function decURI(str: string) {
 export default class ClassicRouter {
   routes: { path: string; regex: RegExp; wild: boolean; fn: THandler }[] = [];
   current: string | undefined;
-  ErrorPage: any;
-  constructor(ErrorPage: any) {
+  ErrorPage: TRet;
+  constructor(ErrorPage: TRet) {
     this.ErrorPage = ErrorPage;
   }
 
@@ -64,7 +64,8 @@ export default class ClassicRouter {
   }
 
   find(pathname: string) {
-    let fn: any, params = {}, j = 0, el, arr = this.routes, len = arr.length;
+    let fn: TRet, params = {}, j = 0, el;
+    const arr = this.routes, len = arr.length;
     pathname = decURI(pathname);
     while (j < len) {
       el = arr[j];
@@ -82,7 +83,7 @@ export default class ClassicRouter {
   handle() {
     const { pathname, search, origin } = window.location;
     if (this.current === pathname + search) return;
-    let { fn, params } = this.find(pathname);
+    const { fn, params } = this.find(pathname);
     const ErrorPage = this.ErrorPage;
     this.current = pathname + search;
     const rev = {} as ReqEvent;
@@ -114,14 +115,20 @@ export default class ClassicRouter {
   resolve() {
     const handle = () => this.handle();
     handle();
-    window.addEventListener("pushstate", (e: any) => {
+
+    // deno-lint-ignore no-window-prefix
+    window.addEventListener("pushstate", (e: TRet) => {
       e.preventDefault();
       handle();
     });
-    window.addEventListener("replacestate", (e: any) => {
+
+    // deno-lint-ignore no-window-prefix
+    window.addEventListener("replacestate", (e: TRet) => {
       e.preventDefault();
       handle();
     });
+
+    // deno-lint-ignore no-window-prefix
     window.addEventListener("popstate", () => {
       handle();
     });

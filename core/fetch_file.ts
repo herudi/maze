@@ -17,7 +17,8 @@ export default function myFetchFile(
     next: NextFunction,
   ) => {
     const { request, response, path } = rev;
-    let isDirectory = path.slice((path.lastIndexOf(".") - 1 >>> 0) + 2) === "";
+    const isDirectory =
+      path.slice((path.lastIndexOf(".") - 1 >>> 0) + 2) === "";
     let fetchFile = fetch_url + path;
     if (isDirectory && ssg) {
       if (fetchFile[fetchFile.length - 1] !== "/") {
@@ -49,8 +50,8 @@ export default function myFetchFile(
         );
         if (request.headers.get("range")) {
           status = 206;
-          let start = 0;
-          let end = stats.size - 1;
+          const start = 0;
+          const end = stats.size - 1;
           if (start >= stats.size || end >= stats.size) {
             response.header("Content-Range", `bytes */${stats.size}`);
             return response.status(416).send();

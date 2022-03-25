@@ -2,32 +2,35 @@
 import { h } from "./nano_jsx.ts";
 import { HttpError, NHttp } from "./deps.ts";
 import fetchFile from "./fetch_file.ts";
-import { ReqEvent, TObject } from "./types.ts";
+import { ReqEvent, TObject, TRet } from "./types.ts";
 
 export default (
   opts: {
-    root: any;
-    error_page: any;
-    apis: any;
+    root: TRet;
+    error_page: TRet;
+    apis: TRet;
     meta_url: string;
     env: string;
     clientScript: string;
     build_id: string;
     ssr: (
-      Component: any,
+      Component: TRet,
       mazeScript: string,
-      opts?: Record<string, any>,
-    ) => any;
+      opts?: Record<string, TRet>,
+    ) => TRet;
     static_config?: (rev: ReqEvent) => void;
   },
-  pages: any[],
+  pages: TRet[],
   app: NHttp<ReqEvent>,
-  routeCallback?: (app: NHttp<ReqEvent>) => any,
+  routeCallback?: (app: NHttp<ReqEvent>) => TRet,
 ) => {
   const env = opts.env;
   const ssr = opts.ssr;
   const build_id = opts.build_id;
   const clientScript = opts.clientScript;
+  const RootApp = opts.root;
+  const ErrorPage = opts.error_page;
+  let obj = {} as TRet;
   app.use((rev, next) => {
     rev.getBaseUrl = () => new URL(rev.request.url).origin;
     rev.isServer = true;
@@ -35,7 +38,8 @@ export default (
     rev.pathname = rev.path;
     rev.fetchApi = async (pathname) => {
       const arr = app.route["ANY"];
-      let i = 0, len = arr.length, fns: any;
+      let i = 0, fns: TRet;
+      const len = arr.length;
       while (i < len) {
         const obj = arr[i];
         if (obj.pathx.test(pathname)) {
@@ -70,15 +74,6 @@ export default (
         };
       }
     };
-    return next();
-  });
-
-  app.on404((rev) => {
-    throw new HttpError(404, `${rev.url} not found`);
-  });
-  let obj = {} as any;
-  const RootApp = opts.root;
-  app.use((rev, next) => {
     rev.render = async (Page, props) => {
       rev.response.type("text/html; charset=utf-8");
       const rootData = RootApp.initProps ? (await RootApp.initProps(rev)) : {};
@@ -114,6 +109,21 @@ export default (
     };
     return next();
   });
+  app.on404((rev) => {
+    throw new HttpError(404, `${rev.url} not found`);
+  });
+  app.onError((err, rev) => {
+    const status = rev.response.status();
+    if (rev.path.startsWith("/api/")) {
+      return { status, message: err.message };
+    }
+    rev.response.type("text/html; charset=utf-8");
+    return ssr(
+      <ErrorPage message={err.message} status={status as number} />,
+      "",
+      { pathname: rev.path },
+    );
+  });
   if (routeCallback) {
     routeCallback(app);
     obj = app.route;
@@ -129,13 +139,13 @@ export default (
   );
   app.use("/api", opts.apis);
   for (let i = 0; i < pages.length; i++) {
-    const route: any = pages[i];
+    const route: TRet = pages[i];
     const methods = route.methods || ["GET"];
     for (let j = 0; j < methods.length; j++) {
       const method = methods[j];
       if (!obj[method + route.path]) {
         app.on(method, route.path, async (rev) => {
-          const Page = route.page as any;
+          const Page = route.page as TRet;
           const initData = Page.initProps
             ? (await Page.initProps(rev))
             : void 0;
@@ -144,19 +154,6 @@ export default (
       }
     }
   }
-  const ErrorPage = opts.error_page;
-  app.onError((err, rev) => {
-    const status = rev.response.status();
-    if (rev.path.startsWith("/api/")) {
-      return { status, message: err.message };
-    }
-    rev.response.type("text/html; charset=utf-8");
-    return ssr(
-      <ErrorPage message={err.message} status={status as number} />,
-      "",
-      { pathname: rev.path },
-    );
-  });
   return {
     listen(
       opts: number | Deno.ListenOptions | Deno.ListenTlsOptions | TObject,
@@ -169,7 +166,7 @@ export default (
       ) => void | Promise<void>,
     ) {
       if (typeof Deno === "undefined") {
-        addEventListener("fetch", (e: any) => {
+        addEventListener("fetch", (e: TRet) => {
           e.respondWith(app.handleEvent(e));
         });
       } else {

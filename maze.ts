@@ -4,7 +4,7 @@ import { LINK } from "./core/constant.ts";
 
 const arg = (Deno.args || [])[0];
 
-async function build(prefix: string = "") {
+async function build(prefix: string) {
   console.log("Building Server Production...");
   const reload = (Deno.args || []).includes("--reload") ? " --reload" : "";
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
@@ -36,7 +36,7 @@ if (arg === "create") {
 } else if (arg === "build") {
   await build(" --my-split");
 } else if (arg === "build-bundle") {
-  await build();
+  await build("");
 } else if (arg === "help") {
   console.log(`The simple fullstack TS/JS with deno and nanojsx.
     

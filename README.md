@@ -5,11 +5,13 @@ Simple CLI tools for building web with [Deno](https://deno.land/) and
 
 > Still [WIP]. but work functionaly.
 
-> It's Fun Project :).
+> Currently not complete tests and docs.
 
 Demo site (deno deploy) => https://maze-ssr.deno.dev
 
 Demo Repo => https://github.com/herudi/maze-demo
+
+See [Docs](https://github.com/herudi/maze/tree/master/docs)
 
 ## Features
 
@@ -62,3 +64,5 @@ maze build-bundle
 ```bash
 deno run -A server_prod.js
 ```
+
+> It's Fun Project :).

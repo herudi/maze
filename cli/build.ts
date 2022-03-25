@@ -4,6 +4,7 @@ import { genRoutesWithRefresh, getListPages } from "./../core/gen.ts";
 import { denoPlugin } from "https://deno.land/x/esbuild_deno_loader@0.4.0/mod.ts";
 import { join, resolve, toFileUrl } from "./deps.ts";
 import { LINK } from "../core/constant.ts";
+import { TRet } from "../core/types.ts";
 
 const isBundle = (Deno.args || []).includes("--my-split") ? false : true;
 
@@ -28,11 +29,11 @@ const BUILD_ID = Date.now();
 
 delete map.imports["types"];
 
-esbuild_import_map.load(map as any);
+esbuild_import_map.load(map as TRet);
 
 const listFiles = await getListPages();
 
-const obj = {} as any;
+const obj = {} as TRet;
 
 for (let i = 0; i < listFiles.length; i++) {
   const name = listFiles[i];
@@ -46,7 +47,7 @@ try {
   });
 } catch (_e) { /* noop */ }
 
-const config: any = {
+const config: TRet = {
   absWorkingDir: dir,
   jsxFactory: "h",
   jsxFragment: "Fragment",

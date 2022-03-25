@@ -1,5 +1,6 @@
 import { join, resolve, toFileUrl, walk } from "../cli/deps.ts";
 import { LINK, STORAGE_KEY_API, STORAGE_KEY_PAGE } from "./constant.ts";
+import { TRet } from "./types.ts";
 
 const link = LINK;
 
@@ -26,7 +27,7 @@ export async function getListPages() {
   return page_list;
 }
 
-async function checkStat(arr: string[], dir: string, storage: any) {
+async function checkStat(arr: string[], dir: string, storage: TRet) {
   const base = join(resolve(dir, "./pages"));
   let status = false, new_entry = false;
   for (let i = 0; i < arr.length; i++) {

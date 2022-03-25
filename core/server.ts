@@ -1,5 +1,5 @@
 import { NHttp } from "./deps.ts";
-import { ReqEvent } from "./types.ts";
+import { ReqEvent, TOptionsInitApp, TRet } from "./types.ts";
 import { join, resolve, toFileUrl } from "../cli/deps.ts";
 import baseInitApp from "./init_app.tsx";
 import { genPages } from "./gen.ts";
@@ -50,17 +50,10 @@ if (bool) location.reload();
 else bool = true;
 });`;
 });
-export const initApp = (opts: {
-  root: any;
-  error_page: any;
-  pages: Record<string, any>[];
-  server_pages: Record<string, any>[];
-  apis: any;
-  meta_url: string;
-  build_id: string;
-  ssr: (Component: any, mazeScript: string, opts?: Record<string, any>) => any;
-  static_config?: (rev: ReqEvent) => void;
-}, routeCallback?: (app: NHttp<ReqEvent>) => any) => {
+export const initApp = (
+  opts: TOptionsInitApp,
+  routeCallback?: (app: NHttp<ReqEvent>) => TRet,
+) => {
   opts.build_id = build_id;
   return baseInitApp(
     {

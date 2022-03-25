@@ -1,11 +1,11 @@
 import { Component, h } from "./nano_jsx.ts";
-import { ReqEvent } from "./types.ts";
+import { ReqEvent, TRet } from "./types.ts";
 
 export const InitProps = (
-  handler: (rev: ReqEvent) => any,
+  handler: (rev: ReqEvent) => TRet,
   allowMethods: string[] = ["GET"],
 ) =>
-  (WrappedComponent: any) => {
+  (WrappedComponent: TRet) => {
     return (class extends Component {
       static async initProps(rev: ReqEvent) {
         const data = await handler(rev);
@@ -15,5 +15,5 @@ export const InitProps = (
       render() {
         return h(WrappedComponent, { ...this.props });
       }
-    } as any);
+    } as TRet);
   };

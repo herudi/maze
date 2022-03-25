@@ -10,5 +10,10 @@
     "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment"
+  },
+  "lint": {
+    "files": {
+      "exclude": ["tests/"]
+    }
   }
 }
