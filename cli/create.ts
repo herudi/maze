@@ -54,8 +54,7 @@ export default async function createApp() {
   );
   await Deno.writeTextFile(
     join(dir, "import_map.json"),
-    `
-{
+    `{
   "imports": {
     "nano-jsx": "https://deno.land/x/nano_jsx@${NANO_VERSION}/mod.ts",
     "nhttp": "https://deno.land/x/nhttp@${NHTTP_VERSION}/mod.ts",
