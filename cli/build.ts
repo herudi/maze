@@ -70,7 +70,8 @@ try {
   }
   await Deno.writeTextFile(
     join(dir, "@shared", "result", "constant.ts"),
-    `export const BUILD_ID: string = '${BUILD_ID}';`,
+    `export const BUILD_ID: string = '${BUILD_ID}';
+export const ENV: string = 'production';`,
   );
   let file_http = await Deno.readTextFile(join(dir, "@shared", "maze.ts"));
   file_http = file_http.replace(

@@ -2,7 +2,7 @@ import {
   initApp as baseInitApp,
   NHttp,
   ReqEvent,
-} from "../../../core/test_server.ts";
+} from "../../../core/server.ts";
 import ErrorPage from "../pages/_default/error.tsx";
 import ssr from "../pages/_default/ssr.tsx";
 import RootApp from "./root_app.tsx";

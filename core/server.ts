@@ -5,17 +5,41 @@ import baseInitApp from "./init_app.tsx";
 import { genPages } from "./gen.ts";
 
 const env = "development";
+const isDev = (Deno.args || []).includes("--dev");
 const dir = Deno.cwd();
-const build_id = Date.now().toString();
+const build_id = isDev ? Date.now().toString() : "1648194232103";
 const app = new NHttp<ReqEvent>({ env });
-await genPages();
-try {
-  await Deno.remove(join(resolve(dir, "./public/__maze")), {
-    recursive: true,
+if (isDev) {
+  await genPages();
+  try {
+    await Deno.remove(join(resolve(dir, "./public/__maze")), {
+      recursive: true,
+    });
+  } catch (_e) { /* noop */ }
+  app.get("/__REFRESH__", ({ response }) => {
+    response.type("text/event-stream");
+    return new ReadableStream({
+      start(controller) {
+        controller.enqueue(`data: reload\nretry: 100\n\n`);
+      },
+      cancel(err) {
+        console.log(err || "Error ReadableStream");
+      },
+    }).pipeThrough(new TextEncoderStream());
   });
-} catch (_e) { /* noop */ }
+  app.get("/js/refresh.js", ({ response }) => {
+    response.type("application/javascript");
+    return `let bool = false; new EventSource("/__REFRESH__").addEventListener("message", _ => {
+  if (bool) location.reload();
+  else bool = true;
+});`;
+  });
+}
+const hydrate_file = isDev
+  ? toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx")))
+  : "./tests/sample/@shared/hydrate.tsx";
 const { files } = await Deno.emit(
-  toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))),
+  hydrate_file,
   {
     bundle: "module",
     check: false,
@@ -24,7 +48,9 @@ const { files } = await Deno.emit(
       jsxFragmentFactory: "Fragment",
       lib: ["dom", "dom.iterable", "esnext"],
     },
-    importMapPath: toFileUrl(join(resolve(dir, "./import_map.json"))).href,
+    importMapPath: isDev
+      ? toFileUrl(join(resolve(dir, "./import_map.json"))).href
+      : void 0,
   },
 );
 const clientScript = `/__maze/${build_id}/_app.js`;
@@ -32,24 +58,7 @@ app.get(clientScript, ({ response }) => {
   response.type("application/javascript");
   return files["deno:///bundle.js"];
 });
-app.get("/__REFRESH__", ({ response }) => {
-  response.type("text/event-stream");
-  return new ReadableStream({
-    start(controller) {
-      controller.enqueue(`data: reload\nretry: 100\n\n`);
-    },
-    cancel(err) {
-      console.log(err || "Error ReadableStream");
-    },
-  }).pipeThrough(new TextEncoderStream());
-});
-app.get("/js/refresh.js", ({ response }) => {
-  response.type("application/javascript");
-  return `let bool = false; new EventSource("/__REFRESH__").addEventListener("message", _ => {
-if (bool) location.reload();
-else bool = true;
-});`;
-});
+
 export const initApp = (
   opts: TOptionsInitApp,
   routeCallback?: (app: NHttp<ReqEvent>) => TRet,

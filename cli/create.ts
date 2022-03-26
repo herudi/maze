@@ -222,7 +222,8 @@ export const pages: any = [
   );
   await Deno.writeTextFile(
     join(dir, "@shared", "result", "constant.ts"),
-    `export const BUILD_ID: string = '${Date.now()}';`,
+    `export const BUILD_ID: string = '${Date.now()}';
+export const ENV: string = 'development';`,
   );
   await Deno.writeTextFile(
     join(dir, "@shared", "result", "apis.ts"),
