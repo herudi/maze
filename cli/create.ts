@@ -81,9 +81,12 @@ export default async function createApp() {
     `export default {
 
   // target id
-  target: "__MY_PAGE__",
+  target_id: "__MY_PAGE__",
 
-  // set anything when hydrate
+  // multi zone route/pages
+  zones: [],
+
+  // set anything
   onHydrate: () => {/*  */}
 }`,
   );
@@ -294,21 +297,19 @@ async function lazy(url: string) {
   const mod = (await import(url)).default;
   return mod;
 }
-const { target, onHydrate } = config as any;
-
+const { target_id, onHydrate, zones } = config as any;
 window.addEventListener("load", () => {
   onHydrate();
   let first = true;
   let init: any = document.getElementById("__INIT_DATA__");
   if (init) init = JSON.parse(init.textContent || "{}");
   const router = new ClassicRouter(ErrorPage);
-  for (let i = 0; i < pages.length; i++) {
-    const obj: any = pages[i];
+  const _pages = router.buildPages(location.pathname, zones, pages);
+  for (let i = 0; i < _pages.length; i++) {
+    const obj: any = _pages[i];
     router.add(obj.path, async (rev) => {
       rev.isFirst = first;
       try {
-        const target_id = typeof target === 'string' ? target : target(rev);
-        if (!target_id && !first) return window.location.href = rev.url;
         let rootData = {};
         if (!first) {
           rootData = RootApp.initProps ? (await RootApp.initProps(rev)) : {};

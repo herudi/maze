@@ -44,8 +44,28 @@ export default class ClassicRouter {
   routes: { path: string; regex: RegExp; wild: boolean; fn: THandler }[] = [];
   current: string | undefined;
   ErrorPage: TRet;
+  is_reload = false;
   constructor(ErrorPage: TRet) {
     this.ErrorPage = ErrorPage;
+  }
+
+  buildPages(path: string, zones: string[], pages: TRet) {
+    this.is_reload = zones.length !== 0;
+    if (zones.length === 0) return pages;
+    let _pages = pages, is_zone = false;
+    for (let i = 0; i < zones.length; i++) {
+      const zone = zones[i];
+      if (path.startsWith(zone)) {
+        _pages = pages.filter((el: TRet) => el.path.startsWith(zone));
+        is_zone = true;
+      }
+    }
+    if (!is_zone) {
+      _pages = pages.filter((el: TRet) =>
+        !zones.some((str) => el.path.startsWith(str))
+      );
+    }
+    return _pages;
   }
 
   add(path: string, fn: THandler) {
@@ -85,6 +105,7 @@ export default class ClassicRouter {
     if (this.current === pathname + search) return;
     const { fn, params } = this.find(pathname);
     const ErrorPage = this.ErrorPage;
+    const isReload = this.is_reload;
     this.current = pathname + search;
     const rev = {} as ReqEvent;
     rev.pathname = pathname;
@@ -108,7 +129,12 @@ export default class ClassicRouter {
     rev.render = (elem, id) => {
       hydrate(elem, id ? document.getElementById(id) : document.body);
     };
-    if (!fn) return rev.render(<ErrorPage message="Not Found" status={404} />);
+    if (!fn) {
+      if (isReload) {
+        return location.reload();
+      }
+      return rev.render(<ErrorPage message="Not Found" status={404} />);
+    }
     fn(rev);
   }
 
