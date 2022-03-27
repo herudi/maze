@@ -3,7 +3,7 @@
 Simple CLI tools for building web with [Deno](https://deno.land/) and
 [Nanojsx](https://nanojsx.io/).
 
-> Still [WIP]. but work functionaly.
+> [WIP]. but work functionaly.
 
 > Currently not complete tests and docs.
 
@@ -29,7 +29,7 @@ See [Docs](https://github.com/herudi/maze/tree/master/docs)
 ## Install
 
 ```bash
-deno install -Af --no-check -r https://raw.githubusercontent.com/herudi/maze/dev-0.0.2/maze.ts
+deno install -Af --no-check -r https://raw.githubusercontent.com/herudi/maze/dev-0.0.3/maze.ts
 ```
 
 ## Usage

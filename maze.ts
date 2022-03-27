@@ -1,5 +1,6 @@
 import createApp from "./cli/create.ts";
 import dev_server from "./cli/dev.ts";
+import { newApis, newPages } from "./cli/gen.ts";
 import { LINK } from "./core/constant.ts";
 
 const arg = (Deno.args || [])[0];
@@ -37,6 +38,10 @@ if (arg === "create") {
   await build(" --my-split");
 } else if (arg === "build-bundle") {
   await build("");
+} else if (arg === "gen:page") {
+  await newPages();
+} else if (arg === "gen:api") {
+  await newApis();
 } else if (arg === "help") {
   console.log(`The simple fullstack TS/JS with deno and nanojsx.
     
@@ -52,6 +57,12 @@ BUILD PRODUCTION:
 
 RUN PRODUCTION:
   deno run -A server_prod.js
+
+GENERATE NEW PAGE:
+  maze gen:page <pathfile>
+
+GENERATE NEW API:
+  maze gen:api <pathfile>
   `);
 } else {
   console.log(`command not valid. please type: maze help`);

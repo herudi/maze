@@ -30,3 +30,31 @@ maze build-bundle
 ```bash
 deno run -A server_prod.js
 ```
+
+### Generate New Page
+
+Usage : `maze gen:page <pathfile>`
+
+BasePath : `pages/`
+
+```bash
+// example generate pages/my_page.tsx
+maze gen:page my_page
+
+// example generate pages/blog/[title].tsx
+maze gen:page blog/[title]
+```
+
+### Generate New Api
+
+Usage : `maze gen:api <pathfile>`
+
+BasePath : `pages/api/`
+
+```bash
+// example generate pages/api/about.ts
+maze gen:api about
+
+// example generate pages/api/blog/[title].ts
+maze gen:api blog/[title]
+```
