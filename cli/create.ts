@@ -79,7 +79,7 @@ export default async function createApp() {
     join(dir, "maze.config.ts"),
     `import type { MazeConfig } from "maze";
   
-  export default <MazeConfig>{ /* config */ }`,
+export default <MazeConfig>{ /* config */ }`,
   );
   await Deno.writeTextFile(
     join(dir, "server.ts"),
