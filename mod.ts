@@ -1,5 +1,6 @@
 export type {
   AppProps,
+  MazeConfig,
   PageProps,
   ReqEvent,
   RequestEvent,

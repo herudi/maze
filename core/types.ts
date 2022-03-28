@@ -58,3 +58,21 @@ export type TOptionsInitApp = {
   static_config?: (rev: ReqEvent) => void;
   [k: string]: TRet;
 };
+
+export type MazeConfig = {
+  /**
+   * Zone routes
+   * @example
+   * // Route only add path startsWith /dashboard.
+   * zones: ["/dashboard"]
+   */
+  zones?: string[];
+  /**
+   * Set anything when hydrate.
+   * @example
+   * onHydrate: () {
+   *   // code
+   * };
+   */
+  onHydrate?: () => void;
+};

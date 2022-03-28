@@ -29,7 +29,7 @@ See [Docs](https://github.com/herudi/maze/tree/master/docs)
 ## Install
 
 ```bash
-deno install -Af --no-check -r https://raw.githubusercontent.com/herudi/maze/dev-0.0.3/maze.ts
+deno install -Af --no-check -r https://raw.githubusercontent.com/herudi/maze/dev-0.0.4/maze.ts
 ```
 
 ## Usage
