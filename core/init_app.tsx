@@ -3,6 +3,18 @@ import { h } from "./nano_jsx.ts";
 import { HttpError, NHttp } from "./deps.ts";
 import fetchFile from "./fetch_file.ts";
 import { ReqEvent, TObject, TRet } from "./types.ts";
+import * as base64 from "https://deno.land/std@0.131.0/encoding/base64.ts";
+
+const encoder = new TextEncoder();
+const def = '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"';
+
+async function entityTag(entity: Uint8Array) {
+  if (!entity) return def;
+  if (entity.length === 0) return def;
+  const digest = await crypto.subtle.digest("SHA-1", entity);
+  const hash = base64.encode(digest).substring(0, 27);
+  return `"${entity.length.toString(16)}-${hash}"`;
+}
 
 export default (
   opts: {
@@ -19,11 +31,15 @@ export default (
       opts?: Record<string, TRet>,
     ) => TRet;
     static_config?: (rev: ReqEvent) => void;
+    etag?: boolean;
+    cache_control?: string;
   },
   pages: TRet[],
   app: NHttp<ReqEvent>,
   routeCallback?: (app: NHttp<ReqEvent>) => TRet,
 ) => {
+  const etag = opts.etag !== false;
+  const cache_control = opts.cache_control;
   const env = opts.env;
   const ssr = opts.ssr;
   const build_id = opts.build_id;
@@ -32,6 +48,57 @@ export default (
   const ErrorPage = opts.error_page;
   let obj = {} as TRet;
   app.use((rev, next) => {
+    if (env === "production") {
+      if (etag) {
+        const { response, request, respondWith } = rev;
+        const sendEtag = async function (body: TRet) {
+          try {
+            let fname = "noop";
+            if (typeof body === "object") {
+              if (body instanceof Response) return respondWith(body);
+              if (
+                body instanceof ReadableStream ||
+                body instanceof FormData ||
+                body instanceof Blob ||
+                typeof (body as unknown as Deno.Reader).read === "function"
+              ) {
+                return respondWith(new Response(body, rev.responseInit));
+              } else if (body instanceof Uint8Array) {
+                fname = "Uint8Array";
+              } else {
+                body = JSON.stringify(body);
+                fname = "json";
+              }
+            }
+            if (!response.header("ETag")) {
+              const etag = await entityTag(
+                fname === "Uint8Array" ? body : encoder.encode(body),
+              );
+              response.header("ETag", `W/${etag}`);
+            }
+            if (
+              request.headers.get("if-none-match") === response.header("ETag")
+            ) {
+              response.status(304);
+              return respondWith(new Response(void 0, rev.responseInit));
+            }
+            if (fname === "json") {
+              response.header(
+                "content-type",
+                "application/json; charset=utf-8",
+              );
+            }
+            return respondWith(new Response(body, rev.responseInit));
+          } catch (_e) {
+            return respondWith(new Response(body, rev.responseInit));
+          }
+        };
+        rev.response.send = sendEtag as TRet;
+      }
+      if (cache_control) {
+        rev.response.header("cache-control", cache_control);
+      }
+    }
     rev.getBaseUrl = () => new URL(rev.request.url).origin;
     rev.isServer = true;
     rev.env = env;

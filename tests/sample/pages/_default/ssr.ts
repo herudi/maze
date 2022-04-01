@@ -1,5 +1,4 @@
-/** @jsx h */
-import { h, Helmet, renderSSR } from "../../deps_client.ts";
+import { Helmet, renderSSR } from "../../deps_client.ts";
 
 export default function ssr(
   Component: any,

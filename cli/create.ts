@@ -136,9 +136,8 @@ export default function ErrorPage(
 `,
   );
   await Deno.writeTextFile(
-    join(dir, "pages", "_default", "ssr.tsx"),
-    `/** @jsx h */
-import { h, Helmet, renderSSR } from "nano-jsx";
+    join(dir, "pages", "_default", "ssr.ts"),
+    `import { Helmet, renderSSR } from "nano-jsx";
 
 export default function ssr(Component: any, mazeScript: string, opts: Record<string, any> = {}) {
   const app = renderSSR(Component, opts);
@@ -155,6 +154,10 @@ ${"<html ${attributes.html.toString()}>"}
 ${"</html>`"}
 }
 `,
+  );
+  await Deno.writeTextFile(
+    join(dir, "pages", "_default", "client.ts"),
+    `export function onHydrate() {/* set anything on hydrate at the client. */};`,
   );
   await Deno.writeTextFile(
     join(dir, "pages", "index.tsx"),
@@ -243,10 +246,10 @@ export const pages: any = [
   );
   await Deno.writeTextFile(
     join(dir, "@shared", "maze.ts"),
-    `
-import { initApp as baseInitApp, NHttp, ReqEvent } from "${link}/core/server.ts";
+    `import { initApp as baseInitApp, NHttp, ReqEvent } from "${link}/core/server.ts";
 import ErrorPage from "../pages/_default/error.tsx";
-import ssr from "../pages/_default/ssr.tsx";
+import ssr from "../pages/_default/ssr.ts";
+import config from "../maze.config.ts";
 import RootApp from "./root_app.tsx";
 import apis from "./result/apis.ts";
 import { pages } from "./result/pages.ts";
@@ -269,7 +272,9 @@ export default (url: string, {
     meta_url: url,
     build_id: BUILD_ID,
     ssr: ssr,
-    static_config: staticConfig
+    static_config: staticConfig,
+    etag: config.etag,
+    cache_control: config.cache_control
   }, appCallback);
 };
 `,
@@ -281,6 +286,7 @@ import { h } from "nano-jsx";
 import { pages } from "./result/pages.ts";
 import RootApp from "./root_app.tsx";
 import config from "../maze.config.ts";
+import { onHydrate } from "../pages/_default/client.ts";
 import ErrorPage from "../pages/_default/error.tsx";
 import ClassicRouter from "${LINK}/core/classic_router.tsx";
 
@@ -289,7 +295,7 @@ async function lazy(url: string) {
   return mod;
 }
 window.addEventListener("load", () => {
-  if (config.onHydrate) config.onHydrate();
+  onHydrate();
   let first = true;
   let init: any = document.getElementById("__INIT_DATA__");
   if (init) init = JSON.parse(init.textContent || "{}");

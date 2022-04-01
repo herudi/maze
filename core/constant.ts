@@ -1,4 +1,4 @@
-export const LINK = "https://raw.githubusercontent.com/herudi/maze/dev-0.0.4";
+export const LINK = "https://raw.githubusercontent.com/herudi/maze/dev-0.0.5";
 export const NANO_VERSION = "v0.0.30";
 export const NHTTP_VERSION = "1.1.11";
 export const STORAGE_KEY_PAGE = "95d6aa06f620";

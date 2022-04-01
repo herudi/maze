@@ -56,10 +56,20 @@ export type TOptionsInitApp = {
     opts?: Record<string, TRet>,
   ) => TRet;
   static_config?: (rev: ReqEvent) => void;
+  etag?: boolean;
+  cache_control?: string;
   [k: string]: TRet;
 };
 
 export type MazeConfig = {
+  /**
+   * Cache control default undefined or no cache (production only).
+   */
+  cache_control?: string;
+  /**
+   * Etager default true (production only).
+   */
+  etag?: boolean;
   /**
    * Zone routes
    * @example
@@ -68,11 +78,7 @@ export type MazeConfig = {
    */
   zones?: string[];
   /**
-   * Set anything when hydrate.
-   * @example
-   * onHydrate: () {
-   *   // code
-   * };
+   * Build config.
    */
-  onHydrate?: () => void;
+  build?: Record<string, TRet>;
 };

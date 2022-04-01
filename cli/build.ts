@@ -25,6 +25,13 @@ const map =
       type: "json",
     },
   })).default;
+
+const cfg =
+  (await import(toFileUrl(join(resolve(dir, "./maze.config.ts"))).href))
+    .default;
+
+const build_cfg = (cfg || {}).build || {};
+
 const BUILD_ID = Date.now();
 
 esbuild_import_map.load(map as TRet);
@@ -107,6 +114,7 @@ export const ENV: string = 'production';`,
         toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))).href,
       ],
       outfile: join(resolve(dir, `./public/__maze/${BUILD_ID}/_app.js`)),
+      ...build_cfg,
     });
   } else {
     await esbuild.build({
@@ -124,6 +132,7 @@ export const ENV: string = 'production';`,
       },
       splitting: true,
       outdir: join(resolve(dir, `./public/__maze/${BUILD_ID}`)),
+      ...build_cfg,
     });
   }
   await clean();
