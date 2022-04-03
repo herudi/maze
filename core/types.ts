@@ -67,7 +67,7 @@ export type MazeConfig = {
    */
   cache_control?: string;
   /**
-   * Etager default true (production only).
+   * Etag headers. default is true.
    */
   etag?: boolean;
   /**

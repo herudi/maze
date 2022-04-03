@@ -8,6 +8,7 @@ import { ReqEvent } from "./types.ts";
 
 export default function myFetchFile(
   fetch_url: string,
+  etager: boolean,
   BUILD_ID: number,
   staticConfig?: (rev: ReqEvent) => void,
   ssg = false,
@@ -29,25 +30,33 @@ export default function myFetchFile(
     try {
       const res = await fetch(fetchFile);
       if (!res.ok || !res.body) return next();
+      let status = 200;
       const etag = res.headers.get("ETag");
       const lastMod = res.headers.get("last-modified");
-      let status = 200;
       if (etag) {
-        response.header("ETag", etag || "");
+        if (etager) {
+          response.header("ETag", etag || "");
+        }
       } else if (lastMod) {
-        const key = btoa(lastMod);
-        response.header("Last-Modified", lastMod);
-        response.header("ETag", `W/"${key}"`);
+        if (etager) {
+          const key = btoa(lastMod);
+          response.header("Last-Modified", lastMod);
+          response.header("ETag", `W/"${key}"`);
+        }
       } else if (typeof Deno !== "undefined" && Deno.stat) {
         const stats = await Deno.stat(new URL(fetchFile));
-        response.header(
-          "Last-Modified",
-          (stats.mtime || new Date(BUILD_ID)).toUTCString(),
-        );
-        response.header(
-          "ETag",
-          `W/"${stats.size}-${(stats.mtime || new Date(BUILD_ID)).getTime()}"`,
-        );
+        if (etager) {
+          response.header(
+            "Last-Modified",
+            (stats.mtime || new Date(BUILD_ID)).toUTCString(),
+          );
+          response.header(
+            "ETag",
+            `W/"${stats.size}-${
+              (stats.mtime || new Date(BUILD_ID)).getTime()
+            }"`,
+          );
+        }
         if (request.headers.get("range")) {
           status = 206;
           const start = 0;
@@ -64,7 +73,10 @@ export default function myFetchFile(
         }
       }
       if (staticConfig) staticConfig(rev);
-      if (request.headers.get("if-none-match") === response.header("ETag")) {
+      if (
+        etager &&
+        request.headers.get("if-none-match") === response.header("ETag")
+      ) {
         return response.status(304).send();
       }
       if (request.headers.get("range")) {
