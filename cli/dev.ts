@@ -8,6 +8,13 @@ export default async function dev_server() {
   const sleep = (ms = 100) => new Promise((ok) => setTimeout(ok, ms));
   try {
     await Deno.writeTextFile(
+      join(resolve(dir, "./@shared/result/constant.ts")),
+      `export const BUILD_ID: string = '${Date.now()}';
+export const ENV: string = 'development';`,
+    );
+  } catch (_e) { /* noop */ }
+  try {
+    await Deno.writeTextFile(
       join(resolve(dir, "./@shared/result/server_pages.ts")),
       `export const pages: any = [];`,
     );
