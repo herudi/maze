@@ -48,56 +48,54 @@ export default (
   const ErrorPage = opts.error_page;
   let obj = {} as TRet;
   app.use((rev, next) => {
-    if (env === "production") {
-      if (etag) {
-        const { response, request, respondWith } = rev;
-        const sendEtag = async function (body: TRet) {
-          try {
-            let fname = "noop";
-            if (typeof body === "object") {
-              if (body instanceof Response) return respondWith(body);
-              if (
-                body instanceof ReadableStream ||
-                body instanceof FormData ||
-                body instanceof Blob ||
-                typeof (body as unknown as Deno.Reader).read === "function"
-              ) {
-                return respondWith(new Response(body, rev.responseInit));
-              } else if (body instanceof Uint8Array) {
-                fname = "Uint8Array";
-              } else {
-                body = JSON.stringify(body);
-                fname = "json";
-              }
-            }
-            if (!response.header("ETag")) {
-              const etag = await entityTag(
-                fname === "Uint8Array" ? body : encoder.encode(body),
-              );
-              response.header("ETag", `W/${etag}`);
-            }
+    if (etag) {
+      const { response, request, respondWith } = rev;
+      const sendEtag = async function (body: TRet) {
+        try {
+          let fname = "noop";
+          if (typeof body === "object") {
+            if (body instanceof Response) return respondWith(body);
             if (
-              request.headers.get("if-none-match") === response.header("ETag")
+              body instanceof ReadableStream ||
+              body instanceof FormData ||
+              body instanceof Blob ||
+              typeof (body as unknown as Deno.Reader).read === "function"
             ) {
-              response.status(304);
-              return respondWith(new Response(void 0, rev.responseInit));
+              return respondWith(new Response(body, rev.responseInit));
+            } else if (body instanceof Uint8Array) {
+              fname = "Uint8Array";
+            } else {
+              body = JSON.stringify(body);
+              fname = "json";
             }
-            if (fname === "json") {
-              response.header(
-                "content-type",
-                "application/json; charset=utf-8",
-              );
-            }
-            return respondWith(new Response(body, rev.responseInit));
-          } catch (_e) {
-            return respondWith(new Response(body, rev.responseInit));
           }
-        };
-        rev.response.send = sendEtag as TRet;
-      }
-      if (cache_control) {
-        rev.response.header("cache-control", cache_control);
-      }
+          if (!response.header("ETag")) {
+            const etag = await entityTag(
+              fname === "Uint8Array" ? body : encoder.encode(body),
+            );
+            response.header("ETag", `W/${etag}`);
+          }
+          if (
+            request.headers.get("if-none-match") === response.header("ETag")
+          ) {
+            response.status(304);
+            return respondWith(new Response(void 0, rev.responseInit));
+          }
+          if (fname === "json") {
+            response.header(
+              "content-type",
+              "application/json; charset=utf-8",
+            );
+          }
+          return respondWith(new Response(body, rev.responseInit));
+        } catch (_e) {
+          return respondWith(new Response(body, rev.responseInit));
+        }
+      };
+      rev.response.send = sendEtag as TRet;
+    }
+    if (env === "production" && cache_control) {
+      rev.response.header("cache-control", cache_control);
     }
     rev.getBaseUrl = () => new URL(rev.request.url).origin;
     rev.isServer = true;
@@ -200,6 +198,7 @@ export default (
       opts.meta_url.endsWith("/public")
         ? opts.meta_url
         : new URL("public", opts.meta_url).href,
+      etag,
       Number(build_id),
       opts.static_config,
     ),
