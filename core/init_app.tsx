@@ -231,13 +231,10 @@ export default (
           | TObject,
       ) => void | Promise<void>,
     ) {
-      if (typeof Deno === "undefined") {
-        addEventListener("fetch", (e: TRet) => {
-          e.respondWith(app.handleEvent(e));
-        });
-      } else {
-        app.listen(opts, callback);
-      }
+      app.listen(opts, callback);
+    },
+    handleEvent(event: TRet) {
+      return app.handleEvent(event);
     },
   };
 };
