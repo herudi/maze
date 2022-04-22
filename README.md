@@ -29,7 +29,7 @@ See [Docs](https://github.com/herudi/maze/tree/master/docs)
 ## Install
 
 ```bash
-deno install -Af --no-check -r https://raw.githubusercontent.com/herudi/maze/dev-0.0.6/maze.ts
+deno install -Af --no-check -r https://raw.githubusercontent.com/herudi/maze/dev-0.0.7/maze.ts
 ```
 
 ## Usage
@@ -47,7 +47,31 @@ cd my-app
 maze dev
 ```
 
-### Build Production
+### Deploy To Deno Deploy
+
+- Add, commit and Push to github.
+- Go to https://deno.com/deploy and signup.
+- Add new project, fill in the project name and create.
+- Deploy from github and continue.
+- Add repository and Github Action.
+- Linking.
+
+Back to project
+
+- Generate Workflow Deno Deploy.
+
+```bash
+maze gen:deploy <project-name>
+```
+
+generate file .github/workflows/deploy.yml
+
+- Commit and Push again.
+- Done.
+
+## Build Self Server
+
+### Build
 
 ```bash
 maze build
@@ -56,13 +80,10 @@ maze build
 maze build-bundle
 ```
 
-> Temporarily build server.ts to server_prod.js. That's because deno deploy
-> doesn't support import-maps yet. but in the future will support.
-
-### Run Production
+### Run Server
 
 ```bash
-deno run -A server_prod.js
+deno run -A server.ts
 ```
 
 > It's Fun Project :).

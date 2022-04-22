@@ -90,10 +90,17 @@ export default <MazeConfig>{
 }`,
   );
   await Deno.writeTextFile(
-    join(dir, "server.ts"),
-    `import maze from "./@shared/maze.ts";
+    join(dir, "maze.ts"),
+    `import createApp from "./@shared/create_app.ts";
 
-maze(import.meta.url).listen(8080, () => {
+export default createApp(import.meta.url);
+`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "server.ts"),
+    `import maze from "./maze.ts";
+
+maze.listen(8080, () => {
   console.log("> Running on http://localhost:8080");
 });
 `,
@@ -253,7 +260,7 @@ export const pages: any = [
 `,
   );
   await Deno.writeTextFile(
-    join(dir, "@shared", "maze.ts"),
+    join(dir, "@shared", "create_app.ts"),
     `import { initApp as baseInitApp, NHttp, ReqEvent } from "${link}/core/server.ts";
 import ErrorPage from "../pages/_default/error.tsx";
 import ssr from "../pages/_default/ssr.ts";
@@ -379,11 +386,5 @@ cd ${app}
 
 RUN DEVELOPMENT:
   maze dev
-
-BUILD PRODUCTION:
-  maze build
-
-RUN PRODUCTION:
-  deno run -A server_prod.js
   `);
 }

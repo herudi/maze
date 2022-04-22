@@ -1,6 +1,6 @@
 import createApp from "./cli/create.ts";
 import dev_server from "./cli/dev.ts";
-import { newApis, newPages } from "./cli/gen.ts";
+import { addDeploy, newApis, newPages } from "./cli/gen.ts";
 import { LINK } from "./core/constant.ts";
 
 const arg = (Deno.args || [])[0];
@@ -42,6 +42,8 @@ if (arg === "create") {
   await newPages();
 } else if (arg === "gen:api") {
   await newApis();
+} else if (arg === "gen:deploy") {
+  await addDeploy();
 } else if (arg === "help") {
   console.log(`The simple fullstack TS/JS with deno and nanojsx.
     
@@ -56,7 +58,10 @@ BUILD PRODUCTION:
   maze build
 
 RUN PRODUCTION:
-  deno run -A server_prod.js
+  deno run -A server.ts
+
+GENERATE WORKFLOW DENO DEPLOY:
+  maze gen:deploy <project-name>
 
 GENERATE NEW PAGE:
   maze gen:page <pathfile>
