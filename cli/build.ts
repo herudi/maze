@@ -69,23 +69,32 @@ try {
     `export const BUILD_ID: string = '${BUILD_ID}';
 export const ENV: string = 'production';`,
   );
-  const maze_file =
+  const create_app_file =
     (await Deno.readTextFile(join(dir, "@shared", "create_app.ts")))
       .replace(
         `${LINK}/core/server.ts`,
         `${LINK}/core/server_prod.ts`,
       );
-  await Deno.writeTextFile(join(dir, "@shared", "create_app.ts"), maze_file);
+  await Deno.writeTextFile(
+    join(dir, "@shared", "create_app.ts"),
+    create_app_file,
+  );
   await esbuild.build({
     ...config,
     format: "esm",
     platform: "neutral",
     target: ["esnext", "es2020"],
     bundle: true,
-    entryPoints: [join(resolve(dir, "./server.ts"))],
-    outfile: join(resolve(dir, "./server.build.js")),
+    entryPoints: [join(resolve(dir, "./maze.ts"))],
+    outfile: join(resolve(dir, "./maze.build.js")),
     plugins: [esbuild_import_map.plugin()],
   });
+  const maze_file = (await Deno.readTextFile(join(dir, "server.ts")))
+    .replace(
+      `maze.ts`,
+      `maze.build.js`,
+    );
+  await Deno.writeTextFile(join(dir, "server.ts"), maze_file);
   if (isBundle) {
     await esbuild.build({
       ...config,
@@ -122,7 +131,7 @@ export const ENV: string = 'production';`,
     });
   }
   console.log("Success building assets !!");
-  console.log("Run server prod: deno run -A server.build.js");
+  console.log("Run server: deno run -A server.ts");
   esbuild.stop();
 } catch (error) {
   console.log(error.message);

@@ -78,10 +78,10 @@ maze build
 maze build-bundle
 ```
 
-### Run Server Prod
+### Run Server
 
 ```bash
-deno run -A server.build.js
+deno run -A server.ts
 ```
 
 > It's Fun Project :).
