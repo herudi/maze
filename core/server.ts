@@ -11,11 +11,6 @@ const build_id = isDev ? Date.now().toString() : "1648194232103";
 const app = new NHttp<ReqEvent>({ env });
 if (isDev) {
   await genPages();
-  try {
-    await Deno.remove(join(resolve(dir, "./public/__maze")), {
-      recursive: true,
-    });
-  } catch (_e) { /* noop */ }
   app.get("/__REFRESH__", ({ response }) => {
     response.type("text/event-stream");
     return new ReadableStream({
