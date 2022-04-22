@@ -47,7 +47,31 @@ cd my-app
 maze dev
 ```
 
-### Build Production
+### Deploy To Deno Deploy
+
+- Add, commit and Push to github.
+- Go to https://deno.com/deploy and signup.
+- Add new project, fill in the project name and create.
+- Deploy from github and continue.
+- Add repository and Github Action.
+- Linking.
+
+Back to project
+
+- Generate Workflow Deno Deploy.
+
+```bash
+maze gen:deploy <project-name>
+```
+
+generate file .github/workflows/deploy.yml
+
+- Commit and Push again.
+- Done.
+
+## Build Self Server
+
+### Build
 
 ```bash
 maze build
@@ -56,7 +80,7 @@ maze build
 maze build-bundle
 ```
 
-### Run Production
+### Run Server
 
 ```bash
 deno run -A server.ts

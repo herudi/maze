@@ -1,3 +1,4 @@
+import { LINK } from "../core/constant.ts";
 import { join } from "./deps.ts";
 
 function cl(str: string) {
@@ -116,4 +117,46 @@ export async function newApis() {
     }
   }
   console.log("Success gen:api " + Deno.args[1]);
+}
+
+export async function addDeploy() {
+  const project = Deno.args[1];
+  if (!project) {
+    console.log("Path Not Found !!\ntry => maze gen:deploy project-name");
+    return;
+  }
+  const cwd = Deno.cwd();
+  try {
+    await Deno.mkdir(join(cwd, ".github", "workflows"), { recursive: true });
+    await Deno.writeTextFile(
+      join(cwd, ".github", "workflows", "deploy.yml"),
+      `name: Deploy
+on: [push]
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Install Deno
+        uses: denoland/setup-deno@main
+        with:
+          deno-version: 1.21.0
+      - name: Build
+        run: deno run -A --no-check ${LINK}/cli/build.ts --my-split
+      - name: Upload to Deno Deploy
+        uses: denoland/deployctl@v1
+        with:
+          project: "${project}"
+          import-map: "./import_map.json"
+          entrypoint: "./server.ts"`,
+    );
+  } catch (error) {
+    console.error(error.message || "Failed create workflows deploy");
+  }
 }
