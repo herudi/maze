@@ -1,4 +1,4 @@
-import { STORAGE_KEY_API, STORAGE_KEY_PAGE } from "../core/constant.ts";
+import { LINK, STORAGE_KEY_API, STORAGE_KEY_PAGE } from "../core/constant.ts";
 import { genRoutesWithRefresh } from "../core/gen.ts";
 import { join, resolve, toFileUrl } from "./deps.ts";
 
@@ -20,6 +20,21 @@ export const ENV: string = 'development';`,
     );
   } catch (_e) { /* noop */ }
   await genRoutesWithRefresh("development");
+  try {
+    let maze_file = await Deno.readTextFile(
+      join(resolve(dir, "./@shared/maze.ts")),
+    );
+    if (maze_file.includes(`${LINK}/core/server_prod.ts`)) {
+      maze_file = maze_file.replace(
+        `${LINK}/core/server_prod.ts`,
+        `${LINK}/core/server.ts`,
+      );
+      await Deno.writeTextFile(
+        join(resolve(dir, "./@shared/maze.ts")),
+        maze_file,
+      );
+    }
+  } catch (_e) { /* noop */ }
   await sleep(1000);
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   const script = CMD +

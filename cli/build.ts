@@ -8,15 +8,6 @@ import { TRet } from "../core/types.ts";
 
 const isBundle = (Deno.args || []).includes("--my-split") ? false : true;
 
-async function clean() {
-  try {
-    await Deno.remove(join(resolve(dir, "./@shared/maze_prod.ts")));
-  } catch (_e) { /* noop */ }
-  try {
-    await Deno.remove(join(resolve(dir, "./server_prod.ts")));
-  } catch (_e) { /* noop */ }
-}
-
 const dir = Deno.cwd();
 
 const map =
@@ -78,28 +69,12 @@ try {
     `export const BUILD_ID: string = '${BUILD_ID}';
 export const ENV: string = 'production';`,
   );
-  let file_http = await Deno.readTextFile(join(dir, "@shared", "maze.ts"));
-  file_http = file_http.replace(
-    `${LINK}/core/server.ts`,
-    `${LINK}/core/server_prod.ts`,
-  );
-  await Deno.writeTextFile(join(dir, "@shared", "maze_prod.ts"), file_http);
-  let file_server = await Deno.readTextFile(join(dir, "server.ts"));
-  file_server = file_server.replace(
-    "./@shared/maze.ts",
-    "./@shared/maze_prod.ts",
-  );
-  await Deno.writeTextFile(join(dir, "server_prod.ts"), file_server);
-  await esbuild.build({
-    ...config,
-    format: "esm",
-    platform: "neutral",
-    target: ["esnext", "es2020"],
-    bundle: true,
-    entryPoints: [join(resolve(dir, "./server_prod.ts"))],
-    outfile: join(resolve(dir, "./server_prod.js")),
-    plugins: [esbuild_import_map.plugin()],
-  });
+  const maze_file = (await Deno.readTextFile(join(dir, "@shared", "maze.ts")))
+    .replace(
+      `${LINK}/core/server.ts`,
+      `${LINK}/core/server_prod.ts`,
+    );
+  await Deno.writeTextFile(join(dir, "@shared", "maze.ts"), maze_file);
   if (isBundle) {
     await esbuild.build({
       ...config,
@@ -135,12 +110,10 @@ export const ENV: string = 'production';`,
       ...build_cfg,
     });
   }
-  await clean();
-  console.log("Success Build !!");
-  console.log("Run Production: deno run -A server_prod.js");
+  console.log("Success building assets !!");
+  console.log("Run server: deno run -A server.ts");
   esbuild.stop();
 } catch (error) {
   console.log(error.message);
-  await clean();
   esbuild.stop();
 }
