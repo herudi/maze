@@ -7,6 +7,14 @@ export default async function dev_server() {
   const dir = Deno.cwd();
   const sleep = (ms = 100) => new Promise((ok) => setTimeout(ok, ms));
   try {
+    await Deno.remove(join(resolve(dir, "./public/__maze")), {
+      recursive: true,
+    });
+  } catch (_e) { /* noop */ }
+  try {
+    await Deno.remove(join(resolve(dir, "./server.build.js")));
+  } catch (_e) { /* noop */ }
+  try {
     await Deno.writeTextFile(
       join(resolve(dir, "./@shared/result/constant.ts")),
       `export const BUILD_ID: string = '${Date.now()}';

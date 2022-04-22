@@ -153,8 +153,7 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "${project}"
-          import-map: "./import_map.json"
-          entrypoint: "./server.ts"`,
+          entrypoint: "./server.build.js"`,
     );
   } catch (error) {
     console.error(error.message || "Failed create workflows deploy");

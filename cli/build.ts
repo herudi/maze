@@ -76,6 +76,16 @@ export const ENV: string = 'production';`,
         `${LINK}/core/server_prod.ts`,
       );
   await Deno.writeTextFile(join(dir, "@shared", "create_app.ts"), maze_file);
+  await esbuild.build({
+    ...config,
+    format: "esm",
+    platform: "neutral",
+    target: ["esnext", "es2020"],
+    bundle: true,
+    entryPoints: [join(resolve(dir, "./server.ts"))],
+    outfile: join(resolve(dir, "./server.build.js")),
+    plugins: [esbuild_import_map.plugin()],
+  });
   if (isBundle) {
     await esbuild.build({
       ...config,
@@ -112,7 +122,7 @@ export const ENV: string = 'production';`,
     });
   }
   console.log("Success building assets !!");
-  console.log("Run server: deno run -A server.ts");
+  console.log("Run server prod: deno run -A server.build.js");
   esbuild.stop();
 } catch (error) {
   console.log(error.message);
