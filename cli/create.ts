@@ -11,6 +11,7 @@ export default async function createApp() {
   const cwd = Deno.cwd();
   const dir = join(cwd, app);
   await Deno.mkdir(join(dir, "@shared"), { recursive: true });
+  await Deno.mkdir(join(dir, ".github", "workflows"), { recursive: true });
   await Deno.mkdir(join(dir, "@shared", "result"));
   await Deno.mkdir(join(dir, "pages", "api"), { recursive: true });
   await Deno.mkdir(join(dir, "pages", "_default"));
@@ -61,6 +62,28 @@ export default async function createApp() {
     "maze": "${link}/mod.ts"
   }
 }`,
+  );
+  await Deno.writeTextFile(
+    join(dir, ".github", "workflows", "deploy.yml"),
+    `name: Deploy
+on: [push]
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Upload to Deno Deploy
+        uses: denoland/deployctl@v1
+        with:
+          project: "${app}"
+          import-map: "./import_map.json"
+          entrypoint: "./server.ts"`,
   );
   await Deno.writeTextFile(
     join(dir, ".vscode", "settings.json"),

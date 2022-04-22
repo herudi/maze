@@ -1,13 +1,8 @@
 import { superdeno } from "./deps.ts";
-import maze from "./sample/@shared/maze.ts";
+import maze from "./sample/maze.ts";
 
-const mock: (request: Request) => any = await new Promise((ok) => {
-  maze(import.meta.url, {
-    appCallback: (app) => {
-      ok((request: Request) => app.handleEvent({ request }));
-    },
-  });
-});
+const mock: (request: Request) => any = (request: Request) =>
+  maze.handleEvent({ request });
 
 Deno.test("GET /", async () => {
   await superdeno(mock)
