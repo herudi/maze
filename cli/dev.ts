@@ -12,7 +12,7 @@ export default async function dev_server() {
     });
   } catch (_e) { /* noop */ }
   try {
-    await Deno.remove(join(resolve(dir, "./server.build.js")));
+    await Deno.remove(join(resolve(dir, "./maze.build.js")));
   } catch (_e) { /* noop */ }
   try {
     await Deno.writeTextFile(
@@ -29,17 +29,32 @@ export const ENV: string = 'development';`,
   } catch (_e) { /* noop */ }
   await genRoutesWithRefresh("development");
   try {
-    let maze_file = await Deno.readTextFile(
+    let my_file = await Deno.readTextFile(
       join(resolve(dir, "./@shared/create_app.ts")),
     );
-    if (maze_file.includes(`${LINK}/core/server_prod.ts`)) {
-      maze_file = maze_file.replace(
+    if (my_file.includes(`${LINK}/core/server_prod.ts`)) {
+      my_file = my_file.replace(
         `${LINK}/core/server_prod.ts`,
         `${LINK}/core/server.ts`,
       );
       await Deno.writeTextFile(
         join(resolve(dir, "./@shared/create_app.ts")),
-        maze_file,
+        my_file,
+      );
+    }
+  } catch (_e) { /* noop */ }
+  try {
+    let my_file = await Deno.readTextFile(
+      join(resolve(dir, "./server.ts")),
+    );
+    if (my_file.includes(`maze.build.js`)) {
+      my_file = my_file.replace(
+        `maze.build.js`,
+        `maze.ts`,
+      );
+      await Deno.writeTextFile(
+        join(resolve(dir, "./server.ts")),
+        my_file,
       );
     }
   } catch (_e) { /* noop */ }

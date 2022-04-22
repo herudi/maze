@@ -58,7 +58,7 @@ BUILD PRODUCTION:
   maze build
 
 RUN PRODUCTION:
-  deno run -A server.build.js
+  deno run -A server.ts
 
 GENERATE WORKFLOW DENO DEPLOY:
   maze gen:deploy <project-name>
