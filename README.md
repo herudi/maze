@@ -29,7 +29,7 @@ See [Docs](https://github.com/herudi/maze/tree/master/docs)
 ## Install
 
 ```bash
-deno install -Af --no-check -r https://raw.githubusercontent.com/herudi/maze/dev-0.0.6/maze.ts
+deno install -Af --no-check -r https://raw.githubusercontent.com/herudi/maze/dev-0.0.7/maze.ts
 ```
 
 ## Usage
@@ -56,13 +56,10 @@ maze build
 maze build-bundle
 ```
 
-> Temporarily build server.ts to server_prod.js. That's because deno deploy
-> doesn't support import-maps yet. but in the future will support.
-
 ### Run Production
 
 ```bash
-deno run -A server_prod.js
+deno run -A server.ts
 ```
 
 > It's Fun Project :).
