@@ -22,7 +22,7 @@ export const ENV: string = 'development';`,
   await genRoutesWithRefresh("development");
   try {
     let maze_file = await Deno.readTextFile(
-      join(resolve(dir, "./@shared/maze.ts")),
+      join(resolve(dir, "./@shared/create_app.ts")),
     );
     if (maze_file.includes(`${LINK}/core/server_prod.ts`)) {
       maze_file = maze_file.replace(
@@ -30,7 +30,7 @@ export const ENV: string = 'development';`,
         `${LINK}/core/server.ts`,
       );
       await Deno.writeTextFile(
-        join(resolve(dir, "./@shared/maze.ts")),
+        join(resolve(dir, "./@shared/create_app.ts")),
         maze_file,
       );
     }

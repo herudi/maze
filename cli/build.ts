@@ -69,12 +69,13 @@ try {
     `export const BUILD_ID: string = '${BUILD_ID}';
 export const ENV: string = 'production';`,
   );
-  const maze_file = (await Deno.readTextFile(join(dir, "@shared", "maze.ts")))
-    .replace(
-      `${LINK}/core/server.ts`,
-      `${LINK}/core/server_prod.ts`,
-    );
-  await Deno.writeTextFile(join(dir, "@shared", "maze.ts"), maze_file);
+  const maze_file =
+    (await Deno.readTextFile(join(dir, "@shared", "create_app.ts")))
+      .replace(
+        `${LINK}/core/server.ts`,
+        `${LINK}/core/server_prod.ts`,
+      );
+  await Deno.writeTextFile(join(dir, "@shared", "create_app.ts"), maze_file);
   if (isBundle) {
     await esbuild.build({
       ...config,
