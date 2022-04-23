@@ -7,10 +7,9 @@ const arg = (Deno.args || [])[0];
 
 async function build(prefix: string) {
   console.log("Building Server Production...");
-  const reload = (Deno.args || []).includes("--reload") ? " --reload" : "";
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   const script = CMD +
-    `deno run -A --no-check${reload} --unstable ${LINK}/cli/build.ts${prefix}`;
+    `deno run -A --no-check ${LINK}/cli/build.ts${prefix}`;
   const p = Deno.run({
     cmd: script.split(" "),
     stdout: "piped",
@@ -35,9 +34,9 @@ if (arg === "create") {
 } else if (arg === "dev") {
   await dev_server();
 } else if (arg === "build") {
-  await build(" --my-split");
-} else if (arg === "build-bundle") {
   await build("");
+} else if (arg === "build-bundle") {
+  await build(" --bundle");
 } else if (arg === "gen:page") {
   await newPages();
 } else if (arg === "gen:api") {

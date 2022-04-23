@@ -1,3 +1,3 @@
 import createApp from "./@shared/create_app.ts";
 
-export default createApp(import.meta.url);
+export default (static_url?: string) => createApp(static_url);

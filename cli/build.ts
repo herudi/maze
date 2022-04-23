@@ -6,7 +6,7 @@ import { join, resolve, toFileUrl } from "./deps.ts";
 import { LINK } from "../core/constant.ts";
 import { TRet } from "../core/types.ts";
 
-const isBundle = (Deno.args || []).includes("--my-split") ? false : true;
+const isBundle = (Deno.args || []).includes("--bundle") ? true : false;
 
 const dir = Deno.cwd();
 

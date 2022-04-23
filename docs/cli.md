@@ -13,7 +13,22 @@ cd my-app
 maze dev
 ```
 
-### Deploy To Deno Deploy
+### Build
+
+```bash
+maze build
+
+// or build bundle.
+maze build-bundle
+```
+
+### Run Server
+
+```bash
+deno run -A server.ts
+```
+
+## Deploy To Deno Deploy
 
 - Create new repo and push to github.
 - Go to https://deno.com/deploy and signup.
@@ -30,25 +45,8 @@ Back to project
 maze gen:deploy <project-name>
 ```
 
-- Add, commit and push again.
+- Add, commit and push.
 - Done.
-
-## Build Self Server
-
-### Build
-
-```bash
-maze build
-
-// or build bundle.
-maze build-bundle
-```
-
-### Run Server
-
-```bash
-deno run -A server.ts
-```
 
 ## Generate
 

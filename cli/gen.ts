@@ -148,7 +148,7 @@ jobs:
         with:
           deno-version: 1.21.0
       - name: Build
-        run: deno run -A --no-check ${LINK}/cli/build.ts --my-split
+        run: deno run -A --no-check ${LINK}/cli/build.ts
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:

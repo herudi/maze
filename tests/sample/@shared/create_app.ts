@@ -12,11 +12,11 @@ import { pages } from "./result/pages.ts";
 import { BUILD_ID } from "./result/constant.ts";
 import { pages as server_pages } from "./result/server_pages.ts";
 
-export default (url: string, {
-  appCallback,
+export default (static_url?: string, {
+  routeCallback,
   staticConfig,
 }: {
-  appCallback?: (app: NHttp<ReqEvent>) => any;
+  routeCallback?: (router: NHttp<ReqEvent>) => any;
   staticConfig?: (rev: ReqEvent) => void;
 } = {}) => {
   return baseInitApp({
@@ -25,11 +25,11 @@ export default (url: string, {
     pages: pages,
     server_pages: server_pages,
     apis: apis,
-    meta_url: url,
+    meta_url: static_url,
     build_id: BUILD_ID,
     ssr: ssr,
     static_config: staticConfig,
     etag: config.etag,
     cache_control: config.cache_control,
-  }, appCallback);
+  }, routeCallback);
 };
