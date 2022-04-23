@@ -4,6 +4,7 @@ import { HttpError, NHttp } from "./deps.ts";
 import fetchFile from "./fetch_file.ts";
 import { ReqEvent, TObject, TRet } from "./types.ts";
 import * as base64 from "https://deno.land/std@0.131.0/encoding/base64.ts";
+import { join, toFileUrl } from "https://deno.land/std@0.132.0/path/mod.ts";
 
 const encoder = new TextEncoder();
 const def = '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"';
@@ -194,10 +195,7 @@ export default (
     obj = app.route;
   }
   app.use(
-    fetchFile(
-      opts.meta_url.endsWith("/public")
-        ? opts.meta_url
-        : new URL("public", opts.meta_url).href,
+    fetchFile(toFileUrl(join(Deno.cwd(), "public")).href,
       etag,
       Number(build_id),
       opts.static_config,
