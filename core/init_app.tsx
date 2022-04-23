@@ -195,7 +195,10 @@ export default (
     obj = app.route;
   }
   app.use(
-    fetchFile(toFileUrl(join(Deno.cwd(), "public")).href,
+    fetchFile(
+      opts.meta_url.endsWith("/public")
+        ? opts.meta_url
+        : toFileUrl(join(Deno.cwd(), "public")).href,
       etag,
       Number(build_id),
       opts.static_config,
