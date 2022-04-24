@@ -77,3 +77,13 @@ maze gen:api about
 // example generate pages/api/blog/[title].ts
 maze gen:api blog/[title]
 ```
+
+## Other
+
+### Clean
+
+clean the project to dev without run server.
+
+```bash
+maze clean
+```

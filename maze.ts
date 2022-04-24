@@ -33,6 +33,8 @@ if (arg === "create") {
   await createApp();
 } else if (arg === "dev") {
   await dev_server();
+} else if (arg === "clean") {
+  await dev_server(true);
 } else if (arg === "build") {
   await build("");
 } else if (arg === "build-bundle") {

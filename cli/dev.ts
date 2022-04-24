@@ -2,7 +2,7 @@ import { LINK, STORAGE_KEY_API, STORAGE_KEY_PAGE } from "../core/constant.ts";
 import { genRoutesWithRefresh } from "../core/gen.ts";
 import { join, resolve, toFileUrl } from "./deps.ts";
 
-export default async function dev_server() {
+export default async function dev_server(is_clean = false) {
   const reload = Deno.args[1] ? " " + Deno.args[1] : "";
   const dir = Deno.cwd();
   const sleep = (ms = 100) => new Promise((ok) => setTimeout(ok, ms));
@@ -12,7 +12,7 @@ export default async function dev_server() {
     });
   } catch (_e) { /* noop */ }
   try {
-    await Deno.remove(join(resolve(dir, "./maze.build.js")));
+    await Deno.remove(join(resolve(dir, "./@shared/core.build.js")));
   } catch (_e) { /* noop */ }
   try {
     await Deno.writeTextFile(
@@ -58,6 +58,7 @@ export const ENV: string = 'development';`,
       );
     }
   } catch (_e) { /* noop */ }
+  if (is_clean) return;
   await sleep(1000);
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   const script = CMD +
