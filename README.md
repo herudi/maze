@@ -1,30 +1,29 @@
 ## Maze
 
-Simple CLI tools for building web with [Deno](https://deno.land/) and
-[Nanojsx](https://nanojsx.io/).
+Fly on the edge with [deno](https://deno.land) and
+[nanojsx](https://nanojsx.io/).
+
+Maze is simple CLI tools for building web.
 
 > [WIP]. but work functionaly.
 
 > Currently not complete tests and docs.
 
-Demo site (deno deploy) => https://maze-ssr.deno.dev
-
-Demo Repo => https://github.com/herudi/maze-demo
-
-See [Docs](https://github.com/herudi/maze/tree/master/docs)
-
 ## Features
 
 - SSR first (good choice for SEO).
 - Nextjs like (dynamic routes page and api/handler).
-- Support for [Deno](https://deno.land), [Deno Deploy](https://deno.com/deploy).
 - Hot Reloading.
 
-## Includes
+## Demo
 
-- [nanojsx](https://nanojsx.io/)
-- [nhttp](https://nhttp.deno.dev)
-- more
+Deno Deploy Site => https://maze-ssr.deno.dev
+
+Netlify Site => https://maze-ssr.netlify.app
+
+Repo Github => https://github.com/herudi/maze-demo
+
+See [Docs](https://github.com/herudi/maze/tree/master/docs)
 
 ## Install
 
@@ -81,5 +80,26 @@ maze gen:deploy <project-name>
 
 - Add, commit and push.
 - Done.
+
+## Deploy To Netlify
+
+/netlify/edge-functions/maze-edge.js
+
+```js
+import maze from "../../@shared/maze.ts";
+
+const app = maze();
+
+app.use(async ({ context, url }, next) => {
+  const asset = await context.rewrite(url);
+  if (asset.status !== 404) return asset;
+  return next();
+});
+
+export default (request, context) => app.handleEvent({ request, context });
+```
+
+See
+https://www.netlify.com/blog/announcing-serverless-compute-with-edge-functions
 
 > It's Fun Project :).
