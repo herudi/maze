@@ -46,6 +46,39 @@ cd my-app
 maze dev
 ```
 
+## Deploy To Deno Deploy
+
+### Automatic
+
+Deno Deploy will automatically pull code and assets from your repository source
+every time you push, and deploy it. This mode is very fast, but does not allow
+for a build step.
+
+### Generate workflows github action
+
+In this mode you push your code and assets to Deno Deploy from a GitHub Actions
+workflow. This allows you to perform a build step before deploying.
+
+```bash
+maze gen:deploy <project-name>
+```
+
+Just integrate to github, code will auto build and deploy.
+
+See https://deno.com/deploy/docs/projects
+
+## Deploy To Netlify (edge functions)
+
+### Generate netlify script
+
+```bash
+maze gen:netlify <project-name>
+```
+
+Just integrate to github, code will auto build and deploy.
+
+## Build Self Server
+
 ### Build
 
 ```bash
@@ -60,48 +93,5 @@ maze build-bundle
 ```bash
 deno run -A server.ts
 ```
-
-## Deploy To Deno Deploy
-
-- Create new repo and push to github.
-- Go to https://deno.com/deploy and signup.
-- Add new project, fill in the project name and create.
-- Deploy from github and continue.
-- Add repository and select Github Action.
-- Linking.
-
-Back to project
-
-- Generate Workflow Deno Deploy.
-
-```bash
-maze gen:deploy <project-name>
-```
-
-- Add, commit and push.
-- Done.
-
-## Deploy To Netlify
-
-/netlify/edge-functions/maze-edge.js
-
-```js
-import maze from "../../@shared/maze.ts";
-
-const app = maze();
-
-app.use(async ({ request, context, url }, next) => {
-  if (request.method === "GET") {
-    const asset = await context.rewrite(url);
-    if (asset.status !== 404) return asset;
-  }
-  return next();
-});
-
-export default (request, context) => app.handleEvent({ request, context });
-```
-
-See
-https://www.netlify.com/blog/announcing-serverless-compute-with-edge-functions
 
 > It's Fun Project :).

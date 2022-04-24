@@ -1,6 +1,6 @@
 import createApp from "./cli/create.ts";
 import dev_server from "./cli/dev.ts";
-import { addDeploy, newApis, newPages } from "./cli/gen.ts";
+import { addDeploy, addNetlifyEdge, newApis, newPages } from "./cli/gen.ts";
 import { LINK } from "./core/constant.ts";
 
 const arg = (Deno.args || [])[0];
@@ -45,6 +45,8 @@ if (arg === "create") {
   await newApis();
 } else if (arg === "gen:deploy") {
   await addDeploy();
+} else if (arg === "gen:netlify") {
+  await addNetlifyEdge();
 } else if (arg === "help") {
   console.log(`The simple fullstack TS/JS with deno and nanojsx.
     
