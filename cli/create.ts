@@ -90,17 +90,24 @@ export default <MazeConfig>{
 }`,
   );
   await Deno.writeTextFile(
-    join(dir, "maze.ts"),
-    `import createApp from "./@shared/create_app.ts";
+    join(dir, "@shared", "maze.ts"),
+    `import core from "./core.ts";
+import { NHttp, ReqEvent } from "${link}/core/server.ts";
 
-export default createApp(import.meta.url);
+export default (static_url?: string, {
+  routerCallback,
+  staticConfig
+}: {
+  routerCallback?: (router: NHttp<ReqEvent>) => any
+  staticConfig?: (rev: ReqEvent) => void
+} = {}) => core(static_url, { routerCallback, staticConfig });
 `,
   );
   await Deno.writeTextFile(
     join(dir, "server.ts"),
-    `import maze from "./maze.ts";
+    `import maze from "./@shared/maze.ts";
 
-maze.listen(8080, () => {
+maze(import.meta.url).listen(8080, () => {
   console.log("> Running on http://localhost:8080");
 });
 `,
@@ -260,8 +267,8 @@ export const pages: any = [
 `,
   );
   await Deno.writeTextFile(
-    join(dir, "@shared", "create_app.ts"),
-    `import { initApp as baseInitApp, NHttp, ReqEvent } from "${link}/core/server.ts";
+    join(dir, "@shared", "core.ts"),
+    `import { initApp as baseInitApp } from "${link}/core/server.ts";
 import ErrorPage from "../pages/_default/error.tsx";
 import ssr from "../pages/_default/ssr.ts";
 import config from "../maze.config.ts";
@@ -271,26 +278,23 @@ import { pages } from "./result/pages.ts";
 import { BUILD_ID } from "./result/constant.ts";
 import { pages as server_pages } from "./result/server_pages.ts";
 
-export default (url: string, {
-  appCallback,
-  staticConfig
-}: {
-  appCallback?: (app: NHttp<ReqEvent>) => any
-  staticConfig?: (rev: ReqEvent) => void
-} = {}) => {
+export default (static_url?: string, {
+  routerCallback,
+  staticConfig,
+} = {} as any) => {
   return baseInitApp({
     root: RootApp,
     error_page: ErrorPage,
     pages: pages,
     server_pages: server_pages,
     apis: apis,
-    meta_url: url,
+    meta_url: static_url,
     build_id: BUILD_ID,
     ssr: ssr,
     static_config: staticConfig,
     etag: config.etag,
     cache_control: config.cache_control
-  }, appCallback);
+  }, routerCallback);
 };
 `,
   );
@@ -384,5 +388,11 @@ cd ${app}
 
 RUN DEVELOPMENT:
   maze dev
-  `);
+
+BUILD PRODUCTION:
+  maze build
+
+RUN PRODUCTION:
+  deno run -A server.ts
+`);
 }

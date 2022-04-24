@@ -2,8 +2,9 @@
 import { h } from "./nano_jsx.ts";
 import { HttpError, NHttp } from "./deps.ts";
 import fetchFile from "./fetch_file.ts";
-import { ReqEvent, TObject, TRet } from "./types.ts";
+import { Middlewares, ReqEvent, TObject, TRet } from "./types.ts";
 import * as base64 from "https://deno.land/std@0.131.0/encoding/base64.ts";
+import { join, toFileUrl } from "https://deno.land/std@0.132.0/path/mod.ts";
 
 const encoder = new TextEncoder();
 const def = '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"';
@@ -21,7 +22,7 @@ export default (
     root: TRet;
     error_page: TRet;
     apis: TRet;
-    meta_url: string;
+    meta_url?: string;
     env: string;
     clientScript: string;
     build_id: string;
@@ -193,16 +194,18 @@ export default (
     routeCallback(app);
     obj = app.route;
   }
-  app.use(
-    fetchFile(
-      opts.meta_url.endsWith("/public")
-        ? opts.meta_url
-        : new URL("public", opts.meta_url).href,
-      etag,
-      Number(build_id),
-      opts.static_config,
-    ),
-  );
+  if (opts.meta_url) {
+    app.use(
+      fetchFile(
+        opts.meta_url.endsWith("/public")
+          ? opts.meta_url
+          : toFileUrl(join(Deno.cwd(), "public")).href,
+        etag,
+        Number(build_id),
+        opts.static_config,
+      ),
+    );
+  }
   app.use("/api", opts.apis);
   for (let i = 0; i < pages.length; i++) {
     const route: TRet = pages[i];
@@ -235,6 +238,12 @@ export default (
     },
     handleEvent(event: TRet) {
       return app.handleEvent(event);
+    },
+    use(
+      ...middlewares: Array<Middlewares<ReqEvent> | Middlewares<ReqEvent>[]>
+    ) {
+      app.use(middlewares as TRet);
+      return this;
     },
   };
 };

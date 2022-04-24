@@ -6,7 +6,7 @@ import { join, resolve, toFileUrl } from "./deps.ts";
 import { LINK } from "../core/constant.ts";
 import { TRet } from "../core/types.ts";
 
-const isBundle = (Deno.args || []).includes("--my-split") ? false : true;
+const isBundle = (Deno.args || []).includes("--bundle") ? true : false;
 
 const dir = Deno.cwd();
 
@@ -69,15 +69,14 @@ try {
     `export const BUILD_ID: string = '${BUILD_ID}';
 export const ENV: string = 'production';`,
   );
-  const create_app_file =
-    (await Deno.readTextFile(join(dir, "@shared", "create_app.ts")))
-      .replace(
-        `${LINK}/core/server.ts`,
-        `${LINK}/core/server_prod.ts`,
-      );
+  const core_file = (await Deno.readTextFile(join(dir, "@shared", "core.ts")))
+    .replace(
+      `${LINK}/core/server.ts`,
+      `${LINK}/core/server_prod.ts`,
+    );
   await Deno.writeTextFile(
-    join(dir, "@shared", "create_app.ts"),
-    create_app_file,
+    join(dir, "@shared", "core.ts"),
+    core_file,
   );
   await esbuild.build({
     ...config,
@@ -85,16 +84,16 @@ export const ENV: string = 'production';`,
     platform: "neutral",
     target: ["esnext", "es2020"],
     bundle: true,
-    entryPoints: [join(resolve(dir, "./maze.ts"))],
-    outfile: join(resolve(dir, "./maze.build.js")),
+    entryPoints: [join(resolve(dir, "@shared", "core.ts"))],
+    outfile: join(resolve(dir, "@shared", "core.build.js")),
     plugins: [esbuild_import_map.plugin()],
   });
-  const maze_file = (await Deno.readTextFile(join(dir, "server.ts")))
+  const maze_file = (await Deno.readTextFile(join(dir, "@shared", "maze.ts")))
     .replace(
-      `maze.ts`,
-      `maze.build.js`,
+      `core.ts`,
+      `core.build.js`,
     );
-  await Deno.writeTextFile(join(dir, "server.ts"), maze_file);
+  await Deno.writeTextFile(join(dir, "@shared", "maze.ts"), maze_file);
   if (isBundle) {
     await esbuild.build({
       ...config,

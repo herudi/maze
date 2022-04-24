@@ -1,3 +1,4 @@
+import { Handler } from "https://deno.land/x/nhttp@1.1.11/src/types.ts";
 import { RequestEvent as BRequestEvent } from "https://deno.land/x/nhttp@1.1.11/src/request_event.ts";
 
 // deno-lint-ignore no-explicit-any
@@ -42,13 +43,17 @@ export type AppProps = {
   props: PageProps;
 };
 
+export type Middlewares<
+  Rev extends RequestEvent = RequestEvent,
+> = Handler<Rev> | Handler<Rev>[];
+
 export type TOptionsInitApp = {
   root: TRet;
   error_page: TRet;
   pages: Record<string, TRet>[];
   server_pages: Record<string, TRet>[];
   apis: TRet;
-  meta_url: string;
+  meta_url?: string;
   build_id: string;
   ssr: (
     Component: TRet,
