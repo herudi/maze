@@ -30,7 +30,7 @@ export const ENV: string = 'development';`,
   await genRoutesWithRefresh("development");
   try {
     let my_file = await Deno.readTextFile(
-      join(resolve(dir, "./@shared/create_app.ts")),
+      join(resolve(dir, "./@shared/core.ts")),
     );
     if (my_file.includes(`${LINK}/core/server_prod.ts`)) {
       my_file = my_file.replace(
@@ -38,22 +38,22 @@ export const ENV: string = 'development';`,
         `${LINK}/core/server.ts`,
       );
       await Deno.writeTextFile(
-        join(resolve(dir, "./@shared/create_app.ts")),
+        join(resolve(dir, "./@shared/core.ts")),
         my_file,
       );
     }
   } catch (_e) { /* noop */ }
   try {
     let my_file = await Deno.readTextFile(
-      join(resolve(dir, "./server.ts")),
+      join(resolve(dir, "@shared", "./maze.ts")),
     );
-    if (my_file.includes(`maze.build.js`)) {
+    if (my_file.includes(`core.build.js`)) {
       my_file = my_file.replace(
-        `maze.build.js`,
-        `maze.ts`,
+        `core.build.js`,
+        `core.ts`,
       );
       await Deno.writeTextFile(
-        join(resolve(dir, "./server.ts")),
+        join(resolve(dir, "@shared", "./maze.ts")),
         my_file,
       );
     }

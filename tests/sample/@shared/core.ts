@@ -1,8 +1,4 @@
-import {
-  initApp as baseInitApp,
-  NHttp,
-  ReqEvent,
-} from "../../../core/server.ts";
+import { initApp as baseInitApp } from "../../../core/server.ts";
 import ErrorPage from "../pages/_default/error.tsx";
 import ssr from "../pages/_default/ssr.ts";
 import config from "../maze.config.ts";
@@ -11,14 +7,12 @@ import apis from "./result/apis.ts";
 import { pages } from "./result/pages.ts";
 import { BUILD_ID } from "./result/constant.ts";
 import { pages as server_pages } from "./result/server_pages.ts";
+import { TRet } from "../../../core/types.ts";
 
 export default (static_url?: string, {
-  routeCallback,
+  routerCallback,
   staticConfig,
-}: {
-  routeCallback?: (router: NHttp<ReqEvent>) => any;
-  staticConfig?: (rev: ReqEvent) => void;
-} = {}) => {
+} = {} as TRet) => {
   return baseInitApp({
     root: RootApp,
     error_page: ErrorPage,
@@ -31,5 +25,5 @@ export default (static_url?: string, {
     static_config: staticConfig,
     etag: config.etag,
     cache_control: config.cache_control,
-  }, routeCallback);
+  }, routerCallback);
 };
