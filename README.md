@@ -90,9 +90,11 @@ import maze from "../../@shared/maze.ts";
 
 const app = maze();
 
-app.use(async ({ context, url }, next) => {
-  const asset = await context.rewrite(url);
-  if (asset.status !== 404) return asset;
+app.use(async ({ request, context, url }, next) => {
+  if (request.method === "GET") {
+    const asset = await context.rewrite(url);
+    if (asset.status !== 404) return asset;
+  }
   return next();
 });
 
