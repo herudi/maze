@@ -159,3 +159,45 @@ jobs:
     console.error(error.message || "Failed create workflows deploy");
   }
 }
+
+export async function addNetlifyEdge() {
+  const project = Deno.args[1];
+  if (!project) {
+    console.log("Path Not Found !!\ntry => maze gen:netlify project-name");
+    return;
+  }
+  const cwd = Deno.cwd();
+  try {
+    await Deno.mkdir(join(cwd, "netlify", "edge-functions"), {
+      recursive: true,
+    });
+    await Deno.writeTextFile(
+      join(cwd, "netlify", "edge-functions", `${project}.js`),
+      `import maze from "../../@shared/maze.ts";
+
+const app = maze();
+
+app.use(async ({ request, context, url }, next) => {
+  if (request.method === 'GET') {
+    const asset = await context.rewrite(url);
+    if (asset.status !== 404) return asset;
+  }
+  return next();
+});
+
+export default (request, context) => app.handleEvent({ request, context });`,
+    );
+    await Deno.writeTextFile(
+      join(cwd, "netlify.toml"),
+      `[build]
+  command = "curl -fsSL https://deno.land/x/install/install.sh | sh && /opt/buildhome/.deno/bin/deno run -A --no-check ${LINK}/cli/build.ts"
+  publish = "public"
+
+[[edge_functions]]
+  function = "${project}"
+  path = "/*"`,
+    );
+  } catch (error) {
+    console.error(error.message || "Failed create edge functions");
+  }
+}
