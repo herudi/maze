@@ -145,7 +145,7 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "${project}"
-          entrypoint: "./server.ts"`,
+          entrypoint: "./.maze/server.ts"`,
     );
   } catch (error) {
     console.error(error.message || "Failed create workflows deploy");

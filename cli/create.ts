@@ -23,13 +23,13 @@ async function craftFromGit(template: string, app_name: string) {
 cd ${app_name}
 
 RUN DEVELOPMENT:
-  maze dev
+  deno task dev
 
 BUILD PRODUCTION:
-  maze build
+  deno task build
 
 RUN PRODUCTION:
-  deno run -A server.ts
+  deno task start
 `);
   } else {
     const errorString = new TextDecoder().decode(rawError);
@@ -87,7 +87,17 @@ export default async function createApp() {
       ]
     }
   },
-  "importMap": "import_map.json"
+  "importMap": "import_map.json",
+  "tasks": {
+    "dev": "maze dev",
+    "dev:reload": "maze dev --reload",
+    "start": "deno run -A --unstable --no-check ./.maze/server.ts",
+    "build": "deno run -A --no-check ${LINK}/cli/build.ts",
+    "build:reload": "deno run -A --no-check --reload ${LINK}/cli/build.ts",
+    "build:bundle": "deno run -A --no-check ${LINK}/cli/build.ts --bundle",
+    "build:bundle:reload": "deno run -A --no-check --reload ${LINK}/cli/build.ts --bundle",
+    "clean": "maze clean"
+  }
 }`,
   );
   await Deno.writeTextFile(
@@ -229,12 +239,12 @@ export default class Home extends Component<PageProps> {
 cd ${app}
 
 RUN DEVELOPMENT:
-  maze dev
+  deno task dev
 
 BUILD PRODUCTION:
-  maze build
+  deno task build
 
 RUN PRODUCTION:
-  deno run -A server.ts
+  deno task start
 `);
 }
