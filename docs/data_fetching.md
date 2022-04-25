@@ -1,8 +1,6 @@
-## Initial Props
-
-Work for server-side and client-side.
-
 ## Data Fetching
+
+Simple data fetching with decorator.
 
 ```jsx
 /** @jsx h */
@@ -33,8 +31,8 @@ Example on functional
 import { Component, h } from "nano-jsx";
 import { PageProps, RequestEvent } from "maze";
 
-function Home() {
-  return <ul>{this.props.items.map((el) => <li>{el}</li>)}</ul>;
+function Home({ items }: PageProps) {
+  return <ul>{items.map((el) => <li>{el}</li>)}</ul>;
 }
 
 Home.initProps = async (rev: RequestEvent) => {
