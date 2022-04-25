@@ -1,11 +1,11 @@
 import { LINK, NANO_VERSION, NHTTP_VERSION } from "../core/constant.ts";
 import { join } from "./deps.ts";
 
-async function craftFromGit(template: string, app_name: string) {
+async function craftFromGit(template: string, app_name: string, dir: string) {
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   template = template.replace("--template=", "");
   const script = CMD +
-    `git clone https://github.com/maze-template/maze-${template}.git ${app_name}`;
+    `git clone https://github.com/maze-template/${template}.git ${app_name}`;
   const p = Deno.run({
     cmd: script.split(" "),
     stdout: "piped",
@@ -23,14 +23,17 @@ async function craftFromGit(template: string, app_name: string) {
 cd ${app_name}
 
 RUN DEVELOPMENT:
-  deno task dev
+  maze dev
 
 BUILD PRODUCTION:
-  deno task build
+  maze build
 
 RUN PRODUCTION:
-  deno task start
+  deno run -A .maze/server.ts
 `);
+    try {
+      await Deno.mkdir(join(dir, "public"));
+    } catch (_e) { /* noop */ }
   } else {
     const errorString = new TextDecoder().decode(rawError);
     console.log(errorString);
@@ -44,12 +47,12 @@ export default async function createApp() {
     return;
   }
   const template = Deno.args[2];
-  if (template && template.includes("--template=")) {
-    return craftFromGit(template, app);
-  }
-  const link = LINK;
   const cwd = Deno.cwd();
   const dir = join(cwd, app);
+  if (template && template.includes("--template=")) {
+    return craftFromGit(template, app, dir);
+  }
+  const link = LINK;
   await Deno.mkdir(join(dir, "pages", "api"), { recursive: true });
   await Deno.mkdir(join(dir, "pages", "_default"));
   await Deno.mkdir(join(dir, ".vscode"));
@@ -189,10 +192,10 @@ export default function ErrorPage(
   );
   await Deno.writeTextFile(
     join(dir, "pages", "_default", "ssr.ts"),
-    `import { Helmet, renderSSR } from "nano-jsx";
+    `import { Helmet, renderSSR, Component } from "nano-jsx";
 
-export default function ssr(Component: any, mazeScript: string, opts: Record<string, any> = {}) {
-  const app = renderSSR(Component, opts);
+export default function ssr(Comp: Component, mazeScript: string, opts = {}) {
+  const app = renderSSR(Comp, opts);
   const { body, head, footer, attributes } = Helmet.SSR(app);
   return ${"`<!DOCTYPE html>"}
 ${"<html ${attributes.html.toString()}>"}
@@ -209,7 +212,7 @@ ${"</html>`"}
   );
   await Deno.writeTextFile(
     join(dir, "pages", "_default", "client.ts"),
-    `export function onHydrate() {/* set anything on hydrate at the client. */};`,
+    `export function onHydrate() {/* set anything on hydrate at the client. */}`,
   );
   await Deno.writeTextFile(
     join(dir, "pages", "index.tsx"),
@@ -240,12 +243,12 @@ export default class Home extends Component<PageProps> {
 cd ${app}
 
 RUN DEVELOPMENT:
-  deno task dev
+  maze dev
 
 BUILD PRODUCTION:
-  deno task build
+  maze build
 
 RUN PRODUCTION:
-  deno task start
+  deno run -A .maze/server.ts
 `);
 }

@@ -52,23 +52,17 @@ if (arg === "create") {
     
 CREATE NEW APP:
   maze create your-app-name
-  maze create your-app-name --template=twind
+  maze create your-app-name --template=template-name
   cd your-app-name
 
 RUN DEVELOPMENT:
-  deno task dev
-  // or
   maze dev
 
 BUILD PRODUCTION:
-  deno task build
-  // or
   maze build
 
 RUN PRODUCTION:
-  deno task start
-  // or
-  deno run -A ./.maze/server.ts
+  deno run -A .maze/server.ts
 
 GENERATE WORKFLOW DENO DEPLOY:
   maze gen:deploy <project-name>
