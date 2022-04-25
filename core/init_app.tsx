@@ -2,7 +2,7 @@
 import { h } from "./nano_jsx.ts";
 import { HttpError, NHttp } from "./deps.ts";
 import fetchFile from "./fetch_file.ts";
-import { Middlewares, ReqEvent, TObject, TRet } from "./types.ts";
+import { ReqEvent, TRet } from "./types.ts";
 import * as base64 from "https://deno.land/std@0.131.0/encoding/base64.ts";
 import { join, toFileUrl } from "https://deno.land/std@0.132.0/path/mod.ts";
 
@@ -31,13 +31,11 @@ export default (
       mazeScript: string,
       opts?: Record<string, TRet>,
     ) => TRet;
-    static_config?: (rev: ReqEvent) => void;
     etag?: boolean;
     cache_control?: string;
   },
   pages: TRet[],
   app: NHttp<ReqEvent>,
-  routeCallback?: (app: NHttp<ReqEvent>) => TRet,
 ) => {
   const etag = opts.etag !== false;
   const cache_control = opts.cache_control;
@@ -47,56 +45,57 @@ export default (
   const clientScript = opts.clientScript;
   const RootApp = opts.root;
   const ErrorPage = opts.error_page;
-  let obj = {} as TRet;
   app.use((rev, next) => {
-    if (etag) {
-      const { response, request, respondWith } = rev;
-      const sendEtag = async function (body: TRet) {
-        try {
-          let fname = "noop";
-          if (typeof body === "object") {
-            if (body instanceof Response) return respondWith(body);
-            if (
-              body instanceof ReadableStream ||
-              body instanceof FormData ||
-              body instanceof Blob ||
-              typeof (body as unknown as Deno.Reader).read === "function"
-            ) {
-              return respondWith(new Response(body, rev.responseInit));
-            } else if (body instanceof Uint8Array) {
-              fname = "Uint8Array";
-            } else {
-              body = JSON.stringify(body);
-              fname = "json";
+    if (env === "production") {
+      if (etag) {
+        const { response, request, respondWith } = rev;
+        const sendEtag = async function (body: TRet) {
+          try {
+            let fname = "noop";
+            if (typeof body === "object") {
+              if (body instanceof Response) return respondWith(body);
+              if (
+                body instanceof ReadableStream ||
+                body instanceof FormData ||
+                body instanceof Blob ||
+                typeof (body as unknown as Deno.Reader).read === "function"
+              ) {
+                return respondWith(new Response(body, rev.responseInit));
+              } else if (body instanceof Uint8Array) {
+                fname = "Uint8Array";
+              } else {
+                body = JSON.stringify(body);
+                fname = "json";
+              }
             }
+            if (!response.header("ETag")) {
+              const etag = await entityTag(
+                fname === "Uint8Array" ? body : encoder.encode(body),
+              );
+              response.header("ETag", `W/${etag}`);
+            }
+            if (
+              request.headers.get("if-none-match") === response.header("ETag")
+            ) {
+              response.status(304);
+              return respondWith(new Response(void 0, rev.responseInit));
+            }
+            if (fname === "json") {
+              response.header(
+                "content-type",
+                "application/json; charset=utf-8",
+              );
+            }
+            return respondWith(new Response(body, rev.responseInit));
+          } catch (_e) {
+            return respondWith(new Response(body, rev.responseInit));
           }
-          if (!response.header("ETag")) {
-            const etag = await entityTag(
-              fname === "Uint8Array" ? body : encoder.encode(body),
-            );
-            response.header("ETag", `W/${etag}`);
-          }
-          if (
-            request.headers.get("if-none-match") === response.header("ETag")
-          ) {
-            response.status(304);
-            return respondWith(new Response(void 0, rev.responseInit));
-          }
-          if (fname === "json") {
-            response.header(
-              "content-type",
-              "application/json; charset=utf-8",
-            );
-          }
-          return respondWith(new Response(body, rev.responseInit));
-        } catch (_e) {
-          return respondWith(new Response(body, rev.responseInit));
-        }
-      };
-      rev.response.send = sendEtag as TRet;
-    }
-    if (env === "production" && cache_control) {
-      rev.response.header("cache-control", cache_control);
+        };
+        rev.response.send = sendEtag as TRet;
+      }
+      if (cache_control) {
+        rev.response.header("cache-control", cache_control);
+      }
     }
     rev.getBaseUrl = () => new URL(rev.request.url).origin;
     rev.isServer = true;
@@ -190,10 +189,6 @@ export default (
       { pathname: rev.path },
     );
   });
-  if (routeCallback) {
-    routeCallback(app);
-    obj = app.route;
-  }
   if (opts.meta_url) {
     app.use(
       fetchFile(
@@ -202,7 +197,6 @@ export default (
           : toFileUrl(join(Deno.cwd(), "public")).href,
         etag,
         Number(build_id),
-        opts.static_config,
       ),
     );
   }
@@ -213,38 +207,12 @@ export default (
     const hydrate = route.hydrate;
     for (let j = 0; j < methods.length; j++) {
       const method = methods[j];
-      if (!obj[method + route.path]) {
-        app.on(method, route.path, async (rev) => {
-          const Page = route.page as TRet;
-          const initData = Page.initProps
-            ? (await Page.initProps(rev))
-            : void 0;
-          return rev.render(Page, { path: route.path, initData }, hydrate);
-        });
-      }
+      app.on(method, route.path, async (rev) => {
+        const Page = route.page as TRet;
+        const initData = Page.initProps ? (await Page.initProps(rev)) : void 0;
+        return rev.render(Page, { path: route.path, initData }, hydrate);
+      });
     }
   }
-  return {
-    listen(
-      opts: number | Deno.ListenOptions | Deno.ListenTlsOptions | TObject,
-      callback?: (
-        err?: Error,
-        opts?:
-          | Deno.ListenOptions
-          | Deno.ListenTlsOptions
-          | TObject,
-      ) => void | Promise<void>,
-    ) {
-      app.listen(opts, callback);
-    },
-    handleEvent(event: TRet) {
-      return app.handleEvent(event);
-    },
-    use(
-      ...middlewares: Array<Middlewares<ReqEvent> | Middlewares<ReqEvent>[]>
-    ) {
-      app.use(middlewares as TRet);
-      return this;
-    },
-  };
+  return app;
 };

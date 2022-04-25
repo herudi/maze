@@ -1,5 +1,5 @@
 import { NHttp } from "./deps.ts";
-import { ReqEvent, TOptionsInitApp, TRet } from "./types.ts";
+import { ReqEvent, TOptionsInitApp } from "./types.ts";
 import { join, resolve, toFileUrl } from "../cli/deps.ts";
 import baseInitApp from "./init_app.tsx";
 import { genPages } from "./gen.ts";
@@ -31,8 +31,8 @@ if (isDev) {
   });
 }
 const hydrate_file = isDev
-  ? toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx")))
-  : "./tests/sample/@shared/hydrate.tsx";
+  ? toFileUrl(join(resolve(dir, "./.maze/hydrate.tsx")))
+  : "./tests/sample/.maze/hydrate.tsx";
 const { files } = await Deno.emit(
   hydrate_file,
   {
@@ -56,7 +56,6 @@ app.get(clientScript, ({ response }) => {
 
 export const initApp = (
   opts: TOptionsInitApp,
-  routeCallback?: (app: NHttp<ReqEvent>) => TRet,
 ) => {
   opts.build_id = build_id;
   return baseInitApp(
@@ -67,7 +66,6 @@ export const initApp = (
     },
     opts.pages,
     app,
-    routeCallback,
   );
 };
 

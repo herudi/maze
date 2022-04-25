@@ -1,68 +1,42 @@
-import { LINK, STORAGE_KEY_API, STORAGE_KEY_PAGE } from "../core/constant.ts";
+import { STORAGE_KEY_API, STORAGE_KEY_PAGE } from "../core/constant.ts";
 import { genRoutesWithRefresh } from "../core/gen.ts";
-import { join, resolve, toFileUrl } from "./deps.ts";
+import createCore from "./create_core.ts";
+import { isExist, join, resolve, toFileUrl } from "./deps.ts";
 
 export default async function dev_server(is_clean = false) {
   const reload = Deno.args[1] ? " " + Deno.args[1] : "";
   const dir = Deno.cwd();
   const sleep = (ms = 100) => new Promise((ok) => setTimeout(ok, ms));
+  const load_constant = join(resolve(dir, "./.maze/result/constant.ts"));
+  if (isExist(load_constant)) {
+    const my_file = await Deno.readTextFile(load_constant);
+    if (my_file.includes(`production`)) {
+      try {
+        await Deno.remove(join(resolve(dir, "./.maze")), {
+          recursive: true,
+        });
+      } catch (_e) { /* noop */ }
+      await createCore();
+    }
+  } else {
+    await createCore();
+  }
   try {
     await Deno.remove(join(resolve(dir, "./public/__maze")), {
       recursive: true,
     });
   } catch (_e) { /* noop */ }
   try {
-    await Deno.remove(join(resolve(dir, "./@shared/core.build.js")));
-  } catch (_e) { /* noop */ }
-  try {
-    await Deno.writeTextFile(
-      join(resolve(dir, "./@shared/result/constant.ts")),
-      `export const BUILD_ID: string = '${Date.now()}';
-export const ENV: string = 'development';`,
-    );
-  } catch (_e) { /* noop */ }
-  try {
-    await Deno.writeTextFile(
-      join(resolve(dir, "./@shared/result/server_pages.ts")),
-      `export const pages: any = [];`,
-    );
+    await Deno.remove(join(resolve(dir, "server.ts")), {
+      recursive: true,
+    });
   } catch (_e) { /* noop */ }
   await genRoutesWithRefresh("development");
-  try {
-    let my_file = await Deno.readTextFile(
-      join(resolve(dir, "./@shared/core.ts")),
-    );
-    if (my_file.includes(`${LINK}/core/server_prod.ts`)) {
-      my_file = my_file.replace(
-        `${LINK}/core/server_prod.ts`,
-        `${LINK}/core/server.ts`,
-      );
-      await Deno.writeTextFile(
-        join(resolve(dir, "./@shared/core.ts")),
-        my_file,
-      );
-    }
-  } catch (_e) { /* noop */ }
-  try {
-    let my_file = await Deno.readTextFile(
-      join(resolve(dir, "@shared", "./maze.ts")),
-    );
-    if (my_file.includes(`core.build.js`)) {
-      my_file = my_file.replace(
-        `core.build.js`,
-        `core.ts`,
-      );
-      await Deno.writeTextFile(
-        join(resolve(dir, "@shared", "./maze.ts")),
-        my_file,
-      );
-    }
-  } catch (_e) { /* noop */ }
   if (is_clean) return;
   await sleep(1000);
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   const script = CMD +
-    `deno run -A --watch --no-check --unstable${reload} ./server.ts --dev`;
+    `deno run -A --watch --no-check --unstable${reload} ./.maze/server.ts --dev`;
   const p = Deno.run({ cmd: script.split(" ") });
   const pages_dir = join(resolve(dir, "./pages"));
   const url = toFileUrl(pages_dir);

@@ -1,5 +1,5 @@
 import { LINK } from "../core/constant.ts";
-import { join } from "./deps.ts";
+import { isExist, join } from "./deps.ts";
 
 function cl(str: string) {
   return str.replace(/\[|\]|\./g, "");
@@ -38,14 +38,6 @@ async function handler(rev: RequestEvent) {
 
 export default handler;`;
 
-function isExist(pathfile: string) {
-  try {
-    Deno.readTextFileSync(pathfile);
-    return true;
-  } catch (_e) {
-    return false;
-  }
-}
 function tryCreate(pathfile: string, tpl: string) {
   try {
     Deno.writeTextFileSync(pathfile, tpl);
@@ -173,7 +165,7 @@ export async function addNetlifyEdge() {
     });
     await Deno.writeTextFile(
       join(cwd, "netlify", "edge-functions", `${project}.js`),
-      `import maze from "../../@shared/maze.ts";
+      `import maze from "../../.maze/maze.ts";
 
 const app = maze();
 

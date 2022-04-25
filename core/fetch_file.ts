@@ -10,7 +10,6 @@ export default function myFetchFile(
   fetch_url: string,
   etager: boolean,
   BUILD_ID: number,
-  staticConfig?: (rev: ReqEvent) => void,
   ssg = false,
 ) {
   return async (
@@ -72,7 +71,6 @@ export default function myFetchFile(
           response.header("Content-Length", (end - start + 1).toString());
         }
       }
-      if (staticConfig) staticConfig(rev);
       if (
         etager &&
         request.headers.get("if-none-match") === response.header("ETag")
