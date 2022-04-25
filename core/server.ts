@@ -1,5 +1,5 @@
 import { NHttp } from "./deps.ts";
-import { ReqEvent, TOptionsInitApp, TRet } from "./types.ts";
+import { ReqEvent, TOptionsInitApp } from "./types.ts";
 import { join, resolve, toFileUrl } from "../cli/deps.ts";
 import baseInitApp from "./init_app.tsx";
 import { genPages } from "./gen.ts";
@@ -22,7 +22,7 @@ if (isDev) {
       },
     }).pipeThrough(new TextEncoderStream());
   });
-  app.get("/js/refresh.js", ({ response }) => {
+  app.get("/static/js/refresh.js", ({ response }) => {
     response.type("application/javascript");
     return `let bool = false; new EventSource("/__REFRESH__").addEventListener("message", _ => {
   if (bool) location.reload();
@@ -31,8 +31,8 @@ if (isDev) {
   });
 }
 const hydrate_file = isDev
-  ? toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx")))
-  : "./tests/sample/@shared/hydrate.tsx";
+  ? toFileUrl(join(resolve(dir, "./.maze/hydrate.tsx")))
+  : "./tests/sample/.maze/hydrate.tsx";
 const { files } = await Deno.emit(
   hydrate_file,
   {
@@ -48,7 +48,7 @@ const { files } = await Deno.emit(
       : void 0,
   },
 );
-const clientScript = `/__maze/${build_id}/_app.js`;
+const clientScript = `/static/__maze/${build_id}/_app.js`;
 app.get(clientScript, ({ response }) => {
   response.type("application/javascript");
   return files["deno:///bundle.js"];
@@ -56,7 +56,6 @@ app.get(clientScript, ({ response }) => {
 
 export const initApp = (
   opts: TOptionsInitApp,
-  routeCallback?: (app: NHttp<ReqEvent>) => TRet,
 ) => {
   opts.build_id = build_id;
   return baseInitApp(
@@ -67,7 +66,6 @@ export const initApp = (
     },
     opts.pages,
     app,
-    routeCallback,
   );
 };
 

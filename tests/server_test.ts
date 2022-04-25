@@ -1,5 +1,5 @@
 import { superdeno } from "./deps.ts";
-import maze from "./sample/@shared/maze.ts";
+import maze from "./sample/.maze/maze.ts";
 
 const mock: (request: Request) => any = (request: Request) =>
   maze(import.meta.url).handleEvent({ request });

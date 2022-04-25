@@ -1,4 +1,3 @@
-import { Handler } from "https://deno.land/x/nhttp@1.1.11/src/types.ts";
 import { RequestEvent as BRequestEvent } from "https://deno.land/x/nhttp@1.1.11/src/request_event.ts";
 
 // deno-lint-ignore no-explicit-any
@@ -44,10 +43,6 @@ export type AppProps = {
   props: PageProps;
 };
 
-export type Middlewares<
-  Rev extends RequestEvent = RequestEvent,
-> = Handler<Rev> | Handler<Rev>[];
-
 export type TOptionsInitApp = {
   root: TRet;
   error_page: TRet;
@@ -61,7 +56,6 @@ export type TOptionsInitApp = {
     mazeScript: string,
     opts?: Record<string, TRet>,
   ) => TRet;
-  static_config?: (rev: ReqEvent) => void;
   etag?: boolean;
   cache_control?: string;
   [k: string]: TRet;
@@ -73,7 +67,7 @@ export type MazeConfig = {
    */
   cache_control?: string;
   /**
-   * Etag headers. default is true.
+   * Etag headers. default is true (production only).
    */
   etag?: boolean;
   /**
@@ -87,4 +81,8 @@ export type MazeConfig = {
    * Build config.
    */
   build?: Record<string, TRet>;
+  /**
+   * PORT number
+   */
+  port?: number;
 };

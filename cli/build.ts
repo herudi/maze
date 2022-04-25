@@ -2,9 +2,10 @@ import * as esbuild from "https://deno.land/x/esbuild@v0.14.25/mod.js";
 import * as esbuild_import_map from "https://esm.sh/esbuild-plugin-import-map?no-check";
 import { genRoutesWithRefresh, getListPages } from "./../core/gen.ts";
 import { denoPlugin } from "https://deno.land/x/esbuild_deno_loader@0.4.1/mod.ts";
-import { join, resolve, toFileUrl } from "./deps.ts";
+import { isExist, join, resolve, toFileUrl } from "./deps.ts";
 import { LINK } from "../core/constant.ts";
 import { TRet } from "../core/types.ts";
+import createCore from "./create_core.ts";
 
 const isBundle = (Deno.args || []).includes("--bundle") ? true : false;
 
@@ -37,6 +38,10 @@ for (let i = 0; i < listFiles.length; i++) {
   obj[_name] = toFileUrl(join(resolve(dir, name))).href;
 }
 
+if (!isExist(join(resolve(dir, "./.maze/result/constant.ts")))) {
+  await createCore();
+}
+
 try {
   await Deno.remove(join(resolve(dir, "./public/__maze")), {
     recursive: true,
@@ -65,17 +70,17 @@ try {
     throw error;
   }
   await Deno.writeTextFile(
-    join(dir, "@shared", "result", "constant.ts"),
+    join(dir, ".maze", "result", "constant.ts"),
     `export const BUILD_ID: string = '${BUILD_ID}';
 export const ENV: string = 'production';`,
   );
-  const core_file = (await Deno.readTextFile(join(dir, "@shared", "core.ts")))
+  const core_file = (await Deno.readTextFile(join(dir, ".maze", "core.ts")))
     .replace(
       `${LINK}/core/server.ts`,
       `${LINK}/core/server_prod.ts`,
     );
   await Deno.writeTextFile(
-    join(dir, "@shared", "core.ts"),
+    join(dir, ".maze", "core.ts"),
     core_file,
   );
   await esbuild.build({
@@ -84,16 +89,16 @@ export const ENV: string = 'production';`,
     platform: "neutral",
     target: ["esnext", "es2020"],
     bundle: true,
-    entryPoints: [join(resolve(dir, "@shared", "core.ts"))],
-    outfile: join(resolve(dir, "@shared", "core.build.js")),
+    entryPoints: [join(resolve(dir, ".maze", "core.ts"))],
+    outfile: join(resolve(dir, ".maze", "core.build.js")),
     plugins: [esbuild_import_map.plugin()],
   });
-  const maze_file = (await Deno.readTextFile(join(dir, "@shared", "maze.ts")))
+  const maze_file = (await Deno.readTextFile(join(dir, ".maze", "maze.ts")))
     .replace(
       `core.ts`,
       `core.build.js`,
     );
-  await Deno.writeTextFile(join(dir, "@shared", "maze.ts"), maze_file);
+  await Deno.writeTextFile(join(dir, ".maze", "maze.ts"), maze_file);
   if (isBundle) {
     await esbuild.build({
       ...config,
@@ -105,7 +110,7 @@ export const ENV: string = 'production';`,
         importMapFile: join(resolve(dir, "./import_map.json")),
       })],
       entryPoints: [
-        toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))).href,
+        toFileUrl(join(resolve(dir, "./.maze/hydrate.tsx"))).href,
       ],
       outfile: join(resolve(dir, `./public/__maze/${BUILD_ID}/_app.js`)),
       ...build_cfg,
@@ -121,7 +126,7 @@ export const ENV: string = 'production';`,
         importMapFile: join(resolve(dir, "./import_map.json")),
       })],
       entryPoints: {
-        "_app": toFileUrl(join(resolve(dir, "./@shared/hydrate.tsx"))).href,
+        "_app": toFileUrl(join(resolve(dir, "./.maze/hydrate.tsx"))).href,
         ...obj,
       },
       splitting: true,
@@ -130,7 +135,7 @@ export const ENV: string = 'production';`,
     });
   }
   console.log("Success building assets !!");
-  console.log("Run server: deno run -A server.ts");
+  console.log("Run server: deno task start");
   esbuild.stop();
 } catch (error) {
   console.log(error.message);

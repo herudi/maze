@@ -1,5 +1,5 @@
 import { LINK } from "../core/constant.ts";
-import { join } from "./deps.ts";
+import { isExist, join } from "./deps.ts";
 
 function cl(str: string) {
   return str.replace(/\[|\]|\./g, "");
@@ -38,14 +38,6 @@ async function handler(rev: RequestEvent) {
 
 export default handler;`;
 
-function isExist(pathfile: string) {
-  try {
-    Deno.readTextFileSync(pathfile);
-    return true;
-  } catch (_e) {
-    return false;
-  }
-}
 function tryCreate(pathfile: string, tpl: string) {
   try {
     Deno.writeTextFileSync(pathfile, tpl);
@@ -153,7 +145,7 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "${project}"
-          entrypoint: "./server.ts"`,
+          entrypoint: "./.maze/server.ts"`,
     );
   } catch (error) {
     console.error(error.message || "Failed create workflows deploy");
@@ -173,19 +165,10 @@ export async function addNetlifyEdge() {
     });
     await Deno.writeTextFile(
       join(cwd, "netlify", "edge-functions", `${project}.js`),
-      `import maze from "../../@shared/maze.ts";
+      `import maze from "../../.maze/maze.ts";
+import midd from "${LINK}/core/netlify-middleware.ts";
 
-const app = maze();
-
-app.use(async ({ request, context, url }, next) => {
-  if (request.method === 'GET') {
-    const asset = await context.rewrite(url);
-    if (asset.status !== 404) return asset;
-  }
-  return next();
-});
-
-export default (request, context) => app.handleEvent({ request, context });`,
+export default (request, context) => maze().use(midd).handleEvent({ request, context });`,
     );
     await Deno.writeTextFile(
       join(cwd, "netlify.toml"),

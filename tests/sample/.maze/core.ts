@@ -7,12 +7,8 @@ import apis from "./result/apis.ts";
 import { pages } from "./result/pages.ts";
 import { BUILD_ID } from "./result/constant.ts";
 import { pages as server_pages } from "./result/server_pages.ts";
-import { TRet } from "../../../core/types.ts";
 
-export default (static_url?: string, {
-  routerCallback,
-  staticConfig,
-} = {} as TRet) => {
+export default (static_url?: string) => {
   return baseInitApp({
     root: RootApp,
     error_page: ErrorPage,
@@ -22,8 +18,7 @@ export default (static_url?: string, {
     meta_url: static_url,
     build_id: BUILD_ID,
     ssr: ssr,
-    static_config: staticConfig,
     etag: config.etag,
     cache_control: config.cache_control,
-  }, routerCallback);
+  });
 };

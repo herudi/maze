@@ -10,14 +10,18 @@ export default function myFetchFile(
   fetch_url: string,
   etager: boolean,
   BUILD_ID: number,
-  staticConfig?: (rev: ReqEvent) => void,
   ssg = false,
 ) {
   return async (
     rev: ReqEvent,
     next: NextFunction,
   ) => {
-    const { request, response, path } = rev;
+    const { request, response } = rev;
+    if (rev.path.startsWith("/static")) {
+      rev.path = rev.path.replace("/static", "");
+      rev.url = rev.url.replace("/static", "");
+    } else return next();
+    const path = rev.path;
     const isDirectory =
       path.slice((path.lastIndexOf(".") - 1 >>> 0) + 2) === "";
     let fetchFile = fetch_url + path;
@@ -72,7 +76,6 @@ export default function myFetchFile(
           response.header("Content-Length", (end - start + 1).toString());
         }
       }
-      if (staticConfig) staticConfig(rev);
       if (
         etager &&
         request.headers.get("if-none-match") === response.header("ETag")
