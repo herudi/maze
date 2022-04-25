@@ -2,8 +2,9 @@ import { LINK, NANO_VERSION, NHTTP_VERSION } from "../core/constant.ts";
 import { join } from "./deps.ts";
 
 async function craftFromGit(template: string, app_name: string, dir: string) {
-  const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   template = template.replace("--template=", "");
+  console.log(`Preparing ${template} to ${app_name}`);
+  const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   const script = CMD +
     `git clone https://github.com/maze-template/${template}.git ${app_name}`;
   const p = Deno.run({
@@ -18,6 +19,25 @@ async function craftFromGit(template: string, app_name: string, dir: string) {
 
   if (code === 0) {
     await Deno.stdout.write(rawOutput);
+    try {
+      await Deno.mkdir(join(dir, "public"));
+    } catch (_e) { /* noop */ }
+    try {
+      await Deno.mkdir(join(dir, "pages", "api"));
+    } catch (_e) { /* noop */ }
+    try {
+      const my_file = await Deno.readTextFile(join(dir, "import_map.json"));
+      const my_obj = JSON.parse(my_file);
+      my_obj["imports"]["nano-jsx"] =
+        `https://deno.land/x/nano_jsx@${NANO_VERSION}/mod.ts`;
+      my_obj["imports"]["nhttp"] =
+        `https://deno.land/x/nhttp@${NHTTP_VERSION}/mod.ts`;
+      my_obj["imports"]["maze"] = `${LINK}/mod.ts`;
+      await Deno.writeTextFile(
+        join(dir, "import_map.json"),
+        JSON.stringify(my_obj, null, 2),
+      );
+    } catch (_e) { /* noop */ }
     console.log(`Success create ${app_name}.
     
 cd ${app_name}
@@ -31,9 +51,6 @@ BUILD PRODUCTION:
 RUN PRODUCTION:
   deno run -A .maze/server.ts
 `);
-    try {
-      await Deno.mkdir(join(dir, "public"));
-    } catch (_e) { /* noop */ }
   } else {
     const errorString = new TextDecoder().decode(rawError);
     console.log(errorString);
