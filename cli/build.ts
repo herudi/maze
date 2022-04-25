@@ -134,18 +134,6 @@ export const ENV: string = 'production';`,
       ...build_cfg,
     });
   }
-  await Deno.writeTextFile(
-    join(dir, "server.ts"),
-    `import maze from "./.maze/maze.ts";
-import config from "./maze.config.ts";
-
-const PORT = config.port || 8080;
-
-maze(import.meta.url).listen(PORT, () => {
-  console.log("> Running on http://localhost:" + PORT);
-});
-`,
-  );
   console.log("Success building assets !!");
   console.log("Run server: deno run -A server.ts");
   esbuild.stop();

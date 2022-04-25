@@ -61,9 +61,16 @@ Just integrate to github, code will auto build and deploy.
 
 ```bash
 deno task build
+// or
+maze build
+```
 
-// or build bundle.
-deno task build-bundle
+### Build Bundle
+
+```bash
+deno task build:bundle
+// or
+maze build-bundle
 ```
 
 ### Run Server

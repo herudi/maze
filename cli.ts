@@ -9,7 +9,7 @@ async function build(prefix: string) {
   console.log("Building Server Production...");
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   const script = CMD +
-    `deno run -A --no-check ${LINK}/cli/build.ts${prefix}`;
+    `deno run -A --unstable --no-check ${LINK}/cli/build.ts${prefix}`;
   const p = Deno.run({
     cmd: script.split(" "),
     stdout: "piped",
@@ -56,13 +56,19 @@ CREATE NEW APP:
   cd your-app-name
 
 RUN DEVELOPMENT:
+  deno task dev
+  // or
   maze dev
 
 BUILD PRODUCTION:
+  deno task build
+  // or
   maze build
 
 RUN PRODUCTION:
-  deno run -A server.ts
+  deno task start
+  // or
+  deno run -A ./.maze/server.ts
 
 GENERATE WORKFLOW DENO DEPLOY:
   maze gen:deploy <project-name>

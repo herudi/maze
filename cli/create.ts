@@ -92,10 +92,10 @@ export default async function createApp() {
     "dev": "maze dev",
     "dev:reload": "maze dev --reload",
     "start": "deno run -A --unstable --no-check ./.maze/server.ts",
-    "build": "deno run -A --no-check ${LINK}/cli/build.ts",
-    "build:reload": "deno run -A --no-check --reload ${LINK}/cli/build.ts",
-    "build:bundle": "deno run -A --no-check ${LINK}/cli/build.ts --bundle",
-    "build:bundle:reload": "deno run -A --no-check --reload ${LINK}/cli/build.ts --bundle",
+    "build": "deno run -A --unstable --no-check ${LINK}/cli/build.ts",
+    "build:reload": "deno run -A --unstable --no-check --reload ${LINK}/cli/build.ts",
+    "build:bundle": "deno run -A --unstable --no-check ${LINK}/cli/build.ts --bundle",
+    "build:bundle:reload": "deno run -A --unstable --no-check --reload ${LINK}/cli/build.ts --bundle",
     "clean": "maze clean"
   }
 }`,

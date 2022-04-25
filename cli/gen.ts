@@ -140,7 +140,7 @@ jobs:
         with:
           deno-version: 1.21.0
       - name: Build
-        run: deno run -A --no-check ${LINK}/cli/build.ts
+        run: deno task build
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
@@ -173,7 +173,7 @@ export default (request, context) => maze().use(midd).handleEvent({ request, con
     await Deno.writeTextFile(
       join(cwd, "netlify.toml"),
       `[build]
-  command = "curl -fsSL https://deno.land/x/install/install.sh | sh && /opt/buildhome/.deno/bin/deno run -A --no-check ${LINK}/cli/build.ts"
+  command = "curl -fsSL https://deno.land/x/install/install.sh | sh && /opt/buildhome/.deno/bin/deno task build"
   publish = "public"
 
 [[edge_functions]]
