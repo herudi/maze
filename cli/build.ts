@@ -135,7 +135,7 @@ export const ENV: string = 'production';`,
     });
   }
   console.log("Success building assets !!");
-  console.log("Run server: deno task start");
+  console.log("Run server: deno run -A .maze/server.ts");
   esbuild.stop();
 } catch (error) {
   console.log(error.message);

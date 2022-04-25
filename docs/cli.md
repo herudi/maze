@@ -19,9 +19,9 @@ cd my-app
 ### Run Development
 
 ```bash
-deno task dev
-// or
 maze dev
+// or
+deno task dev
 ```
 
 ## Deploy To Deno Deploy
@@ -60,25 +60,25 @@ Just integrate to github, code will auto build and deploy.
 ### Build
 
 ```bash
-deno task build
-// or
 maze build
+// or
+deno task build
 ```
 
 ### Build Bundle
 
 ```bash
-deno task build:bundle
-// or
 maze build-bundle
+// or
+deno task build:bundle
 ```
 
 ### Run Server
 
 ```bash
-deno task start
+deno run -A .maze/server.ts
 // or
-deno run -A ./.maze/server.ts
+deno task start
 ```
 
 ## Generate
