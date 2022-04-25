@@ -18,7 +18,7 @@ cd my-app
 - twind Maze with [twind](https://twind.dev/).
 
 ```bash
-maze create my-app --template=twind
+maze create my-app --template=maze-twind
 cd my-app
 ```
 
