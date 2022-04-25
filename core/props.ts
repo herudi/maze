@@ -1,17 +1,22 @@
 import { Component, h } from "./nano_jsx.ts";
 import { ReqEvent, TRet } from "./types.ts";
 
-export const InitProps = (
-  handler: (rev: ReqEvent) => TRet,
-  allowMethods: string[] = ["GET"],
-) =>
+type TInitPage = {
+  props?: (rev: ReqEvent) => TRet;
+  hydrate?: boolean;
+  methods?: string[];
+};
+
+export const InitPage = ({
+  props,
+  hydrate,
+  methods,
+}: TInitPage) =>
   (WrappedComponent: TRet) => {
     return (class extends Component {
-      static async initProps(rev: ReqEvent) {
-        const data = await handler(rev);
-        return data;
-      }
-      static methods = allowMethods;
+      static hydrate = hydrate;
+      static initProps = props;
+      static methods = methods;
       render() {
         return h(WrappedComponent, { ...this.props });
       }

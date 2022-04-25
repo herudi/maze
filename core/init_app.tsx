@@ -140,7 +140,7 @@ export default (
         };
       }
     };
-    rev.render = async (Page, props) => {
+    rev.render = async (Page, props, hydrate = true) => {
       rev.response.type("text/html; charset=utf-8");
       const rootData = RootApp.initProps ? (await RootApp.initProps(rev)) : {};
       if (rootData) {
@@ -160,13 +160,13 @@ export default (
           }}
         />,
         [
-          props.initData
+          props.initData && hydrate
             ? `<script id="__INIT_DATA__" type="application/json">${
               JSON.stringify(props.initData)
             }</script>`
             : "",
           env === "development" ? '<script src="/js/refresh.js"></script>' : "",
-          clientScript
+          clientScript && hydrate
             ? `<script type="module" src="${clientScript}"></script>`
             : "",
         ].join(""),
@@ -210,6 +210,7 @@ export default (
   for (let i = 0; i < pages.length; i++) {
     const route: TRet = pages[i];
     const methods = route.methods || ["GET"];
+    const hydrate = route.hydrate;
     for (let j = 0; j < methods.length; j++) {
       const method = methods[j];
       if (!obj[method + route.path]) {
@@ -218,7 +219,7 @@ export default (
           const initData = Page.initProps
             ? (await Page.initProps(rev))
             : void 0;
-          return rev.render(Page, { path: route.path, initData });
+          return rev.render(Page, { path: route.path, initData }, hydrate);
         });
       }
     }

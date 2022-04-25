@@ -52,6 +52,7 @@ if (arg === "create") {
     
 CREATE NEW APP:
   maze create your-app-name
+  maze create your-app-name --template=twind
   cd your-app-name
 
 RUN DEVELOPMENT:
@@ -65,6 +66,9 @@ RUN PRODUCTION:
 
 GENERATE WORKFLOW DENO DEPLOY:
   maze gen:deploy <project-name>
+
+GENERATE NETLIFY EDGE FUNCTIONS:
+  maze gen:netlify <project-name>
 
 GENERATE NEW PAGE:
   maze gen:page <pathfile>

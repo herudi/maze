@@ -21,6 +21,7 @@ export type ReqEvent = RequestEvent & {
   render: (
     Page: TRet,
     props: { path: string; initData?: TRet },
+    hydrate?: boolean,
   ) => Record<string, TRet>;
 };
 

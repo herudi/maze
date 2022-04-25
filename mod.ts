@@ -6,4 +6,4 @@ export type {
   RequestEvent,
   RouteProps,
 } from "./core/types.ts";
-export { InitProps } from "./core/props.ts";
+export { InitPage } from "./core/props.ts";

@@ -7,13 +7,15 @@ Work for server-side and client-side.
 ```jsx
 /** @jsx h */
 import { Component, h } from "nano-jsx";
-import { PageProps, InitProps } from "maze";
+import { PageProps, InitPage } from "maze";
 
 // decorator
-@InitProps(async (rev) => {
-  const res = await fetch("http://..../items");
-  const items = await res.json();
-  return { items };
+@InitPage({
+  props: async (rev) => {
+    const res = await fetch("http://..../items");
+    const items = await res.json();
+    return { items };
+  }
 })
 class Home extends Component<PageProps> {
   render() {
@@ -24,7 +26,7 @@ class Home extends Component<PageProps> {
 export default Home;
 ```
 
-Example in functional
+Example on functional
 
 ```jsx
 /** @jsx h */
@@ -49,12 +51,14 @@ export default Home;
 ```jsx
 /** @jsx h */
 import { Component, h } from "nano-jsx";
-import { PageProps, InitProps } from "maze";
+import { PageProps, InitPage } from "maze";
 
-@InitProps(async ({ fetchApi }) => {
-  // don't use window.fetch. use rev.fetchApi instead.
-  const { data, error } = await fetchApi("/api/home");
-  return { data, error };
+@InitPage({
+  props: async ({ fetchApi }) => {
+    // don't use window.fetch. use rev.fetchApi instead.
+    const { data, error } = await fetchApi("/api/home");
+    return { data, error };
+  }
 })
 class Home extends Component<PageProps> {
   render() {
@@ -64,4 +68,23 @@ class Home extends Component<PageProps> {
 }
 
 export default Home;
+```
+
+## InitPage
+
+```ts
+...
+@InitPage({
+
+  // initial props
+  props: async (rev) => {...},
+
+  // allow methods default to ["GET"].
+  methods: ["GET", "POST"],
+
+  // Optional rehydration default to true.
+  hydrate: true
+  
+})
+...
 ```
