@@ -16,7 +16,12 @@ export default function myFetchFile(
     rev: ReqEvent,
     next: NextFunction,
   ) => {
-    const { request, response, path } = rev;
+    const { request, response } = rev;
+    if (rev.path.startsWith("/static")) {
+      rev.path = rev.path.replace("/static", "");
+      rev.url = rev.url.replace("/static", "");
+    } else return next();
+    const path = rev.path;
     const isDirectory =
       path.slice((path.lastIndexOf(".") - 1 >>> 0) + 2) === "";
     let fetchFile = fetch_url + path;

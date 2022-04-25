@@ -22,7 +22,7 @@ if (isDev) {
       },
     }).pipeThrough(new TextEncoderStream());
   });
-  app.get("/js/refresh.js", ({ response }) => {
+  app.get("/static/js/refresh.js", ({ response }) => {
     response.type("application/javascript");
     return `let bool = false; new EventSource("/__REFRESH__").addEventListener("message", _ => {
   if (bool) location.reload();
@@ -48,7 +48,7 @@ const { files } = await Deno.emit(
       : void 0,
   },
 );
-const clientScript = `/__maze/${build_id}/_app.js`;
+const clientScript = `/static/__maze/${build_id}/_app.js`;
 app.get(clientScript, ({ response }) => {
   response.type("application/javascript");
   return files["deno:///bundle.js"];

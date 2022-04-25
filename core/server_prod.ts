@@ -8,7 +8,7 @@ const app = new NHttp<ReqEvent>({ env });
 export const initApp = (
   opts: TOptionsInitApp,
 ) => {
-  const clientScript = `/__maze/${opts.build_id}/_app.js`;
+  const clientScript = `/static/__maze/${opts.build_id}/_app.js`;
   const myApp = baseInitApp(
     {
       ...opts,
