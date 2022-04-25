@@ -1,11 +1,51 @@
 import { LINK, NANO_VERSION, NHTTP_VERSION } from "../core/constant.ts";
 import { join } from "./deps.ts";
 
+async function craftFromGit(template: string, app_name: string) {
+  const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
+  template = template.replace("--template=", "");
+  const script = CMD +
+    `git clone https://github.com/maze-template/maze-${template}.git ${app_name}`;
+  const p = Deno.run({
+    cmd: script.split(" "),
+    stdout: "piped",
+    stderr: "piped",
+  });
+
+  const { code } = await p.status();
+  const rawOutput = await p.output();
+  const rawError = await p.stderrOutput();
+
+  if (code === 0) {
+    await Deno.stdout.write(rawOutput);
+    console.log(`Success create ${app_name}.
+    
+cd ${app_name}
+
+RUN DEVELOPMENT:
+  maze dev
+
+BUILD PRODUCTION:
+  maze build
+
+RUN PRODUCTION:
+  deno run -A server.ts
+`);
+  } else {
+    const errorString = new TextDecoder().decode(rawError);
+    console.log(errorString);
+  }
+  Deno.exit(code);
+}
 export default async function createApp() {
   const app = Deno.args[1];
   if (!app) {
     console.log("App Not Found !!\ntry => maze create my-app");
     return;
+  }
+  const template = Deno.args[2];
+  if (template && template.includes("--template=")) {
+    return craftFromGit(template, app);
   }
   const link = LINK;
   const cwd = Deno.cwd();
@@ -234,7 +274,8 @@ export const pages: any = [
   { 
     path: '/',
     page: $0,
-    methods: ($0 as any).methods
+    methods: ($0 as any).methods,
+    hydrate: ($0 as any).hydrate
   },
 ];
 `,
@@ -261,7 +302,8 @@ export const pages: any = [
   { 
     path: '/',
     page: $0,
-    methods: ($0 as any).methods
+    methods: ($0 as any).methods,
+    hydrate: ($0 as any).hydrate
   },
 ];
 `,

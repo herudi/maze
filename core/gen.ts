@@ -85,7 +85,8 @@ export const pages: any = [
         return `{ 
     path: '${path}',
     page: $${i},
-    methods: ($${i} as any).methods
+    methods: ($${i} as any).methods,
+    hydrate: ($${i} as any).hydrate
   },`;
       }).join("\n  ")
     }
