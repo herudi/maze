@@ -135,7 +135,7 @@ export const ENV: string = 'production';`,
     });
   }
   console.log("Success building assets !!");
-  console.log("Run server: deno run -A server.ts");
+  console.log("Run server: deno task start");
   esbuild.stop();
 } catch (error) {
   console.log(error.message);
