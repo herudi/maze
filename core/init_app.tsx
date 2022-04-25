@@ -164,7 +164,9 @@ export default (
               JSON.stringify(props.initData)
             }</script>`
             : "",
-          env === "development" ? '<script src="/js/refresh.js"></script>' : "",
+          env === "development"
+            ? '<script src="/static/js/refresh.js"></script>'
+            : "",
           clientScript && hydrate
             ? `<script type="module" src="${clientScript}"></script>`
             : "",

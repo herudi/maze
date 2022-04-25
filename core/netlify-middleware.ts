@@ -5,9 +5,9 @@ const middleware: Handler = async (rev, next) => {
     if (rev.path.startsWith("/static")) {
       rev.path = rev.path.replace("/static", "");
       rev.url = rev.url.replace("/static", "");
-    } else return next();
-    const asset = await rev.context.rewrite(rev.url);
-    if (asset.status !== 404) return asset;
+      const asset = await rev.context.rewrite(rev.url);
+      if (asset.status !== 404) return asset;
+    }
   }
   return next();
 };
