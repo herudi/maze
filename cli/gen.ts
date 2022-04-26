@@ -209,6 +209,9 @@ app.use(async (rev, next) => {
       rev.path = rev.path.replace("/static", "");
       rev.url = rev.url.replace("/static", "");
       try {
+        if (rev.request.headers.get("if-none-match") === rev.response.header("ETag")) {
+          return rev.response.status(304).send();
+        }
         const page = await getAssetFromKV(rev, {
           mapRequestToAsset: handlePrefix("/static")
         });
