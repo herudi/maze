@@ -201,6 +201,10 @@ function handlePrefix(prefix) {
   }
 }
 
+function getEtag(etag){
+  return etag.replace("W/", "");
+}
+
 const app = maze();
 
 app.use(async (rev, next) => {
@@ -212,6 +216,9 @@ app.use(async (rev, next) => {
         const page = await getAssetFromKV(rev, {
           mapRequestToAsset: handlePrefix("/static")
         });
+        if (getEtag(rev.request.headers.get("if-none-match")) === getEtag(page.headers.get("ETag"))) {
+          return rev.response.status(304).send();
+        }
         const response = new Response(page.body, page);
         response.headers.set("X-XSS-Protection", "1; mode=block");
         response.headers.set("X-Content-Type-Options", "nosniff");
