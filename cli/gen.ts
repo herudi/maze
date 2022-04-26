@@ -141,8 +141,8 @@ jobs:
         with:
           deno-version: ${DENO_VERSION}
       - name: Build
-        run: deno run -A --no-check ${LINK}/cli/build.ts
-      - name: Upload to Deno Deploy
+        run: deno task build
+      - name: Deploy To Deno Deploy
         uses: denoland/deployctl@v1
         with:
           project: "${project}"
@@ -191,6 +191,7 @@ export async function genScriptCf(dir: string) {
     join(dir, "workers-site", "index.js"),
     `import { getAssetFromKV, mapRequestToAsset } from '@cloudflare/kv-asset-handler';
 import maze from "../.maze/core.node.js";
+import pkg from "./package.json";
 
 function handlePrefix(prefix) {
   return request => {
@@ -209,7 +210,7 @@ app.use(async (rev, next) => {
       rev.path = rev.path.replace("/static", "");
       rev.url = rev.url.replace("/static", "");
       try {
-        const cacheControl = {
+        const cacheControl = pkg["cache-control"] || {
           browserTTL: 2 * 60 * 60 * 24,
           edgeTTL: 2 * 60 * 60 * 24,
           bypassCache: false,
