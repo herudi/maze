@@ -1,7 +1,7 @@
 import { LINK, NHTTP_VERSION } from "../core/constant.ts";
 import { join } from "./deps.ts";
 
-export default async function createCore() {
+export default async function createCore(create_tt = true) {
   const link = LINK;
   const dir = Deno.cwd();
   await Deno.mkdir(join(dir, ".maze"), { recursive: true });
@@ -60,11 +60,20 @@ export const pages: any = [
 ];
 `,
   );
-  await Deno.writeTextFile(
-    join(dir, ".maze", "result", "constant.ts"),
-    `export const BUILD_ID: string = '${Date.now()}';
+  if (create_tt) {
+    const TT = Date.now();
+    await Deno.writeTextFile(
+      join(dir, ".maze", "result", "constant.ts"),
+      `export const BUILD_ID: string = '${TT}';
 export const ENV: string = 'development';`,
-  );
+    );
+    await Deno.writeTextFile(
+      join(dir, "maze.gen.ts"),
+      `export const BUILD_ID: string = '${TT}';
+export const ENV: string = 'development';`,
+    );
+  }
+
   await Deno.writeTextFile(
     join(dir, ".maze", "result", "apis.ts"),
     `import { Router } from "https://deno.land/x/nhttp@${NHTTP_VERSION}/mod.ts";
