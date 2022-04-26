@@ -26,8 +26,6 @@ cd my-app
 
 ```bash
 maze dev
-// or
-deno task dev
 ```
 
 ## Deploy To Deno Deploy
