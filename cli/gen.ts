@@ -1,4 +1,5 @@
-import { LINK } from "../core/constant.ts";
+import { DENO_VERSION, LINK } from "../core/constant.ts";
+import buildNode from "./build_node.ts";
 import { isExist, join } from "./deps.ts";
 
 function cl(str: string) {
@@ -138,7 +139,7 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@main
         with:
-          deno-version: 1.21.0
+          deno-version: ${DENO_VERSION}
       - name: Build
         run: deno run -A --no-check ${LINK}/cli/build.ts
       - name: Upload to Deno Deploy
@@ -180,6 +181,72 @@ export default (request, context) => maze().use(midd).handleEvent({ request, con
   function = "${project}"
   path = "/*"`,
     );
+  } catch (error) {
+    console.error(error.message || "Failed create edge functions");
+  }
+}
+
+export async function genScriptCf(dir: string) {
+  await Deno.writeTextFile(
+    join(dir, "workers-site", "index.js"),
+    `import { getAssetFromKV, mapRequestToAsset } from '@cloudflare/kv-asset-handler';
+import maze from "../.maze/core.node.js";
+
+function handlePrefix(prefix) {
+  return request => {
+    const defaultAssetKey = mapRequestToAsset(request);
+    const url = new URL(defaultAssetKey.url);
+    url.pathname = url.pathname.replace(prefix, '/');
+    return new Request(url.toString(), defaultAssetKey);
+  }
+}
+
+const app = maze();
+
+app.use(async (rev, next) => {
+  if (rev.request.method === "GET") {
+    if (rev.path.startsWith("/static")) {
+      rev.path = rev.path.replace("/static", "");
+      rev.url = rev.url.replace("/static", "");
+      try {
+        const page = await getAssetFromKV(rev, {
+          mapRequestToAsset: handlePrefix("/static")
+        });
+        const response = new Response(page.body, page);
+        response.headers.set("X-XSS-Protection", "1; mode=block");
+        response.headers.set("X-Content-Type-Options", "nosniff");
+        response.headers.set("X-Frame-Options", "DENY");
+        response.headers.set("Referrer-Policy", "unsafe-url");
+        response.headers.set("Feature-Policy", "none");
+        return response;
+      } catch (_e) {/* noop */ }
+    }
+  }
+  return next();
+});
+
+addEventListener('fetch', (event) => {
+  event.respondWith(app.handleEvent(event));
+});`,
+  );
+  const my_file = (await Deno.readTextFile(join(dir, "wrangler.toml"))).replace(
+    `bucket = ""`,
+    `bucket = "public"`,
+  );
+  await Deno.writeTextFile(join(dir, "wrangler.toml"), my_file);
+}
+
+export async function addCloudflareWorkers() {
+  const dir = Deno.cwd();
+  if (isExist(join(dir, ".maze", "core.build.js"))) {
+    await buildNode();
+  } else {
+    console.log("Failed : please build first. type = maze build");
+    return;
+  }
+  try {
+    await genScriptCf(dir);
+    console.log("Success generating cloudflare workers.");
   } catch (error) {
     console.error(error.message || "Failed create edge functions");
   }

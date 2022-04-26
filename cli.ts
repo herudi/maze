@@ -1,6 +1,13 @@
+import buildNode from "./cli/build_node.ts";
 import createApp from "./cli/create.ts";
 import dev_server from "./cli/dev.ts";
-import { addDeploy, addNetlifyEdge, newApis, newPages } from "./cli/gen.ts";
+import {
+  addCloudflareWorkers,
+  addDeploy,
+  addNetlifyEdge,
+  newApis,
+  newPages,
+} from "./cli/gen.ts";
 import { LINK } from "./core/constant.ts";
 
 const arg = (Deno.args || [])[0];
@@ -37,6 +44,8 @@ if (arg === "create") {
   await dev_server(true);
 } else if (arg === "build") {
   await build("");
+} else if (arg === "transform-to-node") {
+  await buildNode();
 } else if (arg === "build-bundle") {
   await build(" --bundle");
 } else if (arg === "gen:page") {
@@ -45,6 +54,8 @@ if (arg === "create") {
   await newApis();
 } else if (arg === "gen:deploy") {
   await addDeploy();
+} else if (arg === "gen:cf-workers") {
+  await addCloudflareWorkers();
 } else if (arg === "gen:netlify") {
   await addNetlifyEdge();
 } else if (arg === "help") {
