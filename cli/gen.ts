@@ -201,10 +201,6 @@ function handlePrefix(prefix) {
   }
 }
 
-function getEtag(etag){
-  return etag.replace("W/", "");
-}
-
 const app = maze();
 
 app.use(async (rev, next) => {
@@ -213,12 +209,15 @@ app.use(async (rev, next) => {
       rev.path = rev.path.replace("/static", "");
       rev.url = rev.url.replace("/static", "");
       try {
-        const page = await getAssetFromKV(rev, {
-          mapRequestToAsset: handlePrefix("/static")
-        });
-        if (getEtag(rev.request.headers.get("if-none-match")) === getEtag(page.headers.get("ETag"))) {
-          return rev.response.status(304).send();
+        const cacheControl = {
+          browserTTL: 2 * 60 * 60 * 24,
+          edgeTTL: 2 * 60 * 60 * 24,
+          bypassCache: false,
         }
+        const page = await getAssetFromKV(rev, {
+          mapRequestToAsset: handlePrefix("/static"),
+          cacheControl
+        });
         const response = new Response(page.body, page);
         response.headers.set("X-XSS-Protection", "1; mode=block");
         response.headers.set("X-Content-Type-Options", "nosniff");
