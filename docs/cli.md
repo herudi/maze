@@ -72,8 +72,41 @@ npm install @cloudflare/wrangler -g
 ### Wrangler Init
 
 ```bash
-wrangler init --site
+wrangler init --site <project-name>
 ```
+
+### Publish With Github Action
+
+Please add manually.
+
+```yaml
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Install Deno
+        uses: denoland/setup-deno@main
+        with:
+          deno-version: 1.21.0
+      - name: Build
+        run: deno run -A --no-check https://raw.githubusercontent.com/herudi/maze/dev-0.0.8/cli/build.ts
+      - name: Publish
+        uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+```
+
+## Publish To Cloudflare Workers From Local
 
 ### Login To Cloudflare Workers
 
