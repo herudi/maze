@@ -209,11 +209,14 @@ app.use(async (rev, next) => {
       rev.path = rev.path.replace("/static", "");
       rev.url = rev.url.replace("/static", "");
       try {
-        if (rev.request.headers.get("if-none-match") === rev.response.header("ETag")) {
-          return rev.response.status(304).send();
+        const cacheControl = {
+          browserTTL: 2 * 60 * 60 * 24,
+          edgeTTL: 2 * 60 * 60 * 24,
+          bypassCache: false,
         }
         const page = await getAssetFromKV(rev, {
-          mapRequestToAsset: handlePrefix("/static")
+          mapRequestToAsset: handlePrefix("/static"),
+          cacheControl
         });
         const response = new Response(page.body, page);
         response.headers.set("X-XSS-Protection", "1; mode=block");
