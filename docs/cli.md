@@ -99,7 +99,7 @@ jobs:
         with:
           deno-version: 1.21.0
       - name: Build
-        run: deno run -A --no-check https://raw.githubusercontent.com/herudi/maze/dev-0.0.8/cli/build.ts
+        run: deno task build
       - name: Publish
         uses: cloudflare/wrangler-action@1.3.0
         with:
