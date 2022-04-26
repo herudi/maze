@@ -135,6 +135,7 @@ export default async function createApp() {
     join(dir, ".gitignore"),
     `.maze
 .netlify
+dist
 node_modules`,
   );
   await Deno.writeTextFile(

@@ -61,6 +61,42 @@ maze gen:netlify <project-name>
 
 Just integrate to github, code will auto build and deploy.
 
+## Deploy To Cloudflare Workers
+
+### Install Wrangler
+
+```bash
+npm install @cloudflare/wrangler -g
+```
+
+### Wrangler Init
+
+```bash
+wrangler init --site
+```
+
+### Login To Cloudflare Workers
+
+```bash
+wrangler login
+```
+
+### Build
+
+```bash
+maze build
+```
+
+```bash
+wrangler build
+```
+
+### Publish
+
+```bash
+wrangler publish
+```
+
 ## Build Self Server
 
 ### Build
