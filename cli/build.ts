@@ -41,7 +41,7 @@ for (let i = 0; i < listFiles.length; i++) {
 }
 
 if (!isExist(join(resolve(dir, "./.maze/result/constant.ts")))) {
-  await createCore();
+  await createCore(false);
 }
 
 try {
@@ -73,6 +73,11 @@ try {
   }
   await Deno.writeTextFile(
     join(dir, ".maze", "result", "constant.ts"),
+    `export const BUILD_ID: string = '${BUILD_ID}';
+export const ENV: string = 'production';`,
+  );
+  await Deno.writeTextFile(
+    join(dir, "maze.gen.ts"),
     `export const BUILD_ID: string = '${BUILD_ID}';
 export const ENV: string = 'production';`,
   );

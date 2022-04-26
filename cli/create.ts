@@ -132,6 +132,11 @@ export default async function createApp() {
 }`,
   );
   await Deno.writeTextFile(
+    join(dir, "maze.gen.ts"),
+    `export const BUILD_ID: string = '${Date.now()}';
+export const ENV: string = 'development';`,
+  );
+  await Deno.writeTextFile(
     join(dir, ".gitignore"),
     `.maze
 .netlify
