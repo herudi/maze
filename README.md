@@ -132,11 +132,7 @@ More => https://workers.cloudflare.com/
 
 ```bash
 maze build
-```
-
-### Build Bundle
-
-```bash
+// or
 maze build-bundle
 ```
 
@@ -144,6 +140,8 @@ maze build-bundle
 
 ```bash
 deno run -A .maze/server.ts
+// or
+deno task start
 ```
 
 > It's Fun Project :).
