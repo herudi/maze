@@ -135,15 +135,7 @@ wrangler publish
 ```bash
 maze build
 // or
-deno task build
-```
-
-### Build Bundle
-
-```bash
 maze build-bundle
-// or
-deno task build:bundle
 ```
 
 ### Run Server
