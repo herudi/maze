@@ -211,7 +211,7 @@ app.use(async (rev, next) => {
       rev.url = rev.url.replace("/static", "");
       try {
         const cacheControl = pkg["cache-control"] || {
-          browserTTL: 2 * 60 * 60 * 24,
+          browserTTL: null,
           edgeTTL: 2 * 60 * 60 * 24,
           bypassCache: false,
         }
