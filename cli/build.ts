@@ -25,6 +25,7 @@ const cfg =
     .default;
 
 const build_cfg = (cfg || {}).build || {};
+const build_cfg_server = (cfg || {}).build_server || {};
 
 const BUILD_ID = Date.now();
 
@@ -99,6 +100,7 @@ export const ENV: string = 'production';`,
     entryPoints: [join(resolve(dir, ".maze", "core.ts"))],
     outfile: join(resolve(dir, ".maze", "core.build.js")),
     plugins: [esbuild_import_map.plugin()],
+    ...build_cfg_server,
   });
   const maze_file = (await Deno.readTextFile(join(dir, ".maze", "maze.ts")))
     .replace(

@@ -44,9 +44,13 @@ export default class ClassicRouter {
   routes: { path: string; regex: RegExp; wild: boolean; fn: THandler }[] = [];
   current: string | undefined;
   ErrorPage: TRet;
+  render: (elem: TRet, id?: string) => TRet;
   is_reload = false;
-  constructor(ErrorPage: TRet) {
+  constructor(ErrorPage: TRet, render?: (elem: TRet, id?: string) => TRet) {
     this.ErrorPage = ErrorPage;
+    this.render = render || ((elem, id) => {
+      hydrate(elem, id ? document.getElementById(id) : document.body);
+    });
   }
 
   buildPages(path: string, zones: string[], pages: TRet) {
@@ -126,9 +130,7 @@ export default class ClassicRouter {
         return { data: void 0, error: json };
       }
     };
-    rev.render = (elem, id) => {
-      hydrate(elem, id ? document.getElementById(id) : document.body);
-    };
+    rev.render = this.render;
     if (!fn) {
       if (isReload) {
         return location.reload();

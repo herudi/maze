@@ -13,7 +13,6 @@ import { LINK } from "./core/constant.ts";
 const arg = (Deno.args || [])[0];
 
 async function build(prefix: string) {
-  console.log("Building Server Production...");
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   const script = CMD +
     `deno run -A --unstable --no-check ${LINK}/cli/build.ts${prefix}`;
@@ -44,10 +43,10 @@ if (arg === "create") {
   await dev_server(true);
 } else if (arg === "build") {
   await build("");
-} else if (arg === "transform-to-node") {
-  await buildNode();
 } else if (arg === "build-bundle") {
   await build(" --bundle");
+} else if (arg === "transform-to-node") {
+  await buildNode();
 } else if (arg === "gen:page") {
   await newPages();
 } else if (arg === "gen:api") {

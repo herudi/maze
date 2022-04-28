@@ -31,6 +31,9 @@ export default async function dev_server(is_clean = false) {
       recursive: true,
     });
   } catch (_e) { /* noop */ }
+  try {
+    await Deno.remove(join(resolve(dir, "./workers-site/.maze_ok")));
+  } catch (_e) { /* noop */ }
   await genRoutesWithRefresh("development");
   if (is_clean) return;
   await sleep(1000);
