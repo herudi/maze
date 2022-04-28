@@ -12,16 +12,10 @@ import { LINK } from "./core/constant.ts";
 
 const arg = (Deno.args || [])[0];
 
-async function build(prefix: string, watch = false) {
-  if (!watch) {
-    console.log("Building Server Production...");
-  } else {
-    console.log("Enable build watch...");
-  }
-  const str_watch = watch ? " --watch" : "";
+async function build(prefix: string) {
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
   const script = CMD +
-    `deno run -A --unstable --no-check${str_watch} ${LINK}/cli/build.ts${prefix}`;
+    `deno run -A --unstable --no-check ${LINK}/cli/build.ts${prefix}`;
   const p = Deno.run({
     cmd: script.split(" "),
     stdout: "piped",
@@ -38,9 +32,7 @@ async function build(prefix: string, watch = false) {
     const errorString = new TextDecoder().decode(rawError);
     console.log(errorString);
   }
-  if (!watch) {
-    Deno.exit(code);
-  }
+  Deno.exit(code);
 }
 
 if (arg === "create") {
@@ -53,10 +45,6 @@ if (arg === "create") {
   await build("");
 } else if (arg === "build-bundle") {
   await build(" --bundle");
-} else if (arg === "build-watch") {
-  await build("", true);
-} else if (arg === "build-bundle-watch") {
-  await build(" --bundle", true);
 } else if (arg === "transform-to-node") {
   await buildNode();
 } else if (arg === "gen:page") {
