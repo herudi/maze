@@ -44,6 +44,29 @@ Home.initProps = async (rev: RequestEvent) => {
 export default Home;
 ```
 
+Example class without decorator
+
+```jsx
+/** @jsx h */
+import { Component, h } from "nano-jsx";
+import { PageProps, RequestEvent } from "maze";
+
+class Home extends Component<PageProps> {
+
+  static async initProps(rev: RequestEvent) {
+    const res = await fetch("http://..../items");
+    const items = await res.json();
+    return { items };
+  }
+
+  render() {
+    return <ul>{this.props.items.map((el) => <li>{el}</li>)}</ul>;
+  }
+}
+
+export default Home;
+```
+
 ## Fetch from internal api
 
 ```jsx

@@ -82,6 +82,10 @@ export type MazeConfig = {
    */
   build?: Record<string, TRet>;
   /**
+   * Build server config.
+   */
+  build_server?: Record<string, TRet>;
+  /**
    * PORT number
    */
   port?: number;

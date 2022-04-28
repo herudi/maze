@@ -187,6 +187,13 @@ export default (request, context) => maze().use(midd).handleEvent({ request, con
 }
 
 export async function genScriptCf(dir: string) {
+  if (isExist(join(Deno.cwd(), "workers-site", ".maze_ok"))) {
+    return;
+  }
+  await Deno.writeTextFile(
+    join(dir, "workers-site", ".maze_ok"),
+    "",
+  );
   await Deno.writeTextFile(
     join(dir, "workers-site", "index.js"),
     `import { getAssetFromKV, mapRequestToAsset } from '@cloudflare/kv-asset-handler';

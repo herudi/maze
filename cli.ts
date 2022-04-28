@@ -35,6 +35,27 @@ async function build(prefix: string) {
   }
   Deno.exit(code);
 }
+async function buildWatch(prefix: string) {
+  const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
+  const script = CMD +
+    `deno run -A --unstable --no-check --watch ${LINK}/cli/build.ts${prefix}`;
+  const p = Deno.run({
+    cmd: script.split(" "),
+    stdout: "piped",
+    stderr: "piped",
+  });
+
+  const { code } = await p.status();
+  const rawOutput = await p.output();
+  const rawError = await p.stderrOutput();
+
+  if (code === 0) {
+    await Deno.stdout.write(rawOutput);
+  } else {
+    const errorString = new TextDecoder().decode(rawError);
+    console.log(errorString);
+  }
+}
 
 if (arg === "create") {
   await createApp();
@@ -44,10 +65,14 @@ if (arg === "create") {
   await dev_server(true);
 } else if (arg === "build") {
   await build("");
-} else if (arg === "transform-to-node") {
-  await buildNode();
 } else if (arg === "build-bundle") {
   await build(" --bundle");
+} else if (arg === "build --watch") {
+  await buildWatch("");
+} else if (arg === "build-bundle --watch") {
+  await buildWatch(" --bundle");
+} else if (arg === "transform-to-node") {
+  await buildNode();
 } else if (arg === "gen:page") {
   await newPages();
 } else if (arg === "gen:api") {
