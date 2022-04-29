@@ -237,8 +237,12 @@ bucket = "public"
 entry-point = "cloudflare"
 
 [build]
-command = "deno task build"
-watch_dir = "pages"
+command = ""
+
+# for wrangler dev
+# [build]
+# command = "deno task build"
+# watch_dir = "pages"
 
 [build.upload]
 format = "service-worker"`,
