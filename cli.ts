@@ -1,3 +1,4 @@
+import buildWorkers from "./cli/build_workers.ts";
 import createApp from "./cli/create.ts";
 import dev_server from "./cli/dev.ts";
 import {
@@ -44,6 +45,8 @@ if (arg === "create") {
   await build("");
 } else if (arg === "build-bundle") {
   await build(" --bundle");
+} else if (arg === "build-workers") {
+  await buildWorkers();
 } else if (arg === "gen:page") {
   await newPages();
 } else if (arg === "gen:api") {

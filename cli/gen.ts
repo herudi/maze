@@ -225,7 +225,7 @@ addEventListener('fetch', (event: any) => {
     );
     await Deno.writeTextFile(
       join(cwd, "wrangler.toml"),
-      `name = "maze-ssr"
+      `name = "${project}"
 type = "javascript"
 workers_dev = true
 compatibility_date = "${days().format("YYYY-MM-DD")}"
@@ -233,9 +233,6 @@ compatibility_date = "${days().format("YYYY-MM-DD")}"
 [site]
 bucket = "public"
 entry-point = "cloudflare"
-
-[build]
-command = "deno task build:workers"
 
 [build.upload]
 format = "service-worker"`,

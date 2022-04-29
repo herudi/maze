@@ -146,6 +146,19 @@ export const ENV: string = 'production';`,
       ...build_cfg,
     });
   }
+  if (isExist(join(dir, "cloudflare", "worker.ts"))) {
+    await esbuild.build({
+      minify: true,
+      treeShaking: true,
+      platform: "neutral",
+      bundle: true,
+      plugins: [denoPlugin()],
+      entryPoints: [
+        toFileUrl(join(resolve(dir, "./cloudflare/worker.ts"))).href,
+      ],
+      outfile: join(resolve(dir, `./cloudflare/worker.js`)),
+    });
+  }
   console.log("Success building assets !!");
   console.log("Run server: deno run -A .maze/server.ts");
   esbuild.stop();
