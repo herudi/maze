@@ -1,4 +1,3 @@
-import buildNode from "./cli/build_node.ts";
 import createApp from "./cli/create.ts";
 import dev_server from "./cli/dev.ts";
 import {
@@ -45,18 +44,16 @@ if (arg === "create") {
   await build("");
 } else if (arg === "build-bundle") {
   await build(" --bundle");
-} else if (arg === "transform-to-node") {
-  await buildNode();
 } else if (arg === "gen:page") {
   await newPages();
 } else if (arg === "gen:api") {
   await newApis();
 } else if (arg === "gen:deploy") {
   await addDeploy();
-} else if (arg === "gen:cf-workers") {
-  await addCloudflareWorkers();
 } else if (arg === "gen:netlify") {
   await addNetlifyEdge();
+} else if (arg === "gen:workers") {
+  await addCloudflareWorkers();
 } else if (arg === "help") {
   console.log(`The simple fullstack TS/JS with deno and nanojsx.
     

@@ -1,13 +1,16 @@
-import * as esbuild from "https://deno.land/x/esbuild@v0.14.25/mod.js";
 import * as esbuild_import_map from "https://esm.sh/esbuild-plugin-import-map?no-check";
 import { genRoutesWithRefresh, getListPages } from "./../core/gen.ts";
-import { denoPlugin } from "https://deno.land/x/esbuild_deno_loader@0.4.1/mod.ts";
-import { isExist, join, resolve, toFileUrl } from "./deps.ts";
+import {
+  denoPlugin,
+  esbuild,
+  isExist,
+  join,
+  resolve,
+  toFileUrl,
+} from "./deps.ts";
 import { LINK } from "../core/constant.ts";
 import { TRet } from "../core/types.ts";
 import createCore from "./create_core.ts";
-import buildNode from "./build_node.ts";
-import { genScriptCf } from "./gen.ts";
 
 const isBundle = (Deno.args || []).includes("--bundle") ? true : false;
 
@@ -142,15 +145,6 @@ export const ENV: string = 'production';`,
       outdir: join(resolve(dir, `./public/__maze/${BUILD_ID}`)),
       ...build_cfg,
     });
-  }
-  if (
-    isExist(join(dir, "workers-site", "index.js")) &&
-    isExist(join(dir, "wrangler.toml"))
-  ) {
-    await buildNode(false);
-    try {
-      await genScriptCf(dir);
-    } catch (_e) { /*  */ }
   }
   console.log("Success building assets !!");
   console.log("Run server: deno run -A .maze/server.ts");

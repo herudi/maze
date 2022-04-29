@@ -32,7 +32,7 @@ export default async function dev_server(is_clean = false) {
     });
   } catch (_e) { /* noop */ }
   try {
-    await Deno.remove(join(resolve(dir, "./workers-site/.maze_ok")));
+    await Deno.remove(join(resolve(dir, "./cloudflare/worker.js")));
   } catch (_e) { /* noop */ }
   await genRoutesWithRefresh("development");
   if (is_clean) return;

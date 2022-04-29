@@ -117,6 +117,8 @@ export default async function createApp() {
     "build:reload": "deno run -A --no-check --reload ${LINK}/cli/build.ts",
     "build:bundle": "deno run -A --no-check ${LINK}/cli/build.ts --bundle",
     "build:bundle:reload": "deno run -A --no-check --reload ${LINK}/cli/build.ts --bundle",
+    "build:workers": "deno run -A --no-check ${LINK}/cli/build_workers.ts",
+    "build:workers:reload": "deno run -A --no-check --reload ${LINK}/cli/build_workers.ts",
     "clean": "maze clean"
   }
 }`,
