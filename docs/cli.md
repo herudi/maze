@@ -3,7 +3,7 @@
 ### Install
 
 ```bash
-deno install -Af --no-check -n maze -r https://raw.githubusercontent.com/herudi/maze/dev-0.0.8/cli.ts
+deno install -Af --no-check -n maze -r https://raw.githubusercontent.com/herudi/maze/dev-0.0.9/cli.ts
 ```
 
 ### Create New App
@@ -61,16 +61,10 @@ Just integrate to github, code will auto build and deploy.
 
 ## Deploy To Cloudflare Workers
 
-### Install Wrangler
+### Generate cloudflare-workers script
 
 ```bash
-npm install @cloudflare/wrangler -g
-```
-
-### Wrangler Init
-
-```bash
-wrangler init --site <project-name>
+maze gen:workers <site-name>
 ```
 
 ### Publish With Github Action
@@ -104,29 +98,8 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
 
-## Publish To Cloudflare Workers From Local
-
-### Login To Cloudflare Workers
-
-```bash
-wrangler login
-```
-
-### Build
-
-```bash
-maze build
-```
-
-```bash
-wrangler build
-```
-
-### Publish
-
-```bash
-wrangler publish
-```
+> Note : You can publish with
+> [wrangler](https://developers.cloudflare.com/workers/cli-wrangler)
 
 ## Build Self Server
 

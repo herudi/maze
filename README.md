@@ -30,7 +30,7 @@ See [Docs](https://github.com/herudi/maze/tree/master/docs)
 ## Install
 
 ```bash
-deno install -Af --no-check -n maze -r https://raw.githubusercontent.com/herudi/maze/dev-0.0.8/cli.ts
+deno install -Af --no-check -n maze -r https://raw.githubusercontent.com/herudi/maze/dev-0.0.9/cli.ts
 ```
 
 ## Usage
@@ -62,7 +62,7 @@ In this mode you push your code and assets to Deno Deploy from a GitHub Actions
 workflow. This allows you to perform a build step before deploying.
 
 ```bash
-maze gen:deploy <project-name>
+maze gen:deploy <site-name>
 ```
 
 Just integrate to github, code will auto build and deploy.
@@ -74,23 +74,17 @@ See https://deno.com/deploy/docs/projects
 ### Generate netlify script
 
 ```bash
-maze gen:netlify <project-name>
+maze gen:netlify <site-name>
 ```
 
 Just integrate to github, code will auto build and deploy.
 
 ## Deploy To Cloudflare Workers
 
-### Install Wrangler
+### Generate cloudflare-workers script
 
 ```bash
-npm install @cloudflare/wrangler -g
-```
-
-### Wrangler Init
-
-```bash
-wrangler init --site <project-name>
+maze gen:workers <site-name>
 ```
 
 ### Publish With Github Action
@@ -124,7 +118,8 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
 ```
 
-More => https://workers.cloudflare.com/
+> Note : You can publish with
+> [wrangler](https://developers.cloudflare.com/workers/cli-wrangler)
 
 ## Build Self Server
 

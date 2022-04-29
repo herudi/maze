@@ -1,6 +1,6 @@
 import { DENO_VERSION, LINK } from "../core/constant.ts";
-import buildNode from "./build_node.ts";
 import { isExist, join } from "./deps.ts";
+import days from "https://esm.sh/dayjs";
 
 function cl(str: string) {
   return str.replace(/\[|\]|\./g, "");
@@ -165,11 +165,13 @@ export async function addNetlifyEdge() {
       recursive: true,
     });
     await Deno.writeTextFile(
-      join(cwd, "netlify", "edge-functions", `${project}.js`),
+      join(cwd, "netlify", "edge-functions", `${project}.ts`),
       `import maze from "../../.maze/maze.ts";
-import midd from "${LINK}/core/netlify-middleware.ts";
+import middleware from "${LINK}/core/netlify_middleware.ts";
 
-export default (request, context) => maze().use(midd).handleEvent({ request, context });`,
+export default (request: Request, context: Record<string, any>) => {
+  return maze().use(middleware()).handleEvent({ request, context });
+}`,
     );
     await Deno.writeTextFile(
       join(cwd, "netlify.toml"),
@@ -186,81 +188,65 @@ export default (request, context) => maze().use(midd).handleEvent({ request, con
   }
 }
 
-export async function genScriptCf(dir: string) {
-  if (isExist(join(Deno.cwd(), "workers-site", ".maze_ok"))) {
-    return;
-  }
-  await Deno.writeTextFile(
-    join(dir, "workers-site", ".maze_ok"),
-    "",
-  );
-  await Deno.writeTextFile(
-    join(dir, "workers-site", "index.js"),
-    `import { getAssetFromKV, mapRequestToAsset } from '@cloudflare/kv-asset-handler';
-import maze from "../.maze/core.node.js";
-import pkg from "./package.json";
-
-function handlePrefix(prefix) {
-  return request => {
-    const defaultAssetKey = mapRequestToAsset(request);
-    const url = new URL(defaultAssetKey.url);
-    url.pathname = url.pathname.replace(prefix, '/');
-    return new Request(url.toString(), defaultAssetKey);
-  }
-}
-
-const app = maze();
-
-app.use(async (rev, next) => {
-  if (rev.request.method === "GET") {
-    if (rev.path.startsWith("/static")) {
-      rev.path = rev.path.replace("/static", "");
-      rev.url = rev.url.replace("/static", "");
-      try {
-        const cacheControl = pkg["cache-control"] || {
-          browserTTL: null,
-          edgeTTL: 2 * 60 * 60 * 24,
-          bypassCache: false,
-        }
-        const page = await getAssetFromKV(rev, {
-          mapRequestToAsset: handlePrefix("/static"),
-          cacheControl
-        });
-        const response = new Response(page.body, page);
-        response.headers.set("X-XSS-Protection", "1; mode=block");
-        response.headers.set("X-Content-Type-Options", "nosniff");
-        response.headers.set("X-Frame-Options", "DENY");
-        response.headers.set("Referrer-Policy", "unsafe-url");
-        response.headers.set("Feature-Policy", "none");
-        return response;
-      } catch (_e) {/* noop */ }
-    }
-  }
-  return next();
-});
-
-addEventListener('fetch', (event) => {
-  event.respondWith(app.handleEvent(event));
-});`,
-  );
-  const my_file = (await Deno.readTextFile(join(dir, "wrangler.toml"))).replace(
-    `bucket = ""`,
-    `bucket = "public"`,
-  );
-  await Deno.writeTextFile(join(dir, "wrangler.toml"), my_file);
-}
-
 export async function addCloudflareWorkers() {
-  const dir = Deno.cwd();
-  if (isExist(join(dir, ".maze", "core.build.js"))) {
-    await buildNode();
-  } else {
-    console.log("Failed : please build first. type = maze build");
+  const project = Deno.args[1];
+  if (!project) {
+    console.log("Path Not Found !!\ntry => maze gen:workers project-name");
     return;
   }
+  const cwd = Deno.cwd();
   try {
-    await genScriptCf(dir);
-    console.log("Success generating cloudflare workers.");
+    await Deno.mkdir(join(cwd, "cloudflare"));
+    await Deno.writeTextFile(
+      join(cwd, "cloudflare", "worker.ts"),
+      `import maze from "../.maze/maze.ts";
+import middleware from "${LINK}/core/cf_workers_middleware.ts";
+
+// default cache
+const cache = {
+  browserTTL: null,
+  edgeTTL: 2 * 60 * 60 * 24,
+  bypassCache: false,
+}
+
+addEventListener('fetch', (event: any) => {
+  event.respondWith(maze().use(middleware(cache)).handleEvent(event));
+});`,
+    );
+    await Deno.writeTextFile(
+      join(cwd, "cloudflare", "package.json"),
+      `{
+  "private": true,
+  "name": "worker",
+  "version": "1.0.0",
+  "description": "Maze starter cloudflare worker",
+  "main": "worker.js",
+  "author": "Herudi",
+  "license": "MIT"
+}`,
+    );
+    await Deno.writeTextFile(
+      join(cwd, "wrangler.toml"),
+      `name = "${project}"
+type = "javascript"
+workers_dev = true
+compatibility_date = "${days().format("YYYY-MM-DD")}"
+
+[site]
+bucket = "public"
+entry-point = "cloudflare"
+
+[build]
+command = ""
+
+# for wrangler dev
+# [build]
+# command = "deno task build"
+# watch_dir = "pages"
+
+[build.upload]
+format = "service-worker"`,
+    );
   } catch (error) {
     console.error(error.message || "Failed create edge functions");
   }
