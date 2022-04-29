@@ -5,12 +5,6 @@ import {
 } from "https://esm.sh/@cloudflare/kv-asset-handler";
 import { ReqEvent, TRet } from "./types.ts";
 
-type TConfig = {
-  browserTTL?: number;
-  edgeTTL?: number;
-  bypassCache?: boolean;
-};
-
 function handlePrefix(prefix: string) {
   return (request: Request) => {
     const defaultAssetKey = mapRequestToAsset(request);
@@ -20,7 +14,9 @@ function handlePrefix(prefix: string) {
   };
 }
 
-export default function middleware(config?: TConfig): Handler<ReqEvent> {
+export default function middleware(
+  config?: Record<string, TRet>,
+): Handler<ReqEvent> {
   return async (rev, next) => {
     if (rev.request.method === "GET") {
       if (rev.path.startsWith("/static")) {
