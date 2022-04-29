@@ -165,11 +165,13 @@ export async function addNetlifyEdge() {
       recursive: true,
     });
     await Deno.writeTextFile(
-      join(cwd, "netlify", "edge-functions", `${project}.js`),
+      join(cwd, "netlify", "edge-functions", `${project}.ts`),
       `import maze from "../../.maze/maze.ts";
 import middleware from "${LINK}/core/netlify_middleware.ts";
 
-export default (request, context) => maze().use(middleware()).handleEvent({ request, context });`,
+export default (request: Request, context: Record<string, any>) => {
+  return maze().use(middleware()).handleEvent({ request, context });
+}`,
     );
     await Deno.writeTextFile(
       join(cwd, "netlify.toml"),
@@ -233,6 +235,10 @@ compatibility_date = "${days().format("YYYY-MM-DD")}"
 [site]
 bucket = "public"
 entry-point = "cloudflare"
+
+[build]
+command = "deno task build"
+watch_dir = "pages"
 
 [build.upload]
 format = "service-worker"`,
