@@ -1,4 +1,4 @@
-import { RequestEvent as BRequestEvent } from "https://deno.land/x/nhttp@1.1.11/src/request_event.ts";
+import { NHttp, RequestEvent as BRequestEvent } from "./deps.ts";
 
 // deno-lint-ignore no-explicit-any
 export type TRet = any;
@@ -89,4 +89,8 @@ export type MazeConfig = {
    * PORT number
    */
   port?: number;
+  /**
+   * PORT number
+   */
+  server?: (app: NHttp<ReqEvent>) => void;
 };

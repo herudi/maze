@@ -20,7 +20,13 @@ import config from "../maze.config.ts";
 
 const PORT = config.port || 8080;
 
-maze(import.meta.url).listen(PORT, () => {
+const app = maze(import.meta.url);
+
+if (config.server) {
+  config.server(app);
+}
+
+app.listen(PORT, () => {
   console.log("> Running on http://localhost:" + PORT);
 });
 `,
