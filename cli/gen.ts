@@ -115,7 +115,7 @@ export async function newApis() {
 export async function addDeploy() {
   const project = Deno.args[1];
   if (!project) {
-    console.log("Path Not Found !!\ntry => maze gen:deploy project-name");
+    console.log("Path Not Found !!\ntry => maze gen:deploy site-name");
     return;
   }
   const cwd = Deno.cwd();
@@ -156,7 +156,7 @@ jobs:
 export async function addNetlifyEdge() {
   const project = Deno.args[1];
   if (!project) {
-    console.log("Path Not Found !!\ntry => maze gen:netlify project-name");
+    console.log("Path Not Found !!\ntry => maze gen:netlify site-name");
     return;
   }
   const cwd = Deno.cwd();
@@ -191,7 +191,7 @@ export default (request: Request, context: Record<string, any>) => {
 export async function addCloudflareWorkers() {
   const project = Deno.args[1];
   if (!project) {
-    console.log("Path Not Found !!\ntry => maze gen:workers project-name");
+    console.log("Path Not Found !!\ntry => maze gen:workers site-name");
     return;
   }
   const cwd = Deno.cwd();

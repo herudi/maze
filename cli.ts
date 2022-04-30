@@ -55,12 +55,12 @@ if (arg === "create") {
 } else if (arg === "gen:workers") {
   await addCloudflareWorkers();
 } else if (arg === "help") {
-  console.log(`The simple fullstack TS/JS with deno and nanojsx.
+  console.log(`Simple CLI tools for building web with Deno and Nanojsx.
     
 CREATE NEW APP:
-  maze create your-app-name
-  maze create your-app-name --template=template-name
-  cd your-app-name
+  maze create app-name
+  maze create app-name --template=template-name
+  cd app-name
 
 RUN DEVELOPMENT:
   maze dev
@@ -71,11 +71,14 @@ BUILD PRODUCTION:
 RUN PRODUCTION:
   deno run -A .maze/server.ts
 
-GENERATE WORKFLOW DENO DEPLOY:
-  maze gen:deploy <project-name>
+GENERATE DENO DEPLOY:
+  maze gen:deploy <site-name>
 
 GENERATE NETLIFY EDGE FUNCTIONS:
-  maze gen:netlify <project-name>
+  maze gen:netlify <site-name>
+
+GENERATE CLOUDFLARE WORKERS:
+  maze gen:workers <site-name>
 
 GENERATE NEW PAGE:
   maze gen:page <pathfile>

@@ -42,7 +42,7 @@ In this mode you push your code and assets to Deno Deploy from a GitHub Actions
 workflow. This allows you to perform a build step before deploying.
 
 ```bash
-maze gen:deploy <project-name>
+maze gen:deploy <site-name>
 ```
 
 Just integrate to github, code will auto build and deploy.
@@ -54,7 +54,7 @@ See https://deno.com/deploy/docs/projects
 ### Generate netlify script
 
 ```bash
-maze gen:netlify <project-name>
+maze gen:netlify <site-name>
 ```
 
 Just integrate to github, code will auto build and deploy.

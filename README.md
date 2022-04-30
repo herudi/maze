@@ -3,7 +3,7 @@
 Fly on the edge with [deno](https://deno.land) and
 [nanojsx](https://nanojsx.io/).
 
-Maze is simple CLI tools for building web.
+Maze is simple and small CLI tools for building web.
 
 > [WIP]. but work functionaly.
 
@@ -13,6 +13,9 @@ Maze is simple CLI tools for building web.
 
 - SSR first (good choice for SEO).
 - Nextjs like (dynamic routes page and api/handler).
+- Support [Deno](https://deno.land), [Deno Deploy](https://deno.com/deploy),
+  [Cloudflare Workers](https://workers.cloudflare.com/) and
+  [Netlify Edge Functions](https://www.netlify.com/blog/announcing-serverless-compute-with-edge-functions/),
 - Hot Reloading.
 
 ## Demo
