@@ -1,82 +1,7 @@
 import { LINK, NANO_VERSION, NHTTP_VERSION } from "../core/constant.ts";
 import { join } from "./deps.ts";
 
-async function craftFromGit(template: string, app_name: string, dir: string) {
-  template = template.replace("--template=", "");
-  console.log(`Preparing ${template} to ${app_name}`);
-  const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
-  const script = CMD +
-    `git clone https://github.com/maze-template/${template}.git ${app_name}`;
-  const p = Deno.run({
-    cmd: script.split(" "),
-    stdout: "piped",
-    stderr: "piped",
-  });
-
-  const { code } = await p.status();
-  const rawOutput = await p.output();
-  const rawError = await p.stderrOutput();
-
-  if (code === 0) {
-    await Deno.stdout.write(rawOutput);
-    try {
-      await Deno.mkdir(join(dir, "public"));
-    } catch (_e) { /* noop */ }
-    try {
-      await Deno.mkdir(join(dir, "pages", "api"));
-    } catch (_e) { /* noop */ }
-    try {
-      const my_file = await Deno.readTextFile(join(dir, "import_map.json"));
-      const my_obj = JSON.parse(my_file);
-      my_obj["imports"]["nano-jsx"] =
-        `https://deno.land/x/nano_jsx@${NANO_VERSION}/mod.ts`;
-      my_obj["imports"]["nhttp"] =
-        `https://deno.land/x/nhttp@${NHTTP_VERSION}/mod.ts`;
-      my_obj["imports"]["maze"] = `${LINK}/mod.ts`;
-      await Deno.writeTextFile(
-        join(dir, "import_map.json"),
-        JSON.stringify(my_obj, null, 2),
-      );
-    } catch (_e) { /* noop */ }
-    console.log(`Success create ${app_name}.
-    
-cd ${app_name}
-
-RUN DEVELOPMENT:
-  maze dev
-
-BUILD PRODUCTION:
-  maze build
-
-RUN PRODUCTION:
-  deno run -A .maze/server.ts
-`);
-  } else {
-    const errorString = new TextDecoder().decode(rawError);
-    console.log(errorString);
-  }
-  Deno.exit(code);
-}
-export default async function createApp() {
-  const app = Deno.args[1];
-  if (!app) {
-    console.log("App Not Found !!\ntry => maze create my-app");
-    return;
-  }
-  const template = Deno.args[2];
-  const cwd = Deno.cwd();
-  const dir = join(cwd, app);
-  if (template && template.includes("--template=")) {
-    return craftFromGit(template, app, dir);
-  }
-  const link = LINK;
-  await Deno.mkdir(join(dir, "pages", "api"), { recursive: true });
-  await Deno.mkdir(join(dir, "pages", "_default"));
-  await Deno.mkdir(join(dir, ".vscode"));
-  await Deno.mkdir(join(dir, "public"));
-  await Deno.writeTextFile(
-    join(dir, "deno.json"),
-    `{
+const create_deno_json = `{
   "compilerOptions": {
     "lib": [
       "dom",
@@ -119,8 +44,79 @@ export default async function createApp() {
     "build:bundle:reload": "deno run -A --no-check --reload ${LINK}/cli/build.ts --bundle",
     "clean": "maze clean"
   }
-}`,
-  );
+}`;
+
+async function craftFromGit(template: string, app_name: string, dir: string) {
+  template = template.replace("--template=", "");
+  console.log(`Preparing ${template} to ${app_name}`);
+  const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
+  const script = CMD +
+    `git clone https://github.com/maze-template/${template}.git ${app_name}`;
+  const p = Deno.run({
+    cmd: script.split(" "),
+    stdout: "piped",
+    stderr: "piped",
+  });
+
+  const { code } = await p.status();
+  const rawOutput = await p.output();
+  const rawError = await p.stderrOutput();
+
+  if (code === 0) {
+    await Deno.stdout.write(rawOutput);
+    await Deno.mkdir(join(dir, "public"));
+    await Deno.writeTextFile(join(dir, "deno.json"), create_deno_json);
+    await Deno.mkdir(join(dir, "pages", "api"));
+    const my_file = await Deno.readTextFile(join(dir, "import_map.json"));
+    const my_obj = JSON.parse(my_file);
+    my_obj["imports"]["nano-jsx"] =
+      `https://deno.land/x/nano_jsx@${NANO_VERSION}/mod.ts`;
+    my_obj["imports"]["nhttp"] =
+      `https://deno.land/x/nhttp@${NHTTP_VERSION}/mod.ts`;
+    my_obj["imports"]["maze"] = `${LINK}/mod.ts`;
+    await Deno.writeTextFile(
+      join(dir, "import_map.json"),
+      JSON.stringify(my_obj, null, 2),
+    );
+    await Deno.remove(join(dir, ".git"), { recursive: true });
+    console.log(`Success create ${app_name}.
+    
+cd ${app_name}
+
+RUN DEVELOPMENT:
+  maze dev
+
+BUILD PRODUCTION:
+  maze build
+
+RUN PRODUCTION:
+  deno run -A .maze/server.ts
+`);
+  } else {
+    const errorString = new TextDecoder().decode(rawError);
+    console.log(errorString);
+  }
+  Deno.exit(code);
+}
+
+export default async function createApp() {
+  const app = Deno.args[1];
+  if (!app) {
+    console.log("App Not Found !!\ntry => maze create my-app");
+    return;
+  }
+  const template = Deno.args[2];
+  const cwd = Deno.cwd();
+  const dir = join(cwd, app);
+  if (template && template.includes("--template=")) {
+    return craftFromGit(template, app, dir);
+  }
+  const link = LINK;
+  await Deno.mkdir(join(dir, "pages", "api"), { recursive: true });
+  await Deno.mkdir(join(dir, "pages", "_default"));
+  await Deno.mkdir(join(dir, ".vscode"));
+  await Deno.mkdir(join(dir, "public"));
+  await Deno.writeTextFile(join(dir, "deno.json"), create_deno_json);
   await Deno.writeTextFile(
     join(dir, "import_map.json"),
     `{
