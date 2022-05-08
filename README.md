@@ -42,6 +42,10 @@ deno install -Af --no-check -n maze -r https://raw.githubusercontent.com/herudi/
 
 ```bash
 maze create my-app
+
+// or with twind
+maze create my-app --template=maze-twind
+
 cd my-app
 ```
 

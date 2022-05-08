@@ -1,8 +1,8 @@
-import { Handler } from "https://deno.land/x/nhttp@1.1.11/src/types.ts";
 import {
   getAssetFromKV,
   mapRequestToAsset,
 } from "https://esm.sh/@cloudflare/kv-asset-handler";
+import { Handler } from "./deps.ts";
 import { ReqEvent, TRet } from "./types.ts";
 
 function handlePrefix(prefix: string) {
