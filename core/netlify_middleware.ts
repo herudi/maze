@@ -1,4 +1,4 @@
-import { Handler } from "https://deno.land/x/nhttp@1.1.11/src/types.ts";
+import { Handler } from "./deps.ts";
 import { ReqEvent } from "./types.ts";
 
 export default function middleware(): Handler<ReqEvent> {

@@ -1,5 +1,10 @@
 import { join, resolve, toFileUrl, walk } from "../cli/deps.ts";
-import { LINK, STORAGE_KEY_API, STORAGE_KEY_PAGE } from "./constant.ts";
+import {
+  LINK,
+  NHTTP_VERSION,
+  STORAGE_KEY_API,
+  STORAGE_KEY_PAGE,
+} from "./constant.ts";
 import { TRet } from "./types.ts";
 
 const link = LINK;
@@ -110,7 +115,7 @@ export const pages = [
 `;
   }
   return `
-import { Router } from "https://deno.land/x/nhttp@1.1.10/mod.ts";
+import { Router } from "https://deno.land/x/nhttp@${NHTTP_VERSION}/mod.ts";
 import { RequestEvent } from "${link}/core/types.ts";
 ${arr.map((el, i) => `import $${i} from "../../pages${el}";`).join("\n")}
 const api = new Router<RequestEvent>();
